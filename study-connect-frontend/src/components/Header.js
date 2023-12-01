@@ -1,44 +1,56 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { AppBar, Box, Toolbar, Typography, Button, IconButton,  Avatar } from '@mui/material';
+import { React, useState, useEffect } from 'react';
+import { AppBar, Box, Toolbar, Typography, Button, Divider,  Avatar } from '@mui/material';
 import { deepOrange } from '@mui/material/colors';
 
+const pages = ['Home', 'Friend', 'Group']
 const Header = () => {
+    const storedPage = localStorage.getItem('currentPage');
+    const initialPage = storedPage ? parseInt(storedPage, 10) : 0;
+    const [currentPage, setCurrentPage] = useState(initialPage);
+    useEffect(() => {
+        localStorage.setItem('currentPage', currentPage.toString());
+    }, [currentPage]);
 
-  const handleSignOut = () => {
-    // Implement your sign-out logic here
-    console.log('Signing out...');
-  };
+    const handleSignOut = () => {
+        // Implement your sign-out logic here
+        console.log('Signing out...');
+    };
 
-  return (
-    <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static">
-            <Toolbar>
-                {/* Logo */}
-                <Typography variant="h6" color='#DE5000'>
-                    StudyConnect
-                </Typography>
+    return (
+        <Box sx={{ flexGrow: 1 }}>
+            <AppBar position="static">
+                <Toolbar>
+                    {/* logo */}
+                    <Typography variant="h6" fontWeight={800} color='#DE5000'>
+                        StudyConnect
+                    </Typography>
 
-                {/* Router Links */}
-                <IconButton size="small" color="inherit" component={Link} to="/" >
-                    Home
-                </IconButton>
-                <IconButton size="small" color="inherit" component={Link} to="/friendlist" >
-                    Friend
-                </IconButton>
-                <IconButton size="small" color="inherit" component={Link} to="/group" >
-                    Group
-                </IconButton>
+                    {/* page button */}
+                    <Box sx={{ flexGrow: 1, display: 'flex' }}>
+                        <Box sx={{ margin: 3}}>
+                            <Divider orientation="vertical" color="gray" />
+                        </Box>
+                        {pages.map((page, index) => (
+                            <Button
+                                key={index}
+                                // color="inherit"
+                                sx={{ my: 2, display: 'block', color: currentPage === index ? 'black' : 'gray' }}
+                                onClick={() => setCurrentPage(index)}
+                            >
+                                {page}
+                            </Button>
+                        ))}
+                    </Box>
 
-                {/* Avatar and Sign Out */}
-                <Avatar size="small" sx={{ bgcolor: deepOrange[500] }}>A</Avatar>
-                <IconButton edge="end" size="small" color="primary" onClick={handleSignOut}>
-                    Sign Out
-                </IconButton>
-            </Toolbar>
-      </AppBar>
-    </Box>
-  );
+                    {/* avatar and sign out */}
+                    <Avatar size="small" sx={{ margin:1, bgcolor: deepOrange[500] }}>A</Avatar>
+                    <Button edge="end" size="small" color="primary" onClick={handleSignOut}>
+                        Sign Out
+                    </Button>
+                </Toolbar>
+            </AppBar>
+        </Box>
+    );
 };
 
 export default Header;
