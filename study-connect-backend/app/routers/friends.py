@@ -18,7 +18,7 @@ def requests(student_id: str):
         FROM IS_FRIEND_OF
         WHERE comfirm_status = 'Agree' AND (user1_ID='{student_id}' OR user2_ID='{student_id}')
         """)
-    print(friends_relationship.head())
+    # print(friends_relationship.head())
     return ok_respond({
         "friends": friends_relationship["friend_id"].unique().tolist()
     })
