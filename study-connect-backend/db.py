@@ -14,7 +14,9 @@ def query_database(query: str):
 
 
 if __name__ == "__main__":
-    result = query_database("""
+    result = query_database(
+    """
     SELECT * FROM USER
-                   """)
+    """
+    )
     print(result.head())
