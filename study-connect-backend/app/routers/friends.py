@@ -8,7 +8,7 @@ router = APIRouter(
 )
 
 
-@router.get("/requests/{student_id}")
+@router.get("/list/{student_id}")
 def requests(student_id: str):
     friends_relationship = query_database(
         f"""
