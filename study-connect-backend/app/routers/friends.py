@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from ..db import query_database, update_database
 from ..utils import ok_respond
@@ -13,13 +13,45 @@ class FriendAction(BaseModel):
     user: str
     target: str
 
+# TODO: implement safe checking
 
-@router.get("/send_request")
+
+@router.post("/send_request")
 def send_request(fa: FriendAction):
     update_database(
         f"""
-"""
+        INSERT OR IGNORE INTO IS_FRIEND_OF VALUES ('{fa.user}', '{fa.target}' , 'Unconfirm')
+        """
     )
+    return ok_respond()
+
+
+@router.post("/approve_request")
+def approve_request(fa: FriendAction):
+    try:
+        update_database(
+            f"""
+            UPDATE IS_FRIEND_OF
+            SET confirm_status = 'Agree'
+            WHERE user1_ID = "{fa.user}" AND user2_ID = "{fa.target}";
+            """
+        )
+    except BaseException as err:
+        return HTTPException(status_code=404, detail="No request found")
+    return ok_respond()
+
+@router.post("/unfriend")
+def unfriend(fa: FriendAction):
+    try:
+        update_database(
+            f"""
+            UPDATE IS_FRIEND_OF
+            SET confirm_status = 'Disagree'
+            WHERE user1_ID = "{fa.user}" AND user2_ID = "{fa.target}";
+            """
+        )
+    except BaseException as err:
+        return HTTPException(status_code=404, detail="No request found")
     return ok_respond()
 
 

@@ -1,0 +1,3 @@
+CREATE INDEX index1 ON USER (student_ID);
+CREATE INDEX index2 ON COURSE (course_ID);
+CREATE INDEX index3 ON INSTRUCTOR (instructor_ID);

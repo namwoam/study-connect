@@ -1,4 +1,4 @@
-def ok_respond(payload: dict | None):
+def ok_respond(payload: dict | None = None):
     if payload:
         return {
             "success": True,

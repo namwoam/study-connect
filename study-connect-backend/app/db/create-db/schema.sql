@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS ANNOUNCEMENT(
+    group_ID INT PRIMARY KEY,
+    publisher_ID TEXT NOT NULL,
+    publish_time INT NOT NULL,
+    content TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS DEPARTMENT(
+    department_ID TEXT PRIMARY KEY,
+    department_name TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS COURSE(
+    course_ID INT PRIMARY KEY,
+    course_name TEXT NOT NULL,
+    semester TEXT NOT NULL,
+    department_ID TEXT NOT NULL,
+    FOREIGN KEY(department_ID) REFERENCES DEPARTMENT(department_ID)
+);
+
+CREATE TABLE IF NOT EXISTS 
