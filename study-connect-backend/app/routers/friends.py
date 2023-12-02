@@ -1,11 +1,26 @@
-from fastapi import APIRouter, Depends, HTTPException
-from ..db import query_database
+from fastapi import APIRouter
+from pydantic import BaseModel
+from ..db import query_database, update_database
 from ..utils import ok_respond
 router = APIRouter(
     prefix="/user/friend",
     tags=["friends"],
     responses={404: {"description": "Not found"}},
 )
+
+
+class FriendAction(BaseModel):
+    user: str
+    target: str
+
+
+@router.get("/send_request")
+def send_request(fa: FriendAction):
+    update_database(
+        f"""
+"""
+    )
+    return ok_respond()
 
 
 @router.get("/list/{student_id}")
