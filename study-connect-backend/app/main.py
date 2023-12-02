@@ -2,12 +2,13 @@ from typing import Union
 
 from fastapi import FastAPI
 
-from .routers import friends
+from .routers import friends, courses
 
 app = FastAPI()
 
 
 app.include_router(friends.router)
+app.include_router(courses.router)
 
 
 @app.get("/")

@@ -11,6 +11,15 @@ def query_database(query: str):
     raise NotImplementedError
 
 
+def update_database(query: str):
+    con = sqlite3.connect(os.path.join(
+        os.path.dirname(__file__), "./db/db.sqlite"))
+    cur = con.cursor()
+    cur.execute(query)
+    con.commit()
+    return
+
+
 if __name__ == "__main__":
     result = query_database(
         """
