@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { AppBar, Box, Toolbar, Typography, Button, Divider,  Avatar } from '@mui/material';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { deepOrange } from '@mui/material/colors';
 
 const pages = ['Home', 'Friend', 'Group']
@@ -7,6 +8,7 @@ const Header = () => {
     const storedPage = localStorage.getItem('currentPage');
     const initialPage = storedPage ? parseInt(storedPage, 10) : 0;
     const [currentPage, setCurrentPage] = useState(initialPage);
+    const username = localStorage.getItem('username');
     useEffect(() => {
         localStorage.setItem('currentPage', currentPage.toString());
     }, [currentPage]);
@@ -18,7 +20,7 @@ const Header = () => {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+            <AppBar elevation={1} position="fixed">
                 <Toolbar>
                     {/* logo */}
                     <Typography variant="h6" fontWeight={800} color='#DE5000'>
@@ -44,7 +46,16 @@ const Header = () => {
 
                     {/* avatar and sign out */}
                     <Avatar size="small" sx={{ margin:1, bgcolor: deepOrange[500] }}>A</Avatar>
-                    <Button edge="end" size="small" color="primary" onClick={handleSignOut}>
+                    <Typography variant="p" color='black'>
+                        {username ?? 'userA'}
+                    </Typography>
+                    <Button 
+                        sx={{ margin: 2}}
+                        edge="end" 
+                        size="small" 
+                        color="primary" 
+                        endIcon={<ArrowForwardIcon/>} 
+                        onClick={handleSignOut}>
                         Sign Out
                     </Button>
                 </Toolbar>
