@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
@@ -8,6 +8,9 @@ import Login from './containers/Login';
 import './App.css';
 
 // https://zenoo.github.io/mui-theme-creator/#
+
+// pages['Home', 'Friend', 'Group']
+
 const theme = createTheme({
   palette: {
     mode: 'light',
@@ -39,13 +42,19 @@ const theme = createTheme({
 });
 
 function App() {
-  const [islogin, setIslogin] = useState(false);
-  const [userID, setUserID] = useState('');
+  const [islogin, setIslogin] = useState(localStorage.getItem('islogin')||false);
+  const [userID, setUserID] = useState(localStorage.getItem('userID')||'');
+
+  useEffect(() => {
+    localStorage.setItem('islogin', islogin);
+    localStorage.setItem('userID', userID);
+  }, [islogin, userID])
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Header />
+        {islogin ? <Header /> : <></>}
         <div className='Content'>
           <Routes>
             {islogin ? 
