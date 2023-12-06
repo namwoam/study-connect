@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import Header from './components/Header';
 import HomePage from './containers/Home';
+import Login from './containers/Login';
 import './App.css';
 
 // https://zenoo.github.io/mui-theme-creator/#
@@ -38,6 +39,8 @@ const theme = createTheme({
 });
 
 function App() {
+  const [islogin, setIslogin] = useState(false);
+  const [userID, setUserID] = useState('');
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -45,7 +48,11 @@ function App() {
         <Header />
         <div className='Content'>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            {islogin ? 
+            <Route path="/" element={<HomePage user={userID}/>} />
+            : 
+            <Route path="/" element={<Login setLogin={setIslogin} setuser={setUserID}/>}></Route>
+            }            
           </Routes>
         </div>
       </Router>

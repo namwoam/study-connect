@@ -31,7 +31,7 @@ const recommends = [
 
 
 
-const HomePage = () => {
+const HomePage = ({userID}) => {
     const [openModel, setOpenModel] = useState(false);
     const [detailUserId, setDetailUserId] = useState("");
     const handleOpen = (userId) => {
