@@ -17,6 +17,10 @@ const Header = () => {
         // Implement your sign-out logic here
         console.log('Signing out...');
     };
+    const handleInfo = () => {
+        // Implement your sign-out logic here
+        console.log('Go to info page...');
+    };
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -45,10 +49,13 @@ const Header = () => {
                     </Box>
 
                     {/* avatar and sign out */}
-                    <Avatar size="small" sx={{ margin:1, bgcolor: deepOrange[500] }}>A</Avatar>
-                    <Typography variant="p" color='black'>
-                        {username ?? 'userA'}
-                    </Typography>
+                    <Button
+                        onClick={handleInfo}>
+                        <Avatar size="small" sx={{ margin:1, bgcolor: deepOrange[500] }}>A</Avatar>
+                        <Typography variant="p" color='black'>
+                            {username ?? 'userA'}
+                        </Typography>
+                    </Button>
                     <Button 
                         sx={{ margin: 2}}
                         edge="end" 

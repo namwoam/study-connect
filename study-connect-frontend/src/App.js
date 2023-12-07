@@ -4,6 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import Header from './components/Header';
 import HomePage from './containers/Home';
+import UserPage from './containers/User';
 import Login from './containers/Login';
 import './App.css';
 
@@ -28,7 +29,7 @@ const theme = createTheme({
     },
   },
   shape: {
-    borderRadius: '10px',
+    borderRadius: 10,
   },
   components: {
     MuiAppBar: {
@@ -58,7 +59,10 @@ function App() {
         <div className='Content'>
           <Routes>
             {islogin ? 
-            <Route path="/" element={<HomePage user={userID}/>} />
+            <>
+              <Route path="/" element={<UserPage user={userID}/>} />
+              <Route path="/" element={<HomePage user={userID}/>} />
+            </>
             : 
             <Route path="/" element={<Login setLogin={setIslogin} setuser={setUserID}/>}></Route>
             }            
