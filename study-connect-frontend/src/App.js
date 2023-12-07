@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import Header from './components/Header';
-import HomePage from './containers/Home';
+import MainView from './containers/MainView';
 import Login from './containers/Login';
 import './App.css';
 
@@ -44,6 +44,13 @@ const theme = createTheme({
 function App() {
   const [islogin, setIslogin] = useState(localStorage.getItem('islogin')||false);
   const [userID, setUserID] = useState(localStorage.getItem('userID')||'');
+  const storedPage = localStorage.getItem('currentPage');
+  const initialPage = storedPage ? parseInt(storedPage, 10) : 0;
+  const [currentPage, setCurrentPage] = useState(initialPage);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   useEffect(() => {
     localStorage.setItem('islogin', islogin);
@@ -54,11 +61,11 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        {islogin ? <Header /> : <></>}
+        {islogin ? <Header currentPage={currentPage} onPageChange={handlePageChange} />: <></>}
         <div className='Content'>
           <Routes>
             {islogin ? 
-            <Route path="/" element={<HomePage user={userID}/>} />
+            <Route path="/" element={<MainView currentPage={currentPage} /> } />
             : 
             <Route path="/" element={<Login setLogin={setIslogin} setuser={setUserID}/>}></Route>
             }            
