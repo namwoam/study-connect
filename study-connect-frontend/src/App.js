@@ -7,6 +7,7 @@ import HomePage from './containers/Home';
 import FriendPage from './containers/Friend';
 import CoursePage from './containers/Course';
 import GroupPage from './containers/Group';
+import UserPage from './containers/User';
 import Login from './containers/Login';
 import './App.css';
 
@@ -31,7 +32,7 @@ const theme = createTheme({
     },
   },
   shape: {
-    borderRadius: '10px',
+    borderRadius: 10,
   },
   components: {
     MuiAppBar: {
@@ -45,7 +46,7 @@ const theme = createTheme({
 });
 
 function App() {
-  //localStorage.clear();
+  localStorage.clear();
   const [islogin, setIslogin] = useState(localStorage.getItem('islogin')||false);
   const [userID, setUserID] = useState(localStorage.getItem('userID')||'');
   const [currentPage, setCurrentPage] = useState(localStorage.getItem('currentPage')||0);
@@ -68,6 +69,9 @@ function App() {
     }
     else if (currentPage === 3) {
       return <Route path="/" element={<GroupPage user={userID}/>} />
+    }
+    else if (currentPage === 4) {
+      return <Route path="/" element={<UserPage user={userID}/>} />
     }
     else {
       return <Route path="/" element={<HomePage user={userID}/>} />
