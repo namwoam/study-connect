@@ -45,7 +45,7 @@ const theme = createTheme({
 });
 
 function App() {
-  localStorage.clear();
+  //localStorage.clear();
   const [islogin, setIslogin] = useState(localStorage.getItem('islogin')||false);
   const [userID, setUserID] = useState(localStorage.getItem('userID')||'');
   const [currentPage, setCurrentPage] = useState(localStorage.getItem('currentPage')||0);

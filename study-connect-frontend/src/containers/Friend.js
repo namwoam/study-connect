@@ -1,5 +1,6 @@
 import { React, useState } from 'react';
 import { Box, Grid, Paper, Typography, Button, Container } from '@mui/material';
+import { deepOrange } from '@mui/material/colors';
 
 import InformationModal from '../components/InformationModal';
 
@@ -19,14 +20,14 @@ const FriendCard = {
     borderRadius: '10px'
 }
 
-const recommends = [
-    {uid: 1, username: 'user1', selfIntro: 'Hi, my name is ...'},
-    {uid: 2, username: 'user2', selfIntro: 'Hi, my name is ...'},
-    {uid: 3, username: 'user3', selfIntro: 'Hi, my name is ...'},
-    {uid: 4, username: 'user3', selfIntro: 'Hi, my name is ...'},
-    {uid: 5, username: 'user3', selfIntro: 'Hi, my name is ...'},
-    {uid: 6, username: 'user3', selfIntro: 'Hi, my name is ...'},
-    {uid: 7, username: 'user3', selfIntro: 'Hi, my name is ...'}
+const friends = [
+    {uid: 1, username: 'user1', selfIntro: 'Hi, my name is ...', ig_account: 'user1_ig', fb_account: 'user1_fb'},
+    {uid: 2, username: 'user2', selfIntro: 'Hi, my name is ...', ig_account: 'user2_ig', fb_account: 'user2_fb'},
+    {uid: 3, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user3_ig', fb_account: 'user3_fb'},
+    {uid: 4, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user4_ig', fb_account: 'user4_fb'},
+    {uid: 5, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user5_ig', fb_account: 'user5_fb'},
+    {uid: 6, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user6_ig', fb_account: 'user6_fb'},
+    {uid: 7, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user7_ig', fb_account: 'user7_fb'}
 ]
 
 
@@ -45,43 +46,34 @@ const FriendPage = ({userID}) => {
                 Your Friends
             </Typography>
             <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
-            {recommends.map((recommend, index) => (
-                <Grid container spacing={2} sx={FriendCard}>
-                    <Grid md={8}>
-                        <Typography>
-                            {recommend.username}
-                        </Typography>
-                        <Typography>
-                            {recommend.selfIntro}
-                        </Typography>
+            {friends.map((friend, index) => (
+                <Paper elevation={3} sx={FriendCard}>
+                    <Typography variant="h5" gutterBottom>
+                        {friend.username}
+                    </Typography>
+                    <Typography variant="body1" color="textSecondary" paragraph>
+                        {friend.selfIntro}
+                    </Typography>
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={2}>
+                            <Box bgcolor='#ff8000' borderRadius="10px" textAlign="center" marginTop="1px">
+                                <Typography variant="subtitle1" color="#ffffff">
+                                    IG Account
+                                </Typography>
+                            </Box>
+                            <Box bgcolor='#ff8000' borderRadius="10px" textAlign="center" marginTop="1px">
+                                <Typography variant="subtitle1" color="#ffffff">
+                                    FB Account
+                                </Typography>
+                            </Box>
+                        </Grid>                        
+                        <Grid item xs={8} style={{justifyContent: 'center', alignItems: 'center'}}>
+                            <Typography variant="body1" textAlign="center">{friend.ig_account}</Typography>
+                            <Typography variant="body1" textAlign="center">{friend.fb_account}</Typography>
+                        </Grid>
                     </Grid>
-                    <Grid md={4} 
-                        sx={{ 
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            alignItems: 'flex-end' 
-                        }}
-                    >
-                        <Button
-                            size='small'
-                            variant="contained"
-                            color='primary'
-                            sx={{width: '120px', mb: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
-                        >
-                            Send Request
-                        </Button>
-                        <Button
-                            size='small'
-                            variant="contained"
-                            color='secondary'
-                            onClick={() => handleOpen(recommend.uid)}
-                            sx={{width: '120px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
-                        >
-                            Show More
-                        </Button>
-                    </Grid>
-                </Grid>
+                    
+                </Paper>
             ))}
             </Box>
             <InformationModal open={openModel} setOpen={setOpenModel} userId={detailUserId}/>
