@@ -3,14 +3,16 @@ import { AppBar, Box, Toolbar, Typography, Button, Divider,  Avatar } from '@mui
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { deepOrange } from '@mui/material/colors';
 
-const pages = ['Home', 'Friend', 'Group']
-const Header = () => {
+const pages = ['Home', 'Friend', 'Course', 'Group']
+const Header = ({setpage}) => {
     const storedPage = localStorage.getItem('currentPage');
     const initialPage = storedPage ? parseInt(storedPage, 10) : 0;
     const [currentPage, setCurrentPage] = useState(initialPage);
     const username = localStorage.getItem('username');
     useEffect(() => {
         localStorage.setItem('currentPage', currentPage.toString());
+        console.log("header:", currentPage);
+        setpage(currentPage);
     }, [currentPage]);
 
     const handleSignOut = () => {
