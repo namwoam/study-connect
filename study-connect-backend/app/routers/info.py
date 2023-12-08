@@ -10,7 +10,7 @@ router = APIRouter(
 
 
 @router.post("/user/info/{student_id}")
-def student_info(student_id: string):
+def student_info(student_id: str):
     student_info = query_database(
         f'''
         SELECT u.student_id, u.self_introduction, u.department, c.ig_accoung, c.fb_account
@@ -22,7 +22,7 @@ def student_info(student_id: string):
     })
 
 @router.post("/instructor/info/{instructor_id}")
-def instructor_info(instructor_id: string):
+def instructor_info(instructor_id: str):
     instructor_info = query_database(
         f'''
         SELECT i.instructor_id, i.instructor_name
@@ -35,7 +35,7 @@ def instructor_info(instructor_id: string):
     })
 
 @router.post("/course/info/{course_id}")
-def course_info(course_id: string):
+def course_info(course_id: str):
     course_info = query_database(
         f'''
         SELECT c.course_id, of.instructor_id, c.course_name, c.semester, i.department_id
