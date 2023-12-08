@@ -9,7 +9,7 @@ router = APIRouter(
 )
 
 
-@router.post("/user/info/{student_id}")
+@router.get("/user/info/{student_id}")
 def student_info(student_id: str):
     student_info = query_database(
         f'''
@@ -21,7 +21,7 @@ def student_info(student_id: str):
         "student": student_info["student_id"].unique().tolist()
     })
 
-@router.post("/instructor/info/{instructor_id}")
+@router.get("/instructor/info/{instructor_id}")
 def instructor_info(instructor_id: str):
     instructor_info = query_database(
         f'''
@@ -34,7 +34,7 @@ def instructor_info(instructor_id: str):
         "instructor": instructor_info["instructor_id"].unique().tolist()
     })
 
-@router.post("/course/info/{course_id}")
+@router.get("/course/info/{course_id}")
 def course_info(course_id: str):
     course_info = query_database(
         f'''

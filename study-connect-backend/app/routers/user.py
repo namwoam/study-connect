@@ -14,7 +14,7 @@ class UserUpdate(BaseModel):
     update: str  # 要更新的內容
 
 
-@router.post("/user/edit_intro")
+@router.post("/edit_intro")
 def edit_intro(useri: UserUpdate):
     try:
         update_database(
@@ -31,7 +31,7 @@ def edit_intro(useri: UserUpdate):
 # separate FB and IG into two posts
 
 
-@router.post("/user/edit_contact/FB")
+@router.post("/edit_contact/FB")
 def edit_FB_contact(useri: UserUpdate):
     try:
         update_database(
@@ -46,7 +46,7 @@ def edit_FB_contact(useri: UserUpdate):
     return ok_respond()
 
 
-@router.post("/user/edit_contact/IG")
+@router.post("/edit_contact/IG")
 def edit_IG_contact(useri: UserUpdate):
     try:
         update_database(
@@ -61,7 +61,7 @@ def edit_IG_contact(useri: UserUpdate):
     return ok_respond()
 
 
-@router.post("/user/edit_name")
+@router.post("/edit_name")
 def edit_name(useri: UserUpdate):
     try:
         update_database(
