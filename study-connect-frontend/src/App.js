@@ -28,7 +28,7 @@ const theme = createTheme({
     },
   },
   shape: {
-    borderRadius: '10px',
+    borderRadius: 10,
   },
   components: {
     MuiAppBar: {
@@ -42,8 +42,9 @@ const theme = createTheme({
 });
 
 function App() {
-  const [islogin, setIslogin] = useState(localStorage.getItem('islogin')||false);
-  const [userID, setUserID] = useState(localStorage.getItem('userID')||'');
+  const storedUserID = localStorage.getItem('userID');
+  const [islogin, setIslogin] = useState(storedUserID ? true : false);
+  const [userID, setUserID] = useState(storedUserID ? storedUserID : '');
   const storedPage = localStorage.getItem('currentPage');
   const initialPage = storedPage ? parseInt(storedPage, 10) : 0;
   const [currentPage, setCurrentPage] = useState(initialPage);
@@ -53,15 +54,14 @@ function App() {
   };
 
   useEffect(() => {
-    localStorage.setItem('islogin', islogin);
     localStorage.setItem('userID', userID);
-  }, [islogin, userID])
+  }, [userID])
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        {islogin ? <Header currentPage={currentPage} onPageChange={handlePageChange} />: <></>}
+        {islogin ? <Header currentPage={currentPage} onPageChange={handlePageChange} setIslogin={setIslogin}/>: <></>}
         <div className='Content'>
           <Routes>
             {islogin ? 

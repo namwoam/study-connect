@@ -5,14 +5,15 @@ import { deepOrange } from '@mui/material/colors';
 
 const pages = ['Home', 'Friend', 'Course', 'Group']
 
-const Header = ({ currentPage, onPageChange }) => {
+const Header = ({ currentPage, onPageChange, setIslogin}) => {
     const username = localStorage.getItem('username');
     useEffect(() => {
-        localStorage.setItem('currentPage', currentPage.toString());
+        console.log("header:", currentPage);
     }, [currentPage]);
 
     const handleSignOut = () => {
-        // Implement your sign-out logic here
+        localStorage.clear();
+        setIslogin(false);
         console.log('Signing out...');
     };
 
@@ -48,10 +49,13 @@ const Header = ({ currentPage, onPageChange }) => {
                     </Box>
 
                     {/* avatar and sign out */}
-                    <Avatar size="small" sx={{ margin:1, bgcolor: deepOrange[500] }}>A</Avatar>
-                    <Typography variant="p" color='black'>
-                        {username ?? 'userA'}
-                    </Typography>
+                    <Button
+                        onClick={() => handlePageClick(4)}>
+                        <Avatar size="small" sx={{ margin:1, bgcolor: deepOrange[500] }}>A</Avatar>
+                        <Typography variant="p" color='black'>
+                            {username ?? 'userA'}
+                        </Typography>
+                    </Button>
                     <Button 
                         sx={{ margin: 2}}
                         edge="end" 
