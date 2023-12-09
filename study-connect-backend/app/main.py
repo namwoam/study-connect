@@ -2,7 +2,7 @@ from typing import Union
 
 from fastapi import FastAPI
 
-from .routers import friends, courses, info, user
+from .routers import friends, courses, info, user , group
 
 app = FastAPI()
 
@@ -11,6 +11,7 @@ app.include_router(friends.router)
 app.include_router(courses.router)
 app.include_router(info.router)
 app.include_router(user.router)
+app.include_router(group.router)
 
 
 @app.get("/")

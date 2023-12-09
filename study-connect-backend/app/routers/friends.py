@@ -18,11 +18,14 @@ class FriendAction(BaseModel):
 
 @router.post("/send_request")
 def send_request(fa: FriendAction):
-    update_database(
-        f"""
+    try:
+        update_database(
+            f"""
         INSERT OR IGNORE INTO IS_FRIEND_OF VALUES ('{fa.user}', '{fa.target}' , 'Unconfirm')
         """
-    )
+        )
+    except BaseException as err:
+        return HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -37,8 +40,9 @@ def approve_request(fa: FriendAction):
             """
         )
     except BaseException as err:
-        return HTTPException(status_code=404, detail="No request found")
+        return HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
+
 
 @router.post("/unfriend")
 def unfriend(fa: FriendAction):
@@ -51,7 +55,7 @@ def unfriend(fa: FriendAction):
             """
         )
     except BaseException as err:
-        return HTTPException(status_code=404, detail="No request found")
+        return HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
