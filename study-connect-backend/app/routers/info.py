@@ -9,8 +9,8 @@ router = APIRouter(
 )
 
 
-@router.post("/user/info/{student_id}")
-def student_info(student_id: string):
+@router.get("/user/info/{student_id}")
+def student_info(student_id: str):
     student_info = query_database(
         f'''
         SELECT u.student_id, u.self_introduction, u.department, c.ig_accoung, c.fb_account
@@ -21,8 +21,8 @@ def student_info(student_id: string):
         "student": student_info["student_id"].unique().tolist()
     })
 
-@router.post("/instructor/info/{instructor_id}")
-def instructor_info(instructor_id: string):
+@router.get("/instructor/info/{instructor_id}")
+def instructor_info(instructor_id: str):
     instructor_info = query_database(
         f'''
         SELECT i.instructor_id, i.instructor_name
@@ -34,8 +34,8 @@ def instructor_info(instructor_id: string):
         "instructor": instructor_info["instructor_id"].unique().tolist()
     })
 
-@router.post("/course/info/{course_id}")
-def course_info(course_id: string):
+@router.get("/course/info/{course_id}")
+def course_info(course_id: str):
     course_info = query_database(
         f'''
         SELECT c.course_id, of.instructor_id, c.course_name, c.semester, i.department_id
