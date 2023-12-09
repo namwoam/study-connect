@@ -11,7 +11,7 @@ router = APIRouter(
 
 class UserUpdate(BaseModel):
     user_id: str
-    update: str  # 要更新的內容
+    update_content: str
 
 
 @router.post("/edit_intro")
@@ -20,12 +20,12 @@ def edit_intro(useri: UserUpdate):
         update_database(
             f'''
             UPDATE USER
-            SET self_introduction = {useri.update}
+            SET self_introduction = {useri.update_content}
             WHERE student_id = {useri.user_id}
             '''
         )
     except BaseException as err:
-        return HTTPException(status_code=404, detail="No request found")
+        return HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 # separate FB and IG into two posts
@@ -37,12 +37,12 @@ def edit_FB_contact(useri: UserUpdate):
         update_database(
             f'''
             UPDATE CONTACT
-            SET fb_account = {useri.update}
+            SET fb_account = {useri.update_content}
             WHERE user_id = {useri.user_id}
             '''
         )
     except BaseException as err:
-        return HTTPException(status_code=404, detail="No request found")
+        return HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -52,12 +52,12 @@ def edit_IG_contact(useri: UserUpdate):
         update_database(
             f'''
             UPDATE CONTACT
-            SET ig_account = {useri.update}
+            SET ig_account = {useri.update_content}
             WHERE user_id = {useri.user_id}
             '''
         )
     except BaseException as err:
-        return HTTPException(status_code=404, detail="No request found")
+        return HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -67,10 +67,24 @@ def edit_name(useri: UserUpdate):
         update_database(
             f'''
             UPDATE USER
-            SET name = {useri.update}
+            SET name = {useri.update_content}
             WHERE student_id = {useri.user_id}
             '''
         )
     except BaseException as err:
-        return HTTPException(status_code=404, detail="No request found")
+        return HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
+
+
+@router.get("/enrolled_courses/{student_id}")
+def enrolled_course(student_id: str):
+    courses = query_database(
+        f"""
+        SELECT course_id
+        FROM TAKE_COURSE AS TC
+        WHERE TC.user_ID = '{student_id}'
+        """
+    )
+    return ok_respond({
+        "courses": courses["course_ID"].unique().tolist()
+    })
