@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { Box, Grid, Paper, Typography, Button, Container } from '@mui/material';
+import { Box, Grid, Typography, Button, Container, TextField, Autocomplete } from '@mui/material';
 
 import InformationModal from '../components/InformationModal';
 
@@ -19,19 +19,29 @@ const FriendCard = {
     borderRadius: '10px'
 }
 
-const recommends = [
-    {uid: 1, username: 'user1', selfIntro: 'Hi, my name is ...'},
-    {uid: 2, username: 'user2', selfIntro: 'Hi, my name is ...'},
-    {uid: 3, username: 'user3', selfIntro: 'Hi, my name is ...'},
-    {uid: 4, username: 'user3', selfIntro: 'Hi, my name is ...'},
-    {uid: 5, username: 'user3', selfIntro: 'Hi, my name is ...'},
-    {uid: 6, username: 'user3', selfIntro: 'Hi, my name is ...'},
-    {uid: 7, username: 'user3', selfIntro: 'Hi, my name is ...'}
+const COURSE_ENTRY = [
+    {id: 1, label: '資料庫管理'},
+    {id: 2, label: '網路技術與應用'},
+    {id: 3, label: 'AAA'},
+    {id: 4, label: 'd'},
+    {id: 5, label: 'ff'},
+    {id: 6, label: 'vv'},
+    {id: 7, label: 'eee'},
+]
+
+const courses = [
+    {courseId: 1, username: 'user1', selfIntro: 'Hi, my name is ...'},
+    {courseId: 2, username: 'user2', selfIntro: 'Hi, my name is ...'},
+    {courseId: 3, username: 'user3', selfIntro: 'Hi, my name is ...'},
+    {courseId: 4, username: 'user3', selfIntro: 'Hi, my name is ...'},
+    {courseId: 5, username: 'user3', selfIntro: 'Hi, my name is ...'},
+    {courseId: 6, username: 'user3', selfIntro: 'Hi, my name is ...'},
+    {courseId: 7, username: 'user3', selfIntro: 'Hi, my name is ...'}
 ]
 
 
-
-const CoursePage = ({userID}) => {
+const CoursePage = () => {
+    const userID = localStorage.getItem('userID')
     const [openModel, setOpenModel] = useState(false);
     const [detailUserId, setDetailUserId] = useState("");
     const handleOpen = (userId) => {
@@ -42,17 +52,30 @@ const CoursePage = ({userID}) => {
     return(
         <Container sx={MainContainer}>
             <Typography variant="h5" fontWeight={800} sx={{mt: '30px'}}>
-                Your Courses
+                Discover Course Groups
             </Typography>
-            <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
-            {recommends.map((recommend, index) => (
+            <Autocomplete 
+                size='small'
+                sx={{ width: '400px', marginTop: '30px', marginBottom: '30px' }}
+                options={COURSE_ENTRY}
+                getOptionLabel={(option) => option.label || ""}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                renderInput={(params) => 
+                    <TextField {...params} label="Check available groups in your course" />}
+                // onChange={(event, newValue, reason) => {
+                //     setValues({...values, courseId: reason === "clear" || reason === "removeOption" ? null : newValue.id});
+                // }}
+                // value={COURSE_ENTRY.find(v => v.id === Number(values.courseId)) || null}
+            />
+            <Box sx={{ maxHeight: '65vh', overflowY: 'auto'}}>
+            {courses.map((course, index) => (
                 <Grid container spacing={2} sx={FriendCard}>
                     <Grid md={8}>
                         <Typography>
-                            {recommend.username}
+                            {course.username}
                         </Typography>
                         <Typography>
-                            {recommend.selfIntro}
+                            {course.selfIntro}
                         </Typography>
                     </Grid>
                     <Grid md={4} 
@@ -75,7 +98,7 @@ const CoursePage = ({userID}) => {
                             size='small'
                             variant="contained"
                             color='secondary'
-                            onClick={() => handleOpen(recommend.uid)}
+                            onClick={() => handleOpen(course.courseId)}
                             sx={{width: '120px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                         >
                             Show More

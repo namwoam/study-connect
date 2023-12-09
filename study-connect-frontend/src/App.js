@@ -3,11 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import Header from './components/Header';
-import HomePage from './containers/Home';
-import FriendPage from './containers/Friend';
-import CoursePage from './containers/Course';
-import GroupPage from './containers/Group';
-import UserPage from './containers/User';
+import MainView from './containers/MainView';
 import Login from './containers/Login';
 import './App.css';
 
@@ -46,47 +42,30 @@ const theme = createTheme({
 });
 
 function App() {
-  localStorage.clear();
-  const [islogin, setIslogin] = useState(localStorage.getItem('islogin')||false);
-  const [userID, setUserID] = useState(localStorage.getItem('userID')||'');
-  const [currentPage, setCurrentPage] = useState(localStorage.getItem('currentPage')||0);
+  const storedUserID = localStorage.getItem('userID');
+  const [islogin, setIslogin] = useState(storedUserID ? true : false);
+  const [userID, setUserID] = useState(storedUserID ? storedUserID : '');
+  const storedPage = localStorage.getItem('currentPage');
+  const initialPage = storedPage ? parseInt(storedPage, 10) : 0;
+  const [currentPage, setCurrentPage] = useState(initialPage);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   useEffect(() => {
-    localStorage.setItem('islogin', islogin);
     localStorage.setItem('userID', userID);
-  }, [islogin, userID])
-
-  const handlePage = () => {
-    //['Home', 'Friend', 'Course', 'Group']
-    if (currentPage === 0) {
-      return <Route path="/" element={<HomePage user={userID}/>} />
-    }
-    else if (currentPage === 1) {
-      return <Route path="/" element={<FriendPage user={userID}/>} />
-    }
-    else if (currentPage === 2) {
-      return <Route path="/" element={<CoursePage user={userID}/>} />
-    }
-    else if (currentPage === 3) {
-      return <Route path="/" element={<GroupPage user={userID}/>} />
-    }
-    else if (currentPage === 4) {
-      return <Route path="/" element={<UserPage user={userID}/>} />
-    }
-    else {
-      return <Route path="/" element={<HomePage user={userID}/>} />
-    }
-  }
+  }, [userID])
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        {islogin ? <Header setpage={setCurrentPage}/> : <></>}
+        {islogin ? <Header currentPage={currentPage} onPageChange={handlePageChange} setIslogin={setIslogin}/>: <></>}
         <div className='Content'>
           <Routes>
             {islogin ? 
-            handlePage()
+            <Route path="/" element={<MainView currentPage={currentPage} /> } />
             : 
             <Route path="/" element={<Login setLogin={setIslogin} setuser={setUserID}/>}></Route>
             }            

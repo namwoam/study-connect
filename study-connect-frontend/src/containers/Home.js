@@ -31,7 +31,8 @@ const recommends = [
 
 
 
-const HomePage = ({userID}) => {
+const HomePage = () => {
+    const userID = localStorage.getItem('userID')
     const [openModel, setOpenModel] = useState(false);
     const [detailUserId, setDetailUserId] = useState("");
     const handleOpen = (userId) => {

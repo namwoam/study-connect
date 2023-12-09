@@ -32,7 +32,8 @@ const friends = [
 
 
 
-const FriendPage = ({userID}) => {
+const FriendPage = () => {
+    const userID = localStorage.getItem('userID')
     const [openModel, setOpenModel] = useState(false);
     const [detailUserId, setDetailUserId] = useState("");
     const handleOpen = (userId) => {
