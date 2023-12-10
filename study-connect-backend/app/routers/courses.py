@@ -17,7 +17,6 @@ def requests(course_id: str):
         JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND course_id = "{course_id}" AND JG.join_status = "Join"
         GROUP BY JG.group_id
         """)
-    print(groups.head())
     return ok_respond({
         "groups": groups[["group_ID", "group_name", "group_member"]].values.tolist()
     })
