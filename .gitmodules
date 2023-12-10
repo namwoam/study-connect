@@ -1,0 +1,3 @@
+[submodule "study-connect-llm/Taiwan-LLM"]
+	path = study-connect-llm/Taiwan-LLM
+	url = https://github.com/namwoam/Taiwan-LLM
