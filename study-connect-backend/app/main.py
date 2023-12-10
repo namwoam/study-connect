@@ -2,10 +2,19 @@ from typing import Union
 
 from fastapi import FastAPI
 
+from fastapi.middleware.cors import CORSMiddleware
+
 from .routers import friends, courses, info, user , group
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    # allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(friends.router)
 app.include_router(courses.router)
