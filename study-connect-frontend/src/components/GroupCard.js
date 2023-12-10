@@ -31,7 +31,7 @@ const GroupCard = ({ group, id }) => {
             <Grid item md={6} container spacing={2}>
             {group.jobs.map((job, index) => (
                 <Grid item key={index} xs={4}>
-                <Paper elevation={2} style={{ padding: '3px', textAlign: 'center', background: '#d0d0d0' }}>
+                <Paper elevation={0} style={{ paddingTop: '2px', paddingBottom: '2px', textAlign: 'center', background: '#d0d0d0' }}>
                     <Typography variant="subtitle2">{job}</Typography>
                 </Paper>
                 </Grid>
@@ -39,14 +39,14 @@ const GroupCard = ({ group, id }) => {
             </Grid>
 
             {/* Enter Button */}
-            <Grid item md={2} container style={{ marginTop: '5px', alignItems: 'center', justifyContent: 'center'}}>
+            <Grid item md={2} container style={{ alignItems: 'center', justifyContent: 'center'}}>
                 <Button
                     size='small'
                     maxHeight='10px'
                     variant="contained"
                     color='primary'
                     onClick={() => handleEnter(group.id)}
-                    sx={{width: '120px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
+                    sx={{width: '120px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                 >
                     Enter
                 </Button>
