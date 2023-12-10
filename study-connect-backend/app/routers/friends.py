@@ -67,7 +67,7 @@ def requests(student_id: str):
                     WHEN user2_ID='{student_id}' THEN user1_ID
                     END AS friend_id
         FROM IS_FRIEND_OF
-        WHERE comfirm_status = 'Agree' AND (user1_ID='{student_id}' OR user2_ID='{student_id}')
+        WHERE confirm_status = 'Agree' AND (user1_ID='{student_id}' OR user2_ID='{student_id}')
         """)
     # print(friends_relationship.head())
     return ok_respond({
