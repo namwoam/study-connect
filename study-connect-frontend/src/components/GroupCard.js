@@ -6,21 +6,21 @@ const GroupCard = ({ group, id }) => {
         console.log(id);
     }
   return (
-    <Paper elevation={3} style={{ padding: 20, margin: 10, height: '12%' }}>
+    <Paper elevation={3} style={{ padding: '15px', margin: '20px', height: '12%' }}>
         <Grid container spacing={3}>
             {/* Group Name, Semester, Course Name */}
-            <Grid item md={3}>
+            <Grid item md={4}>
                 <Typography variant="h5" gutterBottom>
                     {group.groupName}
                 </Typography>
                 <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                        <Typography variant="subtitle2" style={{ padding: 10, textAlign: 'center', height: '100%' }}>
+                    <Grid item xs={4}>
+                        <Typography variant="subtitle2">
                             {group.semester}
                         </Typography>
                     </Grid>
-                    <Grid item xs={6}>
-                        <Typography variant="subtitle2" style={{ padding: 10, textAlign: 'center', height: '100%' }}>
+                    <Grid item xs={8}>
+                        <Typography variant="subtitle2">
                             {group.courseName}
                         </Typography>
                     </Grid>
@@ -28,10 +28,10 @@ const GroupCard = ({ group, id }) => {
             </Grid>
 
             {/* Jobs */}
-            <Grid item md={7} container spacing={2}>
+            <Grid item md={6} container spacing={2}>
             {group.jobs.map((job, index) => (
                 <Grid item key={index} xs={4}>
-                <Paper elevation={2} style={{ padding: 10, textAlign: 'center', background: '#d0d0d0' }}>
+                <Paper elevation={2} style={{ padding: '3px', textAlign: 'center', background: '#d0d0d0' }}>
                     <Typography variant="subtitle2">{job}</Typography>
                 </Paper>
                 </Grid>
@@ -39,7 +39,7 @@ const GroupCard = ({ group, id }) => {
             </Grid>
 
             {/* Enter Button */}
-            <Grid item md={2} container style={{ marginTop: 10, alignItems: 'center', justifyContent: 'center'}}>
+            <Grid item md={2} container style={{ marginTop: '5px', alignItems: 'center', justifyContent: 'center'}}>
                 <Button
                     size='small'
                     maxHeight='10px'
