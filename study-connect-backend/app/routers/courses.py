@@ -12,12 +12,15 @@ router = APIRouter(
 def requests(course_id: str):
     groups = query_database(
         f"""
-        SELECT group_id FROM STUDY_GROUP
-        WHERE course_id = "{course_id}"
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member
+        FROM STUDY_GROUP SG
+        JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND course_id = "{course_id}" AND JG.join_status = "Join"
+        GROUP BY JG.group_id
         """)
     return ok_respond({
-        "groups": groups["group_ID"].unique().tolist()
+        "groups": groups[["group_ID", "group_name", "group_member"]].values.tolist()
     })
+
 
 @router.get("/list_students/{course_id}")
 def requests(course_id: str):
@@ -29,5 +32,3 @@ def requests(course_id: str):
     return ok_respond({
         "students": users["user_ID"].unique().tolist()
     })
-
-

@@ -89,3 +89,42 @@ def enrolled_course(student_id: str):
     return ok_respond({
         "courses": courses[["course_ID", "course_name"]].values.tolist()
     })
+
+@router.get("/joined_groups/{student_id}")
+def joined_groups(student_id: str):
+    groups = query_database(
+        f"""
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member
+        FROM STUDY_GROUP SG
+        JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Join"
+        GROUP BY JG.group_id
+        """)
+    return ok_respond({
+        "groups": groups[["group_ID", "group_name", "group_member"]].values.tolist()
+    })
+
+@router.get("/waiting_groups/{student_id}")
+def waiting_groups(student_id:str):
+    groups = query_database(
+        f"""
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member
+        FROM STUDY_GROUP SG
+        JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Waiting"
+        GROUP BY JG.group_id
+        """)
+    return ok_respond({
+        "groups": groups[["group_ID", "group_name", "group_member"]].values.tolist()
+    })
+
+@router.get("/left_groups/{student_id}")
+def waiting_groups(student_id:str):
+    groups = query_database(
+        f"""
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member
+        FROM STUDY_GROUP SG
+        JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Leave"
+        GROUP BY JG.group_id
+        """)
+    return ok_respond({
+        "groups": groups[["group_ID", "group_name", "group_member"]].values.tolist()
+    })
