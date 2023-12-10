@@ -11,15 +11,6 @@ const MainContainer = {
     alignItems: 'center',
 }
 
-const FriendCard = {
-    padding: '15px', 
-    width: '800px', 
-    margin: '20px',
-    boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
-    alignItems: 'center',
-    borderRadius: '10px'
-}
-
 //SQL: use joingroup, group, course to get group{groupName}, joingroup{job}, course{courseName, semester}
 const Groups = [
     {uid: 1, groupName: 'group1', courseName: '資料庫管理', semester: '112-1', jobs: ['Data']},
@@ -36,22 +27,26 @@ const Groups = [
 const GroupPage = ({userID}) => {
     return(
         <Container sx={MainContainer} maxWidth="xl" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Grid container spacing={2}>
-                <Grid con md={6}>
-                    <Typography variant="h5" fontWeight={800} sx={{ mt: '30px' }} style={{textAlign: 'center'}}>
+            <Grid container spacing={2} sx={{ mt: '30px' }}>
+                <Grid item md={6}>
+                    <Typography variant="h5" fontWeight={800} sx={{textAlign: 'center'}}>
                         Your Groups
                     </Typography>
-                    {Groups.map((group, index) => (
-                        <GroupCard group={group} id={index} key={index} />
-                    ))}
+                    <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
+                        {Groups.map((group, index) => (
+                            <GroupCard group={group} id={index} key={index} />
+                        ))}
+                    </Box>
                 </Grid>
                 <Grid item md={6}>
-                    <Typography variant="h5" fontWeight={800} sx={{ mt: '30px' }} style={{textAlign: 'center'}}>
+                    <Typography variant="h5" fontWeight={800} sx={{textAlign: 'center'}}>
                         Course Groups Open To You
                     </Typography>
-                    {Groups.map((group, index) => (
-                        <GroupCard group={group} id={index} key={index} />
-                    ))}
+                    <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
+                        {Groups.map((group, index) => (
+                            <GroupCard group={group} id={index} key={index} />
+                        ))}
+                    </Box>
                 </Grid>
             </Grid>
         </Container>

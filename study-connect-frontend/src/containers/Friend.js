@@ -1,6 +1,6 @@
-import { React, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import { Box, Grid, Paper, Typography, Button, Container } from '@mui/material';
-import { deepOrange } from '@mui/material/colors';
+import instance from '../instance';
 
 import InformationModal from '../components/InformationModal';
 
@@ -36,10 +36,47 @@ const FriendPage = () => {
     const userID = localStorage.getItem('userID')
     const [openModel, setOpenModel] = useState(false);
     const [detailUserId, setDetailUserId] = useState("");
+    const [userFriends, setUserFriends] = useState([]);
+
+    // WIP
+    const fetchUserInfo = async (friendId) => {
+        try {
+            const response = await instance.get(`info/user/info/${friendId}`);
+            if (response.data.success) {
+                return response.data.data;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    // WIP
+    const fetcUserFriends = async () => {
+        try {
+            const response = await instance.get(`/user/friend/list/${userID}`);
+            if (response.data.success) {
+                let friends = [];
+                let friendIDs = response.data.data.friends;
+                console.log(friendIDs);
+                friendIDs.forEach((friendID) => {
+                    const friendInfo = fetchUserInfo(friendID);
+                    friends.push({uid: friendID})
+                })
+                setUserFriends([...friends]);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(()=>{
+        fetcUserFriends()
+    }, [userID]);
+
     const handleOpen = (userId) => {
         setDetailUserId(userId);
         setOpenModel(true);
-    }
+    };
 
     return(
         <Container sx={MainContainer}>
