@@ -17,7 +17,7 @@ def send_request(aga:AdminGroupAction):
     try:
         update_database(
             f"""
-            INSERT OR IGNORE INTO JOIN_GROUP VALUES ('{aga.group_id}', '{aga.user}' , 'Pending' , 'Member' , 'Undecided')
+            INSERT OR IGNORE INTO JOIN_GROUP VALUES ('{aga.group_id}', '{aga.user}' , 'Pending' , 'Member' , 'Waiting')
             """
         )
     except BaseException as err:
@@ -44,7 +44,9 @@ def send_request(aga:AdminGroupAction):
     try:
         update_database(
             f"""
-            DELETE FROM JOIN_GROUP WHERE group_id = "{aga.group_id}" AND user_id = "{aga.user}"
+            UPDATE JOIN_GROUP
+            SET join_status = "Leave"
+            WHERE group_id = "{aga.group_id}" AND user_id = "{aga.user}"
             """
         )
     except BaseException as err:
