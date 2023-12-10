@@ -5,19 +5,19 @@ import CoursePage from './Course';
 import GroupPage from './Group';
 import UserPage from './User';
 
-const MainView = ({ currentPage }) => {
+const MainView = ({ currentPage, userID }) => {
 
     switch (currentPage) {
         case 0:
-        return <HomePage />;
+        return <HomePage userID={userID}/>;
         case 1:
-        return <FriendPage />;
+        return <FriendPage userID={userID}/>;
         case 2:
-        return <CoursePage />;
+        return <CoursePage userID={userID}/>;
         case 3:
-        return <GroupPage />;
+        return <GroupPage userID={userID}/>;
         case 4:
-            return <UserPage />;
+            return <UserPage userID={userID}/>;
         default:
         return null;
     }

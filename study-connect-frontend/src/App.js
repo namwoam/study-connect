@@ -65,7 +65,7 @@ function App() {
         <div className='Content'>
           <Routes>
             {islogin ? 
-            <Route path="/" element={<MainView currentPage={currentPage} /> } />
+            <Route path="/" element={<MainView currentPage={currentPage} userID={userID}/> } />
             : 
             <Route path="/" element={<Login setLogin={setIslogin} setuser={setUserID}/>}></Route>
             }            
