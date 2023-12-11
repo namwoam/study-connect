@@ -58,9 +58,10 @@ const Header = ({ userID, currentPage, onPageChange, setIslogin}) => {
 
                     {/* avatar and sign out */}
                     <Button
+                        sx={{ margin: 1}}
                         onClick={() => handlePageClick(4)}>
-                        <Avatar size="small" sx={{ margin:1, bgcolor: deepOrange[500] }}>A</Avatar>
-                        <Typography variant="p" color='black'>
+                        <Avatar size="small" sx={{ marginRight: 1, bgcolor: deepOrange[400] }} />
+                        <Typography variant="subtitle2" color='black'>
                             {username ?? 'userA'}
                         </Typography>
                     </Button>

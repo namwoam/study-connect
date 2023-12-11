@@ -36,10 +36,10 @@ const GroupCard = ({ group, id }) => {
         </Grid>
 
         {/* Jobs */}
-        <Grid md={6} sx={{display: 'flex'}}>
+        <Grid md={6} sx={{display: 'flex', marginTop: '-20px'}}>
         {group.jobs.map((job, index) => (
-            <Paper elevation={0} style={{ borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', margin: '3px', textAlign: 'center', background: '#d0d0d0' }}>
-                <Typography variant="subtitle2">{job}</Typography>
+            <Paper elevation={0} style={{ borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', marginRight: '10px', textAlign: 'center', background: '#B9B9B9' }}>
+                <Typography variant="subtitle2" fontWeight={600} color={'white'}>{job}</Typography>
             </Paper>
         ))}
         </Grid>

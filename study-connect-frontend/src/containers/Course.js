@@ -116,7 +116,7 @@ const CoursePage = ({userID}) => {
                     break;
             }
         }
-    }, [selectedCourse]);
+    }, [selectedCourse, selectType]);
 
     return(
         <Container sx={MainContainer}>
