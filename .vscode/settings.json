@@ -5,6 +5,12 @@
             "driver": "SQLite",
             "name": "testing",
             "database": "${workspaceFolder:study-connect}/study-connect-backend/app/db/db.sqlite"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "create_db",
+            "database": "${workspaceFolder:study-connect}/study-connect-backend/app/db/create-db/db.sqlite"
         }
     ]
 }
