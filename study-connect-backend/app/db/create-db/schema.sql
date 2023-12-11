@@ -1,12 +1,19 @@
--- Table 1: USER
+
 PRAGMA foreign_keys = ON;
 
+-- Table 3: DEPARTMENT
+CREATE TABLE DEPARTMENT (
+    department_ID CHAR(20) PRIMARY KEY NOT NULL,
+    department_name VARCHAR(20) NOT NULL
+);
+
+-- Table 1: USER
 CREATE TABLE USER (
     student_ID CHAR(9) PRIMARY KEY NOT NULL,
     name VARCHAR(20) NOT NULL,
     self_introduction VARCHAR(300),
-    department CHAR(20)  NOT NULL,
-    FOREIGN KEY (department)
+    department_ID CHAR(20) NOT NULL,
+    FOREIGN KEY (department_ID)
         REFERENCES DEPARTMENT(department_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE
@@ -23,11 +30,7 @@ CREATE TABLE CONTACT (
         ON UPDATE CASCADE
 );
 
--- Table 3: DEPARTMENT
-CREATE TABLE DEPARTMENT (
-    department_ID CHAR(20) PRIMARY KEY NOT NULL,
-    department_name VARCHAR(20) NOT NULL
-);
+
 
 -- Table 4: INSTRUCTOR
 CREATE TABLE INSTRUCTOR (
