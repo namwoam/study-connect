@@ -2,23 +2,14 @@ import { React, useEffect, useState } from 'react';
 import { Box, Grid, Paper, Typography, Button, Container } from '@mui/material';
 import instance from '../instance';
 import { fetchUserInfo } from '../utils/fetchUser';
-
-import InformationModal from '../components/InformationModal';
+import FriendCard from '../components/FriendCard';
+import FriendModal from '../components/FriendModal';
 
 const MainContainer = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-}
-
-const FriendCard = {
-    padding: '15px', 
-    width: '800px', 
-    margin: '20px',
-    boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
-    alignItems: 'center',
-    borderRadius: '10px'
 }
 
 const friends = [
@@ -31,12 +22,20 @@ const friends = [
     {uid: 7, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user7_ig', fb_account: 'user7_fb'}
 ]
 
-
+const invites = [
+    {uid: 1, username: 'user1', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
+    {uid: 2, username: 'user2', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
+    {uid: 3, username: 'user3', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
+    {uid: 4, username: 'user3', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
+    {uid: 5, username: 'user3', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
+    {uid: 6, username: 'user3', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
+    {uid: 7, username: 'user3', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'}
+]
 
 const FriendPage = () => {
     const userID = localStorage.getItem('userID')
     const [openModel, setOpenModel] = useState(false);
-    const [detailUserId, setDetailUserId] = useState("");
+    //const [invatations, setInvatations] = useState(invites);
     const [userFriends, setUserFriends] = useState([]);
 
     // WIP
@@ -62,48 +61,39 @@ const FriendPage = () => {
         fetcUserFriends()
     }, [userID]);
 
-    const handleOpen = (userId) => {
-        setDetailUserId(userId);
+    const handleOpen = () => {
+        //setInvatations();
         setOpenModel(true);
     };
+
+    const accept_friend = (studentID) => {
+        console.log("accept: ", studentID);
+    }
+
+    const reject_friend = (studentID) => {
+        console.log("reject: ", studentID);
+    }
 
     return(
         <Container sx={MainContainer}>
             <Typography variant="h5" fontWeight={800} sx={{mt: '30px'}}>
                 Your Friends
             </Typography>
+            <Button size='small'
+                maxHeight='10px'
+                variant="contained"
+                color='primary'
+                sx={{width: '100px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600, position: 'absolute', top: '12%', right: '23%'}}
+                onClick={handleOpen}
+            >
+                View Invitations
+            </Button>
             <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
-            {friends.map((friend, index) => (
-                <Paper elevation={3} sx={FriendCard}>
-                    <Typography variant="h5" gutterBottom>
-                        {friend.username}
-                    </Typography>
-                    <Typography variant="body1" color="textSecondary" paragraph>
-                        {friend.selfIntro}
-                    </Typography>
-                    <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={2}>
-                            <Box bgcolor='#ff8000' borderRadius="10px" textAlign="center" marginTop="1px">
-                                <Typography variant="subtitle1" color="#ffffff">
-                                    IG Account
-                                </Typography>
-                            </Box>
-                            <Box bgcolor='#ff8000' borderRadius="10px" textAlign="center" marginTop="1px">
-                                <Typography variant="subtitle1" color="#ffffff">
-                                    FB Account
-                                </Typography>
-                            </Box>
-                        </Grid>                        
-                        <Grid item xs={8} style={{justifyContent: 'center', alignItems: 'center'}}>
-                            <Typography variant="body1" textAlign="center">{friend.ig_account}</Typography>
-                            <Typography variant="body1" textAlign="center">{friend.fb_account}</Typography>
-                        </Grid>
-                    </Grid>
-                    
-                </Paper>
+            {friends.map((friend, index) => (   
+                <FriendCard friend={friend}/>
             ))}
             </Box>
-            <InformationModal open={openModel} setOpen={setOpenModel} userId={detailUserId}/>
+            {/* <FriendModal open={openModel} setOpen={setOpenModel} invatations={invites} accept_friend={accept_friend} reject_friend={reject_friend} /> */}
         </Container>
         
     );

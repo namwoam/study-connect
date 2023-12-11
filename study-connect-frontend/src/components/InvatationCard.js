@@ -1,7 +1,7 @@
 import React from 'react';
-import { Grid, Paper, Typography, Button } from '@mui/material';
+import { Grid, Typography, Button } from '@mui/material';
 
-const UserCardStyle = {
+const InvatationStyle = {
     padding: '15px', 
     width: '800px', 
     margin: '20px',
@@ -10,18 +10,18 @@ const UserCardStyle = {
     borderRadius: '10px'
 }
 
-export const UserCard = (props) => {
-    const user = props.user;
-    const handleOpen = props.handleOpen;
+export const InvatationCard = (invatation, accept, reject) => {
+    
+    //{uid: 1, username: 'user1', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
 
     return (
-        <Grid container spacing={2} sx={UserCardStyle}>
+        <Grid container spacing={2} sx={InvatationStyle}>
             <Grid md={8}>
                 <Typography>
-                    {user.username}
+                    {invatation.username}
                 </Typography>
                 <Typography>
-                    {user.selfIntro}
+                    {invatation.selfIntro}
                 </Typography>
             </Grid>
             <Grid md={4} 
@@ -36,22 +36,23 @@ export const UserCard = (props) => {
                     size='small'
                     variant="contained"
                     color='primary'
+                    onClick={() => accept(invatation.uid)}
                     sx={{width: '120px', mb: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                 >
-                    Send Request
+                    Accept
                 </Button>
                 <Button
                     size='small'
                     variant="contained"
                     color='secondary'
-                    onClick={() => handleOpen(user.uid)}
+                    onClick={() => reject(invatation.uid)}
                     sx={{width: '120px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                 >
-                    Show More
+                    Reject
                 </Button>
             </Grid>
         </Grid>
     )
 }
 
-export default UserCard;
+export default InvatationCard;
