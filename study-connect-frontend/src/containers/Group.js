@@ -26,8 +26,16 @@ const Groups = [
 
 const GroupPage = ({userID}) => {
     return(
-        <Container sx={MainContainer} maxWidth="xl" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Grid container spacing={2} sx={{ mt: '30px' }}>
+        <Container sx={MainContainer}>
+            <Typography variant="h5" fontWeight={800} sx={{mt: '30px', textAlign: 'center'}}>
+                Your Groups
+            </Typography>
+            <Box sx={{ maxHeight: '80vh', overflowY: 'auto', mt: '20px' }}>
+                {Groups.map((group, index) => (
+                    <GroupCard group={group} id={index} key={index} />
+                ))}
+            </Box>
+            {/* <Grid container spacing={2} sx={{ mt: '30px' }}>
                 <Grid item md={6}>
                     <Typography variant="h5" fontWeight={800} sx={{textAlign: 'center'}}>
                         Your Groups
@@ -48,7 +56,7 @@ const GroupPage = ({userID}) => {
                         ))}
                     </Box>
                 </Grid>
-            </Grid>
+            </Grid> */}
         </Container>
     );
 }

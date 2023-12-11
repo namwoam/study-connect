@@ -1,6 +1,7 @@
 import { React, useState } from 'react';
 import { Box, Grid, Paper, Typography, Button, Container } from '@mui/material';
 
+import { UserCard } from '../components/UserCard';
 import InformationModal from '../components/InformationModal';
 
 const MainContainer = {
@@ -8,15 +9,6 @@ const MainContainer = {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-}
-
-const FriendCard = {
-    padding: '15px', 
-    width: '800px', 
-    margin: '20px',
-    boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
-    alignItems: 'center',
-    borderRadius: '10px'
 }
 
 const recommends = [
@@ -29,12 +21,11 @@ const recommends = [
     {uid: 7, username: 'user3', selfIntro: 'Hi, my name is ...'}
 ]
 
-
-
 const HomePage = () => {
     const userID = localStorage.getItem('userID')
     const [openModel, setOpenModel] = useState(false);
     const [detailUserId, setDetailUserId] = useState("");
+
     const handleOpen = (userId) => {
         setDetailUserId(userId);
         setOpenModel(true);
@@ -47,42 +38,7 @@ const HomePage = () => {
             </Typography>
             <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
             {recommends.map((recommend, index) => (
-                <Grid container spacing={2} sx={FriendCard}>
-                    <Grid md={8}>
-                        <Typography>
-                            {recommend.username}
-                        </Typography>
-                        <Typography>
-                            {recommend.selfIntro}
-                        </Typography>
-                    </Grid>
-                    <Grid md={4} 
-                        sx={{ 
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            alignItems: 'flex-end' 
-                        }}
-                    >
-                        <Button
-                            size='small'
-                            variant="contained"
-                            color='primary'
-                            sx={{width: '120px', mb: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
-                        >
-                            Send Request
-                        </Button>
-                        <Button
-                            size='small'
-                            variant="contained"
-                            color='secondary'
-                            onClick={() => handleOpen(recommend.uid)}
-                            sx={{width: '120px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
-                        >
-                            Show More
-                        </Button>
-                    </Grid>
-                </Grid>
+                <UserCard user={recommend} handleOpen={handleOpen} key={index} id={index}/>
             ))}
             </Box>
             <InformationModal open={openModel} setOpen={setOpenModel} userId={detailUserId}/>
