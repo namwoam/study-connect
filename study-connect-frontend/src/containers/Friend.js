@@ -1,6 +1,7 @@
 import { React, useEffect, useState } from 'react';
 import { Box, Grid, Paper, Typography, Button, Container } from '@mui/material';
 import instance from '../instance';
+import { fetchUserInfo } from '../utils/fetchUser';
 
 import InformationModal from '../components/InformationModal';
 
@@ -37,18 +38,6 @@ const FriendPage = () => {
     const [openModel, setOpenModel] = useState(false);
     const [detailUserId, setDetailUserId] = useState("");
     const [userFriends, setUserFriends] = useState([]);
-
-    // WIP
-    const fetchUserInfo = async (friendId) => {
-        try {
-            const response = await instance.get(`info/user/info/${friendId}`);
-            if (response.data.success) {
-                return response.data.data;
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
     // WIP
     const fetcUserFriends = async () => {
