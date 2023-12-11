@@ -137,7 +137,7 @@ const CoursePage = ({userID}) => {
                 options={courseOptions}
                 getOptionLabel={(option) => `${option.id} ${option.label}`}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
-                renderInput={(params) => <TextField {...params} label="Check available groups in your course" />}
+                renderInput={(params) => <TextField {...params} label="Select a course" />}
                 onChange={(event, newValue, reason) => {
                     setSelectedCourse(reason === "clear" || reason === "removeOption" ? null : newValue);
                 }}
