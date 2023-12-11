@@ -61,7 +61,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        {islogin ? <Header currentPage={currentPage} onPageChange={handlePageChange} setIslogin={setIslogin}/>: <></>}
+        {islogin ? <Header userID={userID} currentPage={currentPage} onPageChange={handlePageChange} setIslogin={setIslogin}/>: <></>}
         <div className='Content'>
           <Routes>
             {islogin ? 
