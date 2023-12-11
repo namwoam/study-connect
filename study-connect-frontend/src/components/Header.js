@@ -2,11 +2,19 @@ import { React, useState, useEffect } from 'react';
 import { AppBar, Box, Toolbar, Typography, Button, Divider,  Avatar } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { deepOrange } from '@mui/material/colors';
+import { fetchUserInfo } from '../utils/fetchUser';
 
 const pages = ['Home', 'Friend', 'Course', 'Group']
 
-const Header = ({ currentPage, onPageChange, setIslogin}) => {
-    const username = localStorage.getItem('username');
+const Header = ({ userID, currentPage, onPageChange, setIslogin}) => {
+    const [username, setUsername] = useState("USERNAME");
+
+    useEffect(() => {
+        const userInfo = fetchUserInfo(userID);
+        console.log(userInfo);
+        // SET username here
+    }, []);
+
     useEffect(() => {
         console.log("header:", currentPage);
     }, [currentPage]);
@@ -50,9 +58,10 @@ const Header = ({ currentPage, onPageChange, setIslogin}) => {
 
                     {/* avatar and sign out */}
                     <Button
+                        sx={{ margin: 1}}
                         onClick={() => handlePageClick(4)}>
-                        <Avatar size="small" sx={{ margin:1, bgcolor: deepOrange[500] }}>A</Avatar>
-                        <Typography variant="p" color='black'>
+                        <Avatar size="small" sx={{ marginRight: 1, bgcolor: deepOrange[400] }} />
+                        <Typography variant="subtitle2" color='black'>
                             {username ?? 'userA'}
                         </Typography>
                     </Button>

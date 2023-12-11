@@ -6,6 +6,7 @@ import {
   Button,
   Container,
   TextField,
+  Paper
 } from '@mui/material';
 
 import InformationModal from '../components/InformationModal';
@@ -15,23 +16,25 @@ const MainContainer = {
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
+  background: "FFB7A1"
 };
 
 const BigCard = {
   // padding: '10px',
-  width: '50%',
+  width: '45%',
   margin: '20px',
   alignItems: 'center',
   borderRadius: '10px',
   border: '1px solid #ccc',
   display: 'flex', 
   flexDirection: 'column',
+  paddingBottom: '25px'
 };
 
 const InfoCard = {
   padding: '15px',
-  width: '95%',
-  margin: '20px',
+  width: '90%',
+  marginTop: '25px',
   alignItems: 'center',
   borderRadius: '10px',
   border: '1px solid #ccc',
@@ -39,8 +42,8 @@ const InfoCard = {
 
 const BigCourseCard = {
   padding: '15px',
-  width: '95%',
-  margin: '20px',
+  width: '90%',
+  marginTop: '25px',
   alignItems: 'center',
   borderRadius: '10px',
   border: '1px solid #ccc',
@@ -49,14 +52,14 @@ const BigCourseCard = {
 };
 
 const CourseCard = {
-  padding: '15px',
+  padding: '5px',
   width: '95%',
-  margin: '20px',
+  margin: '5px',
   alignItems: 'center',
   borderRadius: '10px',
-  border: '1px solid #ccc',
+  // border: '1px solid #ccc',
   flexDirection: 'row',
-  'justify-content': 'space-between',
+  justifyContent: 'space-between',
 };
 
 const currentUser = {
@@ -130,11 +133,11 @@ const UserPage = () => {
       <Typography variant="h5" fontWeight={800} sx={{ mt: '30px' }}>
         Edit Your Personal Info Here
       </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'row', width: '120%'}}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between'}}>
           {/* 左側部分，顯示個人資訊 */}
           <Box sx={BigCard}>
             <Box sx={InfoCard}>
-              <Typography variant="h5" fontWeight={800} sx={{ mt: '5px' }}>
+              <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
                 Personal Info
               </Typography>
               <Typography 
@@ -159,7 +162,7 @@ const UserPage = () => {
               <Typography sx={{ mt: 2 }}>{currentUser.uid}</Typography>
             </Box>
             <Box sx={InfoCard}>
-              <Typography variant="h5" fontWeight={800} sx={{ mt: '5px' }}>
+              <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
                 Contact
               </Typography>
               <TextField
@@ -184,7 +187,7 @@ const UserPage = () => {
               />
             </Box>
             <Box sx={InfoCard}>
-              <Typography variant="h5" fontWeight={800} sx={{ mt: '5px' }}>
+              <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
                 Self Introduction
               </Typography>
               <TextField
@@ -206,8 +209,8 @@ const UserPage = () => {
               color="primary"
               onClick={handleConfirmUpdate}
               sx={{
-                width: '120px',
-                mt: '5px',
+                width: '200px',
+                mt: '25px',
                 textTransform: 'none',
                 color: '#fff',
                 fontSize: '14px',
@@ -219,18 +222,18 @@ const UserPage = () => {
           </Box>
 
           {/* 右側部分，顯示修課紀錄 */}
-          <Grid sx={BigCard}>
+          <Box sx={BigCard}>
             <Box sx={BigCourseCard}>
-              <Typography variant="h5" fontWeight={800} sx={{ mt: '5px' }}>
+              <Typography variant="h6" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
                 Current Course Records
               </Typography>
               {currentCourseRecords.map((course, index) => (
                   <Grid container spacing={2} sx={CourseCard}>
-                      <Grid>
-                          <Typography>
-                              {course.semester}
-                          </Typography>
-                      </Grid>
+                      <Paper elevation={0} style={{ border: '1px #d0d0d0 solid', borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', margin: '3px', textAlign: 'center'}}>
+                        <Typography>
+                          {course.semester}
+                        </Typography>
+                      </Paper>
                       <Grid>
                           <Typography>
                               {course.coursename}
@@ -265,25 +268,27 @@ const UserPage = () => {
               ))}
             </Box>
             <Box sx={BigCourseCard}>
-              <Typography variant="h5" fontWeight={800} sx={{ mt: '5px' }}>
+              <Typography variant="h6" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
                 History Course Records
               </Typography>
               {previousCourseRecords.map((course, index) => (
                   <Grid container spacing={2} sx={CourseCard}>
-                      <Grid>
-                          <Typography>
-                              {course.semester}
-                          </Typography>
-                      </Grid>
+                      <Paper elevation={0} style={{ border: '1px #d0d0d0 solid', borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', margin: '3px', textAlign: 'center'}}>
+                        <Typography>
+                          {course.semester}
+                        </Typography>
+                      </Paper>
                       <Grid>
                           <Typography>
                               {course.coursename}
                           </Typography>
                       </Grid>
                       <Grid>
-                          <Typography>
-                              {course.grade}
+                        <Paper elevation={0} style={{ borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '8px', paddingRight: '8px', textAlign: 'center', background: '#F5E9D3' }}>
+                          <Typography variant='subtitle2'>
+                            {course.grade}
                           </Typography>
+                        </Paper>
                       </Grid>
                       <Grid
                           sx={{ 
@@ -308,7 +313,7 @@ const UserPage = () => {
                   </Grid>
               ))}
             </Box>
-          </Grid>
+          </Box>
       </Box>
     </Container>
   );
