@@ -4,6 +4,7 @@ import FriendPage from './Friend';
 import CoursePage from './Course';
 import GroupPage from './Group';
 import UserPage from './User';
+import GroupInfoPage from './GroupInfo';
 
 const MainView = ({ currentPage, userID }) => {
 
