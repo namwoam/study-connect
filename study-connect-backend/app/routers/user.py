@@ -94,37 +94,37 @@ def enrolled_course(student_id: str):
 def joined_groups(student_id: str):
     groups = query_database(
         f"""
-        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity
         FROM STUDY_GROUP SG
         JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Join"
         GROUP BY JG.group_id
         """)
     return ok_respond({
-        "groups": groups[["group_ID", "group_name", "group_member"]].values.tolist()
+        "groups": groups[["group_ID", "group_name", "group_member" , "capacity"]].values.tolist()
     })
 
 @router.get("/waiting_groups/{student_id}")
 def waiting_groups(student_id:str):
     groups = query_database(
         f"""
-        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity
         FROM STUDY_GROUP SG
         JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Waiting"
         GROUP BY JG.group_id
         """)
     return ok_respond({
-        "groups": groups[["group_ID", "group_name", "group_member"]].values.tolist()
+        "groups": groups[["group_ID", "group_name", "group_member" , "capacity"]].values.tolist()
     })
 
 @router.get("/left_groups/{student_id}")
 def waiting_groups(student_id:str):
     groups = query_database(
         f"""
-        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member , capacity
         FROM STUDY_GROUP SG
         JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Leave"
         GROUP BY JG.group_id
         """)
     return ok_respond({
-        "groups": groups[["group_ID", "group_name", "group_member"]].values.tolist()
+        "groups": groups[["group_ID", "group_name", "group_member" , "capacity"]].values.tolist()
     })
