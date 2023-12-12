@@ -60,7 +60,7 @@ def unfriend(fa: FriendAction):
 
 
 @router.get("/list/{student_id}")
-def requests(student_id: str):
+def list_friends(student_id: str):
     friends_relationship = query_database(
         f"""
         SELECT CASE WHEN user1_ID='{student_id}' THEN user2_ID

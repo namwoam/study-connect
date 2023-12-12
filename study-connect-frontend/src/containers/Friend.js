@@ -41,7 +41,7 @@ const FriendPage = () => {
     const [alerts, setAlerts] = useState(false);
 
     // WIP
-    const fetcUserFriends = async () => {
+    const fetchUserFriends = async () => {
         try {
             const response = await instance.get(`/user/friend/list/${userID}`);
             if (response.data.success) {
@@ -60,7 +60,7 @@ const FriendPage = () => {
     };
 
     useEffect(()=>{
-        fetcUserFriends()
+        fetchUserFriends()
     }, [userID]);
 
     const handleOpen = () => {
@@ -86,7 +86,7 @@ const FriendPage = () => {
                 maxHeight='10px'
                 variant="contained"
                 color='primary'
-                sx={{width: '100px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600, position: 'absolute', top: '12%', right: '23%'}}
+                sx={{width: '200px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600, position: 'absolute', top: '94px', right: '23%'}}
                 onClick={handleOpen}
             >
                 View Invitations
