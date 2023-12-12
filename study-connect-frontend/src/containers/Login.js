@@ -39,7 +39,7 @@ const Login = ({setLogin, setuser}) => {
               height: '100%',
             }}
           >
-            <Typography component="h8" variant="h6" fontWeight={800} style={{ position: 'relative', top: '500px', color: '#fff'}}>
+            <Typography component="h6" variant="h6" fontWeight={800} style={{ position: 'relative', top: '500px', color: '#fff'}}>
               StudyConnect helps you connect study partners!
             </Typography>
         </Grid>
@@ -47,7 +47,7 @@ const Login = ({setLogin, setuser}) => {
           <Typography component="h6" variant="h6" fontWeight={800} style={{ position: 'absolute', top: '20px', right: '50px', color: '#ff8000'}}>
             StudyConnect
           </Typography>
-          <Typography component="h8" variant="h6" gutterBottom>
+          <Typography component="h6" variant="h6" gutterBottom>
             Welcome to StudyConnect!
           </Typography>
           <Typography component="h1" variant="h4" fontWeight={800} gutterBottom>

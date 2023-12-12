@@ -3,28 +3,28 @@ import { Grid, Typography, Button } from '@mui/material';
 
 const InvatationStyle = {
     padding: '15px', 
-    width: '800px', 
+    width: '500px', 
     margin: '20px',
     boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
     alignItems: 'center',
     borderRadius: '10px'
 }
 
-export const InvatationCard = (invatation, accept, reject) => {
+export const InvatationCard = ({invatation, accept_friend, reject_friend}) => {
     
     //{uid: 1, username: 'user1', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
 
     return (
-        <Grid container spacing={2} sx={InvatationStyle}>
-            <Grid md={8}>
-                <Typography>
+        <Grid key={invatation.uid} container spacing={2} sx={InvatationStyle}>
+            <Grid item md={8}>
+                <Typography variant="h6">
                     {invatation.username}
                 </Typography>
                 <Typography>
                     {invatation.selfIntro}
                 </Typography>
             </Grid>
-            <Grid md={4} 
+            <Grid item md={4} 
                 sx={{ 
                     display: 'flex',
                     flexDirection: 'column',
@@ -36,7 +36,7 @@ export const InvatationCard = (invatation, accept, reject) => {
                     size='small'
                     variant="contained"
                     color='primary'
-                    onClick={() => accept(invatation.uid)}
+                    onClick={() => accept_friend(invatation.uid)}
                     sx={{width: '120px', mb: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                 >
                     Accept
@@ -45,7 +45,7 @@ export const InvatationCard = (invatation, accept, reject) => {
                     size='small'
                     variant="contained"
                     color='secondary'
-                    onClick={() => reject(invatation.uid)}
+                    onClick={() => reject_friend(invatation.uid)}
                     sx={{width: '120px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                 >
                     Reject

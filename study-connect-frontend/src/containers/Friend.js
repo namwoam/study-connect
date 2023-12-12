@@ -4,6 +4,7 @@ import instance from '../instance';
 import { fetchUserInfo } from '../utils/fetchUser';
 import FriendCard from '../components/FriendCard';
 import FriendModal from '../components/FriendModal';
+import InformationModal from '../components/InformationModal';
 
 const MainContainer = {
     display: 'flex',
@@ -37,6 +38,7 @@ const FriendPage = () => {
     const [openModel, setOpenModel] = useState(false);
     //const [invatations, setInvatations] = useState(invites);
     const [userFriends, setUserFriends] = useState([]);
+    const [alerts, setAlerts] = useState(false);
 
     // WIP
     const fetcUserFriends = async () => {
@@ -63,6 +65,7 @@ const FriendPage = () => {
 
     const handleOpen = () => {
         //setInvatations();
+        console.log(invites);
         setOpenModel(true);
     };
 
@@ -93,7 +96,7 @@ const FriendPage = () => {
                 <FriendCard friend={friend}/>
             ))}
             </Box>
-            {/* <FriendModal open={openModel} setOpen={setOpenModel} invatations={invites} accept_friend={accept_friend} reject_friend={reject_friend} /> */}
+            <FriendModal open={openModel} setOpen={setOpenModel} invatations={friends} accept_friend={accept_friend} reject_friend={reject_friend} />
         </Container>
         
     );

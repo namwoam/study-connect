@@ -7,10 +7,13 @@ const ModelStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 650,
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
+    maxHeight: '70vh',
+    overflowY: 'auto',
+    mt: '20px'
 };
 
 const FriendModal = ({open, setOpen, invatations, accept_friend, reject_friend}) => {
@@ -20,12 +23,12 @@ const FriendModal = ({open, setOpen, invatations, accept_friend, reject_friend})
         <Modal
             open={open}
             onClose={handleClose}
-            aria-labelledby="modal-title"
-            aria-describedby="modal-description"
         >
-            {invatations.map((invatation, index) => (
-                <InvatationCard invatation={invatation} accept={accept_friend} reject={reject_friend} />
-            ))}
+            <Box sx={ModelStyle}>
+                {invatations.map((invatation, index) => (
+                    <InvatationCard invatation={invatation} accept_friend={accept_friend} reject_friend={reject_friend} />
+                ))}
+            </Box>
         </Modal>
     );
 }
