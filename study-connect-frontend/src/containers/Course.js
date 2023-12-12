@@ -133,7 +133,7 @@ const CoursePage = ({userID}) => {
             </Button>
             <Autocomplete
                 size='small'
-                sx={{ width: '400px', marginTop: '25px', marginBottom: '30px' }}
+                sx={{ width: '600px', marginTop: '25px', marginBottom: '30px' }}
                 options={courseOptions}
                 getOptionLabel={(option) => `${option.id} ${option.label}`}
                 isOptionEqualToValue={(option, value) => option.id === value.id}

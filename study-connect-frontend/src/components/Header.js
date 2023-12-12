@@ -1,12 +1,13 @@
 import { React, useState, useEffect } from 'react';
 import { AppBar, Box, Toolbar, Typography, Button, Divider,  Avatar } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { deepOrange } from '@mui/material/colors';
 import { fetchUserInfo } from '../utils/fetchUser';
 
-const pages = ['Home', 'Friend', 'Course', 'Group']
+const pages = ['Home', 'Friend', 'Course', 'Group'];
 
-const Header = ({ userID, currentPage, onPageChange, setIslogin}) => {
+const Header = ({ userID, currentPage, onPageChange, setIslogin, isAdmin}) => {
     const [username, setUsername] = useState("USERNAME");
 
     useEffect(() => {
@@ -65,8 +66,17 @@ const Header = ({ userID, currentPage, onPageChange, setIslogin}) => {
                             {username ?? 'userA'}
                         </Typography>
                     </Button>
+                    {isAdmin ?
+                        <Button 
+                            sx={{ margin: 1}}
+                            color="primary" 
+                            startIcon={<AdminPanelSettingsIcon/>} 
+                            onClick={() => handlePageClick(5)}>
+                                Admin
+                        </Button> : <></>
+                    }
                     <Button 
-                        sx={{ margin: 2}}
+                        sx={{ margin: 1}}
                         edge="end" 
                         size="small" 
                         color="primary" 
