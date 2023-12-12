@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Paper, Grid, Snackbar } from '@mui/material';
 
-const Login = ({setLogin, setuser}) => {
+const adminIDs = ['B10101025'];
+
+const Login = ({setLogin, setuser, setIsadmin}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -12,6 +14,10 @@ const Login = ({setLogin, setuser}) => {
     console.log('Password:', password);
     
     if (username === password) {
+        if (adminIDs.includes(username)) {
+          localStorage.setItem('isAdmin', 'true');
+          setIsadmin(true);
+        }
         setLogin(true);
         setuser(username);
     }
