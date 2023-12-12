@@ -9,7 +9,7 @@ router = APIRouter(
 
 
 @router.get("/list_groups/{course_id}")
-def requests(course_id: str):
+def list_groups(course_id: str):
     groups = query_database(
         f"""
         SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member , capacity
@@ -23,7 +23,7 @@ def requests(course_id: str):
 
 
 @router.get("/list_students/{course_id}")
-def requests(course_id: str):
+def list_students(course_id: str):
     users = query_database(
         f"""
         SELECT user_id FROM TAKE_COURSE
