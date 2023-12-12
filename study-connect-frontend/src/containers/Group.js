@@ -1,7 +1,6 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import { Box, Grid, Paper, Typography, Button, Container } from '@mui/material';
-
-import InformationModal from '../components/InformationModal';
+import instance from '../instance';
 import GroupCard from '../components/GroupCard';
 
 const MainContainer = {
@@ -11,6 +10,7 @@ const MainContainer = {
     alignItems: 'center',
 }
 
+//test: B10102025
 //SQL: use joingroup, group, course to get group{groupName}, joingroup{job}, course{courseName, semester}
 const Groups = [
     {uid: 1, groupName: 'group1', courseName: '資料庫管理', semester: '112-1', jobs: ['Data']},
@@ -25,6 +25,30 @@ const Groups = [
 
 
 const GroupPage = ({userID}) => {
+    const [groups, setGroups] = useState([]);
+    const [groupInfo, setGroupInfo] = useState([]);
+
+    const fetchJoinedGroups = async () => {
+        try {
+            const response = await instance.get(`/user/joined_groups/${userID}`);
+            if (response.data.success) {
+                let groups = [];
+                let joinedGroups = response.data.data.groups;
+                joinedGroups.forEach((group) => {
+                    groups.push({id: group[0], groupName: group[1]})
+                })
+                setGroups([...groups]);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        fetchJoinedGroups();
+        console.log("joined_groups: ",groups);
+    }, [userID]);
+
     return(
         <Container sx={MainContainer}>
             <Typography variant="h5" fontWeight={800} sx={{mt: '30px', textAlign: 'center'}}>
