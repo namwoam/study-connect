@@ -13,12 +13,22 @@ router = APIRouter(
 def student_info(student_id: str):
     student_info = query_database(
         f'''
-        SELECT u.student_id, u.self_introduction, u.department, c.ig_accoung, c.fb_account
-        FROM USER AS u, CONTACT AS c
-        WHERE student_id = "{student_id}" AND u.student_id = c.student_id
+        SELECT U.student_id, U.student_name , U.self_introduction, D.department_ID , D.department_name , C.ig_account AS ig , C.fb_account AS fb
+        FROM USER AS U
+        JOIN CONTACT AS C ON U.student_id = C.user_id
+        JOIN DEPARTMENT AS D ON D.department_ID = U.department_ID
+        WHERE student_id = "{student_id}"
         ''')
+    if len(student_info) == 0:
+        return ok_respond({})
     return ok_respond({
-        "student": student_info["student_id"].unique().tolist()
+        "student_id": student_info["student_ID"].to_list()[0],
+        "student_name": student_info["student_name"].to_list()[0],
+        "self_introduction": student_info["self_introduction"].to_list()[0],
+        "department_id": student_info["department_ID"].to_list()[0],
+        "department_name": student_info["department_name"].to_list()[0],
+        "ig": student_info["ig"].to_list()[0],
+        "fb": student_info["fb"].to_list()[0]
     })
 
 
