@@ -29,7 +29,7 @@ CREATE TABLE IS_FRIEND_OF (
     user1_ID CHAR(9) NOT NULL,
     user2_ID CHAR(9) NOT NULL,
     confirm_status VARCHAR(11) NOT NULL CHECK (
-        confirm_status IN ('Agree', 'Disagree', 'Unconfirmed', 'Unfriend')
+        confirm_status IN ('Agree', 'Disagree', 'Unconfirm', 'Unfriend')
     ),
     PRIMARY KEY (user1_ID, user2_ID),
     FOREIGN KEY (user1_ID) REFERENCES USER(student_ID) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -46,7 +46,7 @@ CREATE TABLE COURSE (
 CREATE TABLE TAKE_COURSE (
     user_ID CHAR(9) NOT NULL,
     course_ID CHAR(20) NOT NULL,
-    grade VARCHAR(2) NOT NULL DEFAULT 'I' CHECK (
+    grade VARCHAR(2) DEFAULT 'I' CHECK (
         grade IN (
             'A+',
             'A',
@@ -72,7 +72,6 @@ CREATE TABLE TAKE_COURSE (
 CREATE TABLE OFFER_COURSE (
     instructor_ID INT NOT NULL,
     course_ID CHAR(20) NOT NULL,
-    PRIMARY KEY (instructor_ID, course_ID),
     FOREIGN KEY (instructor_ID) REFERENCES INSTRUCTOR(instructor_ID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (course_ID) REFERENCES COURSE(course_ID) ON DELETE
     SET NULL ON UPDATE CASCADE
@@ -126,7 +125,7 @@ CREATE TABLE MEET (
     FOREIGN KEY (host_ID) REFERENCES USER(student_ID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 -- Table 13: MEET_AVAILABLE_TIME
-CREATE TABLE MEET_AVAILABLE_TIME (
+CREATE TABLE MEET_AVAILABLE (
     meet_ID INT NOT NULL,
     user_ID CHAR(9) NOT NULL,
     available_from TIMESTAMP NOT NULL,
