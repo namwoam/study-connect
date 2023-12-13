@@ -22,10 +22,10 @@ const Groups = [
     {uid: 7, groupName: 'group7', courseName: '會計學甲上', semester: '112-1', jobs: ['Marketing', 'Management', 'Analytics']}
 ]
 
-
+//joined_groups contain coursename, semester, (user_job)
 
 const GroupPage = ({userID}) => {
-    const [groups, setGroups] = useState([]);
+    const [joinedGroups, setjoinedGroups] = useState([]);
     const [groupInfo, setGroupInfo] = useState([]);
 
     const fetchJoinedGroups = async () => {
@@ -37,7 +37,7 @@ const GroupPage = ({userID}) => {
                 joinedGroups.forEach((group) => {
                     groups.push({id: group[0], groupName: group[1]})
                 })
-                setGroups([...groups]);
+                setjoinedGroups([...groups]);
             }
         } catch (error) {
             console.log(error);
@@ -46,7 +46,7 @@ const GroupPage = ({userID}) => {
 
     useEffect(() => {
         fetchJoinedGroups();
-        console.log("joined_groups: ",groups);
+        console.log("joined_groups: ",joinedGroups);
     }, [userID]);
 
     return(
