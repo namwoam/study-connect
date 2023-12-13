@@ -10,10 +10,10 @@ const ModelStyle = {
     width: 650,
     bgcolor: 'background.paper',
     boxShadow: 24,
+    borderRadius: '10px',
     p: 4,
     maxHeight: '70vh',
     overflowY: 'auto',
-    mt: '20px'
 };
 
 const FriendModal = ({open, setOpen, invatations, accept_friend, reject_friend}) => {

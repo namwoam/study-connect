@@ -17,7 +17,7 @@ const GroupCard = ({ group, id }) => {
   return (
     <Grid container spacing={3} sx={GroupCardStyle}>
         {/* Group Name, Semester, Course Name */}
-        <Grid item md={4}>
+        <Grid md={4}>
             <Typography variant="h5" gutterBottom>
                 {group.groupName}
             </Typography>
@@ -36,7 +36,7 @@ const GroupCard = ({ group, id }) => {
         </Grid>
 
         {/* Jobs */}
-        <Grid item md={6} sx={{display: 'flex', marginTop: '-20px'}}>
+        <Grid md={6} sx={{display: 'flex', marginTop: '-20px'}}>
         {group.jobs.map((job, index) => (
             <Paper elevation={0} style={{ borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', marginRight: '10px', textAlign: 'center', background: '#B9B9B9' }}>
                 <Typography variant="subtitle2" fontWeight={600} color={'white'}>{job}</Typography>
@@ -45,7 +45,7 @@ const GroupCard = ({ group, id }) => {
         </Grid>
 
         {/* Enter Button */}
-        <Grid item md={2} container style={{ alignItems: 'center', justifyContent: 'center'}}>
+        <Grid md={2} container style={{ alignItems: 'center', justifyContent: 'center'}}>
             <Button
                 size='small'
                 maxHeight='10px'

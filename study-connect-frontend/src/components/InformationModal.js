@@ -9,6 +9,7 @@ const ModelStyle = {
     width: 400,
     bgcolor: 'background.paper',
     boxShadow: 24,
+    borderRadius: '10px',
     p: 4,
 };
 

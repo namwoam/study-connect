@@ -39,6 +39,13 @@ const FriendPage = () => {
     //const [invatations, setInvatations] = useState(invites);
     const [userFriends, setUserFriends] = useState([]);
     const [alerts, setAlerts] = useState(false);
+    const [openInfoModel, setOpenInfoModel] = useState(false);
+    const [detailUserId, setDetailUserId] = useState("");
+
+    const handleInfoOpen = (uid) => {
+        setDetailUserId(uid);
+        setOpenInfoModel(true);
+    }
 
     // WIP
     const fetchUserFriends = async () => {
@@ -86,16 +93,17 @@ const FriendPage = () => {
                 maxHeight='10px'
                 variant="contained"
                 color='primary'
-                sx={{width: '200px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600, position: 'absolute', top: '94px', right: '23%'}}
+                sx={{width: '200px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600, position: 'absolute', top: '94px', right: '24%'}}
                 onClick={handleOpen}
             >
                 View Invitations
             </Button>
             <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
             {friends.map((friend, index) => (   
-                <FriendCard friend={friend}/>
+                <FriendCard friend={friend} handleInfoOpen={handleInfoOpen}/>
             ))}
             </Box>
+            <InformationModal open={openInfoModel} setOpen={setOpenInfoModel} userId={detailUserId}/>
             <FriendModal open={openModel} setOpen={setOpenModel} invatations={friends} accept_friend={accept_friend} reject_friend={reject_friend} />
         </Container>
         

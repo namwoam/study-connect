@@ -3,11 +3,12 @@ import { Grid, Typography, Button } from '@mui/material';
 
 const InvatationStyle = {
     padding: '15px', 
-    width: '500px', 
-    margin: '20px',
+    maxWidth: '550px', 
+    margin: '10px',
     boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
     alignItems: 'center',
-    borderRadius: '10px'
+    borderRadius: '10px',
+    justifyContent: 'center'
 }
 
 export const InvatationCard = ({invatation, accept_friend, reject_friend}) => {
@@ -16,7 +17,7 @@ export const InvatationCard = ({invatation, accept_friend, reject_friend}) => {
 
     return (
         <Grid key={invatation.uid} container spacing={2} sx={InvatationStyle}>
-            <Grid item md={8}>
+            <Grid md={8}>
                 <Typography variant="h6">
                     {invatation.username}
                 </Typography>
@@ -24,7 +25,7 @@ export const InvatationCard = ({invatation, accept_friend, reject_friend}) => {
                     {invatation.selfIntro}
                 </Typography>
             </Grid>
-            <Grid item md={4} 
+            <Grid md={4} 
                 sx={{ 
                     display: 'flex',
                     flexDirection: 'column',
