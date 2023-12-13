@@ -7,13 +7,6 @@ import MainView from './containers/MainView';
 import Login from './containers/Login';
 import './App.css';
 
-import HomePage from './containers/Home';
-import FriendPage from './containers/Friend';
-import CoursePage from './containers/Course';
-import GroupPage from './containers/Group';
-import UserPage from './containers/User';
-import AdminPage from './containers/Admin';
-
 // https://zenoo.github.io/mui-theme-creator/#
 
 // pages['Home', 'Friend', 'Group']
@@ -73,16 +66,8 @@ function App() {
         {islogin ? <Header userID={userID} currentPage={currentPage} onPageChange={handlePageChange} setIslogin={setIslogin} isAdmin={isAdmin}/>: <></>}
         <div className='Content'>
           <Routes>
-            {islogin ? (
-              <>
-                <Route path="/" element={<HomePage userID={userID}/> } />
-                <Route path="/Home" element={<HomePage userID={userID}/> } />
-                <Route path="/Friend" element={<FriendPage userID={userID}/> } />
-                <Route path="/Course" element={<CoursePage userID={userID}/> } />
-                <Route path="/Group" element={<GroupPage userID={userID}/> } />
-                <Route path="/User" element={<UserPage userID={userID}/> } />
-              </>
-            )
+            {islogin ? 
+            <Route path="/" element={<MainView currentPage={currentPage} userID={userID}/> } />
             : 
             <Route path="/" element={<Login setLogin={setIslogin} setuser={setUserID} setIsadmin={setIsadmin}/>}></Route>
             }            

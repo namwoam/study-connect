@@ -38,7 +38,7 @@ const GroupPage = ({userID}) => {
                 joinedGroups.forEach((group) => {
                     groups.push({id: group[0], groupName: group[1], courseName: '會計學甲上', semester: '112-1'})
                 })
-                setGroups([...groups]);
+                setJoinedGroups([...groups]);
             }
         } catch (error) {
             console.log(error);
@@ -47,7 +47,7 @@ const GroupPage = ({userID}) => {
 
     useEffect(() => {
         fetchJoinedGroups();
-        console.log("joined_groups: ",groups);
+        console.log("joined_groups: ",joinedGroups);
     }, [userID]);
 
     return(
