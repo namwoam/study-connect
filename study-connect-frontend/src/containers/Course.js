@@ -52,7 +52,7 @@ const CoursePage = ({userID}) => {
                 let groups = [];
                 let selectedcourseGroups = response.data.data.groups;
                 selectedcourseGroups.forEach((group) => {
-                    groups.push({groupId: group[0], groupName: group[1], currentCnt: group[2], groupCapacity: 5})
+                    groups.push({groupId: group[0], groupName: group[1], currentCnt: group[2], groupCapacity: group[3]})
                 })
                 setCourseGroups([...groups]);
             }
@@ -133,7 +133,7 @@ const CoursePage = ({userID}) => {
             </Button>
             <Autocomplete
                 size='small'
-                sx={{ width: '600px', marginTop: '25px', marginBottom: '30px' }}
+                sx={{ width: '600px', marginTop: '25px', marginBottom: '20px' }}
                 options={courseOptions}
                 getOptionLabel={(option) => `${option.id} ${option.label}`}
                 isOptionEqualToValue={(option, value) => option.id === value.id}

@@ -17,7 +17,7 @@ export const UserCard = (props) => {
     return (
         <Grid container spacing={2} sx={UserCardStyle}>
             <Grid md={8}>
-                <Typography>
+                <Typography variant="h6">
                     {user.username}
                 </Typography>
                 <Typography>
