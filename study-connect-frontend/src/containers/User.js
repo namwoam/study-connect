@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import instance from '../instance';
 import { fetchCourseInfo } from '../utils/fetchCourse';
+import { fetchUserInfo } from '../utils/fetchUser';
 
 import InformationModal from '../components/InformationModal';
 
@@ -170,19 +171,6 @@ const UserPage = ({userID}) => {
     updateUserFB();
   };
 
-  const fetchUserInfo = async () => {
-    try {
-        const response = await instance.get(`/info/user/info/${userID}`);
-        if (response.data.success) {
-            let userID = response.data.data.id;
-            console.log(userID);
-            setUserInfo(response.data.data);
-        }
-    } catch (error) {
-        console.log(error);
-    }
-  };
-
   const fetchEnrolledCourse = async () => {
     try {
       const response = await instance.get(`/user/enrolled_course/${userID}`);
@@ -207,8 +195,19 @@ const UserPage = ({userID}) => {
     }
   }
 
-useEffect(()=>{
-  fetchUserInfo()}, [userID]);
+useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      const getUserInfo = await fetchUserInfo(userID);
+      setUserInfo(getUserInfo);
+    }
+    catch (error) {
+        console.error('Error fetching userinfo:', error);
+    }            
+  }
+  fetchUser();
+  
+}, [userID]);
 
 useEffect(()=>{
   fetchEnrolledCourse()}, [userID]);
