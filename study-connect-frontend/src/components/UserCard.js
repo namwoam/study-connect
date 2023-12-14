@@ -16,7 +16,7 @@ export const UserCard = (props) => {
 
     return (
         <Grid container spacing={2} sx={UserCardStyle}>
-            <Grid md={8}>
+            <Grid item md={8}>
                 <Typography variant="h6">
                     {user.username}
                 </Typography>
@@ -24,7 +24,7 @@ export const UserCard = (props) => {
                     {user.selfIntro}
                 </Typography>
             </Grid>
-            <Grid md={4} 
+            <Grid item md={4} 
                 sx={{ 
                     display: 'flex',
                     flexDirection: 'column',

@@ -9,11 +9,23 @@ const pages = ['Home', 'Friend', 'Course', 'Group'];
 
 const Header = ({ userID, currentPage, onPageChange, setIslogin, isAdmin}) => {
     const [username, setUsername] = useState("USERNAME");
+    const [userInfo, setUserInfo] = useState({});
+
 
     useEffect(() => {
-        const userInfo = fetchUserInfo(userID);
-        console.log(userInfo);
-        // SET username here
+        const fetchUser = async () => {
+            try {
+                const getUserInfo = await fetchUserInfo(userID);
+                console.log("header user info:",getUserInfo);
+                setUserInfo(getUserInfo);
+                setUsername(getUserInfo.student_name);
+            }
+            catch (error) {
+                console.error('Error fetching userinfo:', error);
+            }            
+        }
+        fetchUser();
+        
     }, []);
 
     useEffect(() => {
@@ -61,9 +73,9 @@ const Header = ({ userID, currentPage, onPageChange, setIslogin, isAdmin}) => {
                     <Button
                         sx={{ margin: 1}}
                         onClick={() => handlePageClick(4)}>
-                        <Avatar size="small" sx={{ marginRight: 1, bgcolor: deepOrange[400] }} />
+                        <Avatar size="small" sx={{ height:'24px', width: '24px', marginRight: 1, bgcolor: deepOrange[400] }} />
                         <Typography variant="subtitle2" color='black'>
-                            {username ?? 'userA'}
+                            {userInfo.student_name ?? 'userA'}
                         </Typography>
                     </Button>
                     {isAdmin ?
