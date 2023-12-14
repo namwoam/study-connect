@@ -29,7 +29,7 @@ const BigCard = {
   alignItems: 'center',
   display: 'flex', 
   flexDirection: 'column',
-  paddingBottom: '25px'
+  paddingBottom: '20px'
 };
 
 const InfoCard = {
@@ -107,10 +107,6 @@ const UserPage = ({userID}) => {
   const [previousCourse, setPreviousCourse] = useState([]);
   const [currentCourse, setCurrentCourse] = useState([]);
   const [editingSetCourseHistory, SetCourseHistory] = useState("");
-  const [editIGSuccess, setEditIGSuccess] = useState(false);
-  const [editFBSuccess, setEditFBSuccess] = useState(false);
-  const [editIntroSuccess, setEditIntroSuccess] = useState(false);
-  const [userInfo, setUserInfo] = useState(localStorage.getItem("userInfo"));
 
   const handleIntroChange = (event) => {
     setEditingIntro(event.target.value);
@@ -300,7 +296,7 @@ useEffect(()=>{
               onClick={handleConfirmUpdate}
               sx={{
                 width: '200px',
-                mt: '25px',
+                mt: '35px',
                 textTransform: 'none',
                 color: '#fff',
                 fontSize: '14px',
