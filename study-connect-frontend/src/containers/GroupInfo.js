@@ -26,11 +26,11 @@ const MainContainer = {
 const BigCard = {
     // padding: '10px',
     width: '50%',
-    margin: '20px',
+    margin: '10px',
     alignItems: 'flex-start',
     display: 'flex', 
     flexDirection: 'row',
-    paddingBottom: '25px',
+    paddingBottom: '20px',
     boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
     borderRadius: '10px',
 };
@@ -45,7 +45,7 @@ const GroupInfoCard = {
     paddingBottom: '25px',
     border: '1px solid #ccc', 
     borderRadius: '10px',
-    paddingLeft: '15px',
+    padding: '15px',
 };
 
 const MeetingInfoCard = {
@@ -58,7 +58,7 @@ const MeetingInfoCard = {
     paddingBottom: '25px',
     border: '1px solid #ccc', 
     borderRadius: '10px',
-    paddingLeft: '15px',
+    padding: '15px',
 };
 
 const SmallTitle = {
@@ -107,7 +107,7 @@ const course = {semester: '110-1', courseName: '資料庫管理', courseID: 'CSI
 courseInfo: "打開系網➡️系所成員➡️專任師資➡️找到教授➡️複製他的email➡️打開gmail ➡️收件者欄位貼上email➡️開始寫信 \n Dear 教授 嗚嗚嗚拜託不要當我好不好🥺 我都有去上課欸😭😭期中我已經唸的很認真了😢😢差這一門課就可以畢業了🥺🥺我會好好認真讀書😭不要當我好嗎😭😭🙏🙏嗚嗚嗚"}
 
     
-const GroupInfoPage = ({userID, groupID}) => {
+const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
 
 
     // userInfo = groupMember.filter((member) => member.ID === userID)[0];
@@ -164,7 +164,7 @@ const GroupInfoPage = ({userID, groupID}) => {
     };
 
     const handleBackToGroups = () => {
-        console.log("back to groups");
+        setEnterGroup(false);
     };
 
     const handleOpenAnnouncement = () => {
@@ -207,13 +207,50 @@ const GroupInfoPage = ({userID, groupID}) => {
                         Course Group 1
                     </Typography>
                 </Box>
-                <Box sx={{width: "30%"}}>
+                <Box sx={{width: "30%", display:'flex', justifyContent: 'right', paddingRight: '15px'}}>
+                    <Button
+                        id="confirm-update-button"
+                        size="small"
+                        variant="contained"
+                        color="primary"
+                        onClick={handleOpenMeeting}
+                        sx={{
+                            width: '100px',
+                            height: '30px',
+                            borderRadius: '30px',
+                            marginRight: '10px',
+                            textTransform: 'none',
+                            color: '#fff',
+                            fontSize: '14px',
+                            fontWeight: 600,
+                        }}
+                    >
+                        發起會議
+                    </Button> 
+                    <Button
+                        id="confirm-update-button"
+                        size="small"
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleOpenAnnouncement}
+                        sx={{
+                            width: '100px',
+                            height: '30px',
+                            borderRadius: '30px',
+                            textTransform: 'none',
+                            color: '#fff',
+                            fontSize: '14px',
+                            fontWeight: 600,
+                        }}
+                    >
+                        發起公告
+                    </Button>
                 </Box>
             </Box>
 
 
             {/* on hover, show more course info */}
-            <Grid item xs={12} sx={{ paddingTop: '20px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', position: 'relative'}}
+            <Grid item xs={12} sx={{ cursor: 'help', paddingTop: '20px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', position: 'relative'}}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             >
@@ -394,47 +431,7 @@ const GroupInfoPage = ({userID, groupID}) => {
                 </Grid>
             </Box>
 
-            <Button
-                id="confirm-update-button"
-                size="small"
-                variant="contained"
-                color="primary"
-                onClick={handleOpenMeeting}
-                sx={{
-                    width: '100px',
-                    height: '30px',
-                    borderRadius: '30px',
-                    mt: '25px',
-                    textTransform: 'none',
-                    color: '#fff',
-                    fontSize: '14px',
-                    fontWeight: 600,
-                }}
-            >
-                發起會議
-            </Button>
             <MeetingModal open={openMeetingModel} setOpen={setOpenMeetingModel} />
-
-            <Button
-                id="confirm-update-button"
-                size="small"
-                variant="contained"
-                color="secondary"
-                onClick={handleOpenAnnouncement}
-                sx={{
-                    width: '100px',
-                    height: '30px',
-                    borderRadius: '30px',
-                    mt: '10px',
-                    mb: '25px',
-                    textTransform: 'none',
-                    color: '#fff',
-                    fontSize: '14px',
-                    fontWeight: 600,
-                }}
-            >
-                發起公告
-            </Button>
             <AnnouncementModal open={openAnnouncementModel} setOpen={setOpenAnnouncementModel}/>
         </Container>
     );
