@@ -19,6 +19,18 @@ class GroupAction(BaseModel):
     capacity: int
     course_id: str
 
+class Announcement(BaseModel):
+    user: str
+    content: str
+    group_id: str
+
+
+class Meeting(BaseModel):
+	user: str
+	meet_name: str
+	group_id:str
+	start_time:str
+	end_time:str
 
 @router.post("/send_request")
 def send_request(aga: AdminGroupAction):
@@ -87,4 +99,31 @@ def create(ga: GroupAction):
     except BaseException as err:
         print(err)
         return HTTPException(status_code=403, detail="Forbidden")
+    return ok_respond()
+
+@router.post("/announcement/create")
+def announcement_create(a: Announcement):
+    try:
+        update_database(
+            f"""
+            INSERT OR IGNORE INTO ANNOUNCEMENT VALUES('{a.user}', '{a.content}', '{a.group_id}')
+            """
+        )
+    except BaseException as err:
+        print(err)
+        return HTTPException(status_code = 403, detail = "Forbidden")
+    return ok_respond()
+
+
+@router.post("/meeting/create")
+def meeting_create(m: Meeting):
+    try:
+        update_database(
+            f"""
+            INSERT OR IGNORE INTO MEET VALUES('{m.user}', '{m.meet_name}', '{m.group_id}', '{m.start_time}', '{m.end_time}')
+            """
+        )
+    except BaseException as err:
+        print(err)
+        return HTTPException(status_code = 403, detail = "Forbidden")
     return ok_respond()
