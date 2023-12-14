@@ -107,7 +107,7 @@ const FriendPage = () => {
                 View Invitations
             </Button>
             <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
-            {friends.map((friend, index) => (   
+            {friends.length > 0 && friends.map((friend, index) => (   
                 <FriendCard friend={friend} handleInfoOpen={handleInfoOpen}/>
             ))}
             </Box>
