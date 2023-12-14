@@ -43,15 +43,19 @@ const HomePage = () => {
 
                 const fetchRecommendInfo = async (recommendID) => {
                     const friendInfo = await fetchUserInfo(recommendID);
-                    if (friendInfo){
-                        return { uid: recommendID, 
-                            username: friendInfo.student_name, 
-                            department: friendInfo.department_name, 
-                            selfIntro: friendInfo.self_introduction ?? "" 
-                        };
-                    }
-                    else {
-                        return null;
+                    const courseResponse = await instance.get(`/user/enrolled_courses/${recommendID}`);
+                    if (courseResponse.data.success) {
+                        if (friendInfo){
+                            return { uid: recommendID, 
+                                username: friendInfo.student_name, 
+                                department: friendInfo.department_name, 
+                                selfIntro: friendInfo.self_introduction ?? "",
+                                courseRecords: courseResponse.data.data.courses
+                            };
+                        }
+                        else {
+                            return null;
+                        }
                     }
                 };
     
@@ -75,7 +79,7 @@ const HomePage = () => {
                 Discover Your Friends Now
             </Typography>
             <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
-            {recommends && recommends.map((recommend, index) => (
+            {recommends.length > 0 && recommends.map((recommend, index) => (
                 <UserCard user={recommend} handleOpen={handleOpen} key={index} id={index}/>
             ))}
             </Box>

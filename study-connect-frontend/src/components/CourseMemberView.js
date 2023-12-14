@@ -16,7 +16,7 @@ const CourseMemberView = ({courseMembers}) => {
 
     return(
         <>
-            <Box sx={{ maxHeight: '55vh', overflowY: 'auto'}}>
+            <Box sx={{ maxHeight: '52vh', overflowY: 'auto'}}>
                 {courseMembers.map((member, index) => (
                     <UserCard user={member} handleOpen={handleOpen} key={index} id={index}/>
                 ))}

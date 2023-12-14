@@ -13,12 +13,9 @@ const ModalStyle = {
     p: 4,
 };
 
-const spanStype = {
-    color: '#6e6d6d'
-}
-
 const InformationModal = ({ open, setOpen, user }) => {
     const handleClose = () => setOpen(false);
+    const courses = user.courseRecords;
 
     return (
         <Modal
@@ -32,9 +29,17 @@ const InformationModal = ({ open, setOpen, user }) => {
                 {user.username}
                 </Typography>
                 <Typography id="modal-description" sx={{ mt: 2 }}>
-                    <p><span style={{spanStype}}>學號：</span>{user.uid}</p>
-                    <p><span style={{spanStype}}>系所：</span>{user.department}</p>
-                    <p><span style={{spanStype}}>修課檢視：</span>{user.self_introduction}</p>
+                    <p><span>學號：</span>{user.uid}</p>
+                    <p><span>系所：</span>{user.department}</p>
+                    <p><span>修課檢視：</span></p>
+                    {courses && courses.map((course) => {
+                        if (course[4] == 1)
+                            return (
+                                <p>{course[2]} {course[1]}</p>
+                            )
+                    })
+
+                    }
                     
                     {/* <p>Instagram 帳號: {user.ig_account}</p>
                     <p>Facebook 帳號: {user.fb_account}</p> */}

@@ -16,7 +16,7 @@ export const UserCard = (props) => {
     const handleOpen = props.handleOpen;
 
     return (
-        <Grid container spacing={2} sx={UserCardStyle}>
+        <Grid container spacing={2} sx={UserCardStyle} key={props.id}>
             <Grid item md={8}>
                 <Typography variant="h6">
                     {user.username}
