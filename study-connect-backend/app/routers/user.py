@@ -26,8 +26,8 @@ def edit_intro(useri: UserUpdate):
         update_database(
             f'''
             UPDATE USER
-            SET self_introduction = {useri.update_content}
-            WHERE student_id = {useri.user_id}
+            SET self_introduction = "{useri.update_content}"
+            WHERE student_id = "{useri.user_id}"
             '''
         )
     except BaseException as err:
@@ -43,8 +43,8 @@ def edit_FB_contact(useri: UserUpdate):
         update_database(
             f'''
             UPDATE CONTACT
-            SET fb_account = {useri.update_content}
-            WHERE user_id = {useri.user_id}
+            SET fb_account = "{useri.update_content}"
+            WHERE user_id = "{useri.user_id}"
             '''
         )
     except BaseException as err:
@@ -58,8 +58,8 @@ def edit_IG_contact(useri: UserUpdate):
         update_database(
             f'''
             UPDATE CONTACT
-            SET ig_account = {useri.update_content}
-            WHERE user_id = {useri.user_id}
+            SET ig_account = "{useri.update_content}"
+            WHERE user_id = "{useri.user_id}"
             '''
         )
     except BaseException as err:
@@ -73,8 +73,8 @@ def edit_name(useri: UserUpdate):
         update_database(
             f'''
             UPDATE USER
-            SET name = {useri.update_content}
-            WHERE student_id = {useri.user_id}
+            SET name = "{useri.update_content}"
+            WHERE student_id = "{useri.user_id}"
             '''
         )
     except BaseException as err:
