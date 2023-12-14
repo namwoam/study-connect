@@ -40,10 +40,18 @@ const FriendPage = () => {
     const [userFriends, setUserFriends] = useState([]);
     const [alerts, setAlerts] = useState(false);
     const [openInfoModel, setOpenInfoModel] = useState(false);
-    const [detailUserId, setDetailUserId] = useState("");
+    const [selectedUser, setSelectedUser] = useState("");
 
     const handleInfoOpen = (uid) => {
-        setDetailUserId(uid);
+        let selectedUser = fetchUserInfo(uid);
+        let user = {
+            student_id: "B101039992",
+            self_introduction: 'Hi, my name is.......',
+            department: '資管系',
+            ig_account: "B101039992__",
+            fb_account: "王小明"
+        }
+        setSelectedUser(user);
         setOpenInfoModel(true);
     }
 
@@ -103,7 +111,7 @@ const FriendPage = () => {
                 <FriendCard friend={friend} handleInfoOpen={handleInfoOpen}/>
             ))}
             </Box>
-            <InformationModal open={openInfoModel} setOpen={setOpenInfoModel} userId={detailUserId}/>
+            <InformationModal open={openInfoModel} setOpen={setOpenInfoModel} user={selectedUser}/>
             <FriendModal open={openModel} setOpen={setOpenModel} invatations={friends} accept_friend={accept_friend} reject_friend={reject_friend} />
         </Container>
         
