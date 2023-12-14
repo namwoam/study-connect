@@ -101,13 +101,14 @@ def enrolled_course(student_id: str):
 def joined_groups(student_id: str):
     groups = query_database(
         f"""
-        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity , course_name , semester
         FROM STUDY_GROUP SG
+        JOIN COURSE AS C ON SG.course_id = C.course_id
         JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Join"
         GROUP BY JG.group_id
         """)
     return ok_respond({
-        "groups": groups[["group_ID", "group_name", "group_member", "capacity"]].values.tolist()
+        "groups": groups[["group_ID", "group_name", "group_member", "capacity", "course_name", "semester"]].values.tolist()
     })
 
 
@@ -115,13 +116,14 @@ def joined_groups(student_id: str):
 def waiting_groups(student_id: str):
     groups = query_database(
         f"""
-        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity, course_name, semester
         FROM STUDY_GROUP SG
+        JOIN COURSE AS C ON SG.course_id = C.course_id
         JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Waiting"
         GROUP BY JG.group_id
         """)
     return ok_respond({
-        "groups": groups[["group_ID", "group_name", "group_member", "capacity"]].values.tolist()
+        "groups": groups[["group_ID", "group_name", "group_member", "capacity", "course_name", "semester"]].values.tolist()
     })
 
 
@@ -129,13 +131,14 @@ def waiting_groups(student_id: str):
 def waiting_groups(student_id: str):
     groups = query_database(
         f"""
-        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member , capacity
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity, course_name, semester
         FROM STUDY_GROUP SG
+        JOIN COURSE AS C ON SG.course_id = C.course_id
         JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Leave"
         GROUP BY JG.group_id
         """)
     return ok_respond({
-        "groups": groups[["group_ID", "group_name", "group_member", "capacity"]].values.tolist()
+        "groups": groups[["group_ID", "group_name", "group_member", "capacity", "course_name", "semester"]].values.tolist()
     })
 
 
