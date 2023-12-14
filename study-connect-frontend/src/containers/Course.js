@@ -21,18 +21,7 @@ const CoursePage = ({userID}) => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [selectType, setSelectType] = useState(1);
-    const [anchorEl, setAnchorEl] = useState(null);
     const [courseInfo, setCourseInfo] = useState(null); 
-
-    const handlePopoverOpen = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handlePopoverClose = () => {
-        setAnchorEl(null);
-    };
-
-    const openPopover = Boolean(anchorEl);
 
     const toggleView = () => {
         setSelectType((prevType) => (prevType === 1 ? 2 : 1));
@@ -69,7 +58,6 @@ const CoursePage = ({userID}) => {
     };
 
     const fetchGroupsInCourse = async () => {
-        
         try {
             const response = await instance.get(`/course/list_groups/${selectedCourse.id}`);
             if (response.data.success) {
@@ -90,14 +78,23 @@ const CoursePage = ({userID}) => {
         try {
             const response = await instance.get(`/course/list_students/${selectedCourse.id}`);
             if (response.data.success) {
-                let members = [];
                 let selectedcourseMembers = response.data.data.students;
-                console.log(selectedcourseMembers);
-                selectedcourseMembers.forEach((member) => {
-                    const friendInfo = fetchUserInfo(member);
-                    console.log(friendInfo);
-                    members.push({uid: member})
-                })
+                const fetchMemberInfo = async (uid) => {
+                    const friendInfo = await fetchUserInfo(uid);
+                    if (friendInfo){
+                        return { uid: uid,
+                            username: friendInfo.student_name, 
+                            department: friendInfo.department_name, 
+                            selfIntro: friendInfo.self_introduction ?? "" 
+                        };
+                    }
+                    else {
+                        return null;
+                    }
+                };
+    
+                const UserInfoArray = await Promise.all(selectedcourseMembers.map(fetchMemberInfo));
+                let members = UserInfoArray.filter(info => info !== null);
                 setCourseMembers([...members]);
             }
         } catch (error) {
@@ -188,11 +185,11 @@ const CoursePage = ({userID}) => {
                 </Box>                       
             }
             {
-                selectType == 1 && selectedCourse ? 
-                <CourseGroupView selectedCourse={selectedCourse} courseGroups={courseGroups} sendJoinGroupRequest={sendJoinGroupRequest}/>
+                selectType == 1 && selectedCourse && courseGroups.length > 0? 
+                <CourseGroupView courseGroups={courseGroups} sendJoinGroupRequest={sendJoinGroupRequest}/>
                 :
-                selectType == 2 && selectedCourse ?
-                <CourseMemberView selectedCourse={selectedCourse} courseMembers={courseGroups} sendJoinGroupRequest={sendJoinGroupRequest}/>
+                selectType == 2 && selectedCourse && courseMembers.length > 0?
+                <CourseMemberView courseMembers={courseMembers} sendJoinGroupRequest={sendJoinGroupRequest}/>
                 :
                 <></>
             }

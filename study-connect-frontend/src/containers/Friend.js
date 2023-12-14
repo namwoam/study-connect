@@ -60,13 +60,23 @@ const FriendPage = () => {
         try {
             const response = await instance.get(`/user/friend/list/${userID}`);
             if (response.data.success) {
-                let friends = [];
                 let friendIDs = response.data.data.friends;
-                console.log(friendIDs);
-                friendIDs.forEach((friendID) => {
-                    const friendInfo = fetchUserInfo(friendID);
-                    friends.push({uid: friendID})
-                })
+                const fetchFriendInfo = async (fid) => {
+                    const friendInfo = await fetchUserInfo(fid);
+                    if (friendInfo){
+                        return { uid: fid, 
+                            username: friendInfo.student_name, 
+                            department: friendInfo.department_name, 
+                            selfIntro: friendInfo.self_introduction ?? "" 
+                        };
+                    }
+                    else {
+                        return null;
+                    }
+                };
+    
+                const friendInfoArray = await Promise.all(friendIDs.map(fetchFriendInfo));
+                let friends = friendInfoArray.filter(info => info !== null);
                 setUserFriends([...friends]);
             }
         } catch (error) {
@@ -101,15 +111,18 @@ const FriendPage = () => {
                 maxHeight='10px'
                 variant="contained"
                 color='primary'
-                sx={{width: '200px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600, position: 'absolute', top: '94px', right: '24%'}}
+                sx={{width: '160px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600, position: 'absolute', top: '94px', right: '24%'}}
                 onClick={handleOpen}
             >
                 View Invitations
             </Button>
             <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
-            {friends.length > 0 && friends.map((friend, index) => (   
-                <FriendCard friend={friend} handleInfoOpen={handleInfoOpen}/>
-            ))}
+            {userFriends.length > 0 ? 
+                userFriends.map((friend, index) => (   
+                    <FriendCard friend={friend} handleInfoOpen={handleInfoOpen}/>
+                ))
+                : <Typography sx={{mt: '20px'}}>You don't have any friend now. QQ</Typography>
+            }
             </Box>
             <InformationModal open={openInfoModel} setOpen={setOpenInfoModel} user={selectedUser}/>
             <FriendModal open={openModel} setOpen={setOpenModel} invatations={friends} accept_friend={accept_friend} reject_friend={reject_friend} />
