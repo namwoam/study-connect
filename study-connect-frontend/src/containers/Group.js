@@ -36,7 +36,7 @@ const GroupPage = ({userID}) => {
                 let joinedGroups = response.data.data.groups;
                 console.log(joinedGroups);
                 joinedGroups.forEach((group) => {
-                    groups.push({id: group[0], groupName: group[1], courseName: '會計學甲上', semester: '112-1'})
+                    groups.push({id: group[0], groupName: group[1], courseName: group[4], semester: group[5]})
                 })
                 setJoinedGroups([...groups]);
             }

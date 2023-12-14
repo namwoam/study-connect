@@ -6,14 +6,11 @@ import {
   Button,
   Container,
   TextField,
-  Paper
+  Paper, 
+  Snackbar
 } from '@mui/material';
 import instance from '../instance';
-import { fetchCourseInfo } from '../utils/fetchCourse';
-import { fetchUserInfo } from '../utils/fetchUser';
-
-import InformationModal from '../components/InformationModal';
-
+import { fetchUserInfo } from '../utils/fetchUser'; 
 
 const MainContainer = {
   display: 'flex',
@@ -98,16 +95,40 @@ const previousCourseRecords = [//create 10 course 1nfo
   {uid: 9, coursename: 'course9', semester: '112-1', grade: 'A', visibility: 0},
 ]
 
-
 const UserPage = ({userID}) => {
   const [openModel, setOpenModel] = useState(false);
-  const [editingIntro, setEditingIntro] = useState(currentUser.selfIntro);
-  const [editingFB, setEditingFB] = useState(currentUser.FB);
-  const [editingIG, setEditingIG] = useState(currentUser.IG);
-  const [userInfo, setUserInfo] = useState();
-  const [previousCourse, setPreviousCourse] = useState([]);
-  const [currentCourse, setCurrentCourse] = useState([]);
+  const [editingIntro, setEditingIntro] = useState("");
+  const [editingFB, setEditingFB] = useState("");
+  const [editingIG, setEditingIG] = useState("");
   const [editingSetCourseHistory, SetCourseHistory] = useState("");
+  const [editIGSuccess, setEditIGSuccess] = useState(false);
+  const [editFBSuccess, setEditFBSuccess] = useState(false);
+  const [editIntroSuccess, setEditIntroSuccess] = useState(false);
+  const [userInfo, setUserInfo] = useState({});
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+        try {
+            const getUserInfo = await fetchUserInfo(userID);
+            console.log("userpage user info:",getUserInfo);
+            setUserInfo(getUserInfo);
+            setEditingFB(userInfo.fb);
+            setEditingIG(userInfo.ig);
+            setEditingIntro(userInfo.self_introduction);
+        }
+        catch (error) {
+            console.error('Error fetching userinfo:', error);
+        }            
+    }
+    fetchUser();
+    
+}, []);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   const handleIntroChange = (event) => {
     setEditingIntro(event.target.value);
@@ -120,6 +141,7 @@ const UserPage = ({userID}) => {
   const handleFBChange = (event) => {
     setEditingFB(event.target.value);
   };
+
   const handleUpdateVisibility = (courseHistoryID, visibility) => {
     SetCourseHistory(courseHistoryID, visibility);
     console.log('Toggle visibility', courseHistoryID);
@@ -127,91 +149,27 @@ const UserPage = ({userID}) => {
 
   const updateUserSelfIntroduction = async () => {
     try {
-      //pass User ID and new self introduction to backend
-        const response = await instance.post('/user/edit_intro', {"user_id": userID, "update_content": editingIntro});
+        const response = await instance.post('/user/edit_contact/IG', {
+            user_id: userID,
+            update_content: toString(editingIG),
+        });
         if (response.data.success) {
-            console.log('Update success');
+            
+        } else {
+            
         }
     } catch (error) {
         console.log(error);
     }
-  };
-
-  const updateUserIG = async () => {
-    try {
-      //pass User ID and new self introduction to backend
-        const response = await instance.post('/user/edit_contact/IG', {"user_id": userID, "update_content": editingIntro});
-        if (response.data.success) {
-            console.log('Update success');
-        }
-    } catch (error) {
-        console.log(error);
-    }
-  };
-
-  const updateUserFB = async () => {
-    try {
-      //pass User ID and new self introduction to backend
-        const response = await instance.post('/user/edit_contact/FB', {"user_id": userID, "update_content": editingIntro});
-        if (response.data.success) {
-            console.log('Update success');
-        }
-    } catch (error) {
-        console.log(error);
-    }
-  };
-
+};
 
   const handleConfirmUpdate = () => {
-    // console.log('Updating self introduction:', editingIntro);
-    // console.log('Updating self introduction:', editingIG);
-    // console.log('Updating self introduction:', editingFB);
-    updateUserSelfIntroduction();
-    updateUserIG();
-    updateUserFB();
+    console.log('Updating self introduction:', editingIntro);
+    console.log('Updating self introduction:', editingIG);
+    console.log('Updating self introduction:', editingFB);
+    // TODO: Make API request to update the self introduction
+    // After the update, you may want to fetch the updated user information
   };
-
-  const fetchEnrolledCourse = async () => {
-    try {
-      const response = await instance.get(`/user/enrolled_course/${userID}`);
-      if (response.data.success) {
-          let currentCourse = [];
-          let previousCourse = [];
-          let courseIDs = response.data.data.course_ids;
-          console.log(courseIDs);
-          courseIDs.forEach((courseID) => {
-            const courseInfo = fetchCourseInfo(courseID);
-            if (courseInfo.semester == '112-1') {
-              currentCourse.push({uid: courseID, coursename: courseInfo.name, semester: courseInfo.semester, grade: 'Null', visibility: 1});
-            } else {
-              previousCourse.push({uid: courseID, coursename: courseInfo.name, semester: courseInfo.semester, grade: courseInfo.grade, visibility: 1});
-            }
-          })
-          setCurrentCourse([...currentCourse]);
-          setPreviousCourse([...previousCourse]);
-      }
-    } catch (error) {
-        console.log(error);
-    }
-  }
-
-useEffect(() => {
-  const fetchUser = async () => {
-    try {
-      const getUserInfo = await fetchUserInfo(userID);
-      setUserInfo(getUserInfo);
-    }
-    catch (error) {
-        console.error('Error fetching userinfo:', error);
-    }            
-  }
-  fetchUser();
-  
-}, [userID]);
-
-useEffect(()=>{
-  fetchEnrolledCourse()}, [userID]);
-
 
   return (
     <Container sx={MainContainer}>
@@ -234,7 +192,7 @@ useEffect(()=>{
               >
                 ID
               </Typography>
-              <Typography sx={{ mt: 2 }}>{currentUser.uid}</Typography>
+              <Typography sx={{ mt: 2 }} >{userInfo.student_id ?? "User ID"}</Typography>
               <Typography
                 sx={{
                   mt: 2,
@@ -244,7 +202,7 @@ useEffect(()=>{
               >
                 Username
               </Typography>
-              <Typography sx={{ mt: 2 }}>{currentUser.uid}</Typography>
+              <Typography sx={{ mt: 2 }}>{userInfo.student_name ?? "User Name"}</Typography>
             </Box>
             <Box sx={InfoCard}>
               <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
@@ -278,7 +236,6 @@ useEffect(()=>{
               <TextField
                 multiline
                 rows={4}
-                label="Self Introduction"
                 variant="outlined"
                 fullWidth
                 value={editingIntro}
@@ -341,12 +298,12 @@ useEffect(()=>{
                               size='small'
                               variant="contained"
                               // if visibility == 1, color = primary, else color = secondary
-                              color={course.visibility == 1 ? 'primary' : 'secondary'}
+                              color={course.visibility === 1 ? 'primary' : 'secondary'}
                               onClick={() => handleUpdateVisibility(course.uid)}
                               sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                           >
                               {/* if visibility == 1, "Show", else Hide */}
-                              {course.visibility == 1 ? 'Show' : 'Hide'}
+                              {course.visibility === 1 ? 'Show' : 'Hide'}
                           </Button>
                       </Grid>
                   </Grid>
@@ -387,12 +344,12 @@ useEffect(()=>{
                               size='small'
                               variant="contained"
                               // if visibility == 1, color = primary, else color = secondary
-                              color={course.visibility == 1 ? 'primary' : 'secondary'}
+                              color={course.visibility === 1 ? 'primary' : 'secondary'}
                               onClick={() => handleUpdateVisibility(course.uid)}
                               sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                           >
                               {/* if visibility == 1, "Show", else Hide */}
-                              {course.visibility == 1 ? 'Show' : 'Hide'}
+                              {course.visibility === 1 ? 'Show' : 'Hide'}
                           </Button>
                       </Grid>
                   </Grid>
@@ -400,6 +357,16 @@ useEffect(()=>{
             </Box>
           </Box>
       </Box>
+      <Snackbar
+        anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+        }}
+        open={openSnackbar}
+        autoHideDuration={3000} // Adjust the duration as needed
+        onClose={handleCloseSnackbar}
+        message={alertMessage}
+      />
     </Container>
   );
 };
