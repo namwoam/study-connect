@@ -31,6 +31,23 @@ def student_info(student_id: str):
         "fb": student_info["fb"].to_list()[0]
     })
 
+@router.get("/department/{department_id}")
+def department_info(department_id:str):
+    department_info = query_database(
+        f'''
+        SELECT d.department_id, d.department_name, c.course_id
+        FROM DEPARTMENT AS D
+        JOIN COURSE AS C ON C.department_id = d.department_id
+        WHERE D.department_id = "{department_id}"
+        '''
+    )
+    return ok_respond({
+        "department_id": department_info["department_ID"].to_list()[0],
+        "department_name": department_info["department_name"].to_list()[0],
+        "offer_courses": department_info["course_ID"].tolist()
+    })
+
+
 
 @router.get("/instructor/{instructor_id}")
 def instructor_info(instructor_id: str):
@@ -62,7 +79,7 @@ def course_info(course_id: str):
         WHERE c.course_id = "{course_id}";
         '''
     )
-    print(course_info)
+    # print(course_info)
     return ok_respond({
         "course_id": course_info["course_ID"].tolist()[0],
         "course_name": course_info["course_name"].tolist()[0],
@@ -105,7 +122,7 @@ def group_info(group_id: str):
         WHERE M.group_id = "{group_id}"
         """
     )
-    print(group_info)
+    # print(group_info)
     if len(group_info) == 0:
         return ok_respond({})
     return ok_respond({
