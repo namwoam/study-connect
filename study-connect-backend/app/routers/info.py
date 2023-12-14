@@ -36,14 +36,16 @@ def student_info(student_id: str):
 def instructor_info(instructor_id: str):
     instructor_info = query_database(
         f'''
-        SELECT i.instructor_id, i.instructor_name
+        SELECT i.instructor_id, i.instructor_name, OF.course_id
         FROM INSTRUCTOR AS i
+        JOIN OFFER_COURSE AS OF ON OF.instructor_id = i.instructor_id
         WHERE i.instructor_id = "{instructor_id}"
         '''
     )
     return ok_respond({
         "instructor_id": instructor_info["instructor_ID"].to_list()[0],
         "instructor_name": instructor_info["instructor_name"].to_list()[0],
+        "offer_courses": instructor_info["course_ID"].tolist()
     })
 
 
