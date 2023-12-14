@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from 'react';
-import { Typography, Button, Container, TextField, Autocomplete, Snackbar } from '@mui/material';
+import { Typography, Button, Container, TextField, Autocomplete, Snackbar, IconButton, Popover, Box} from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
 import CourseGroupView from '../components/CourseGroupView';
 import CourseMemberView from '../components/CourseMemberView';
 import instance from '../instance';
@@ -20,13 +21,36 @@ const CoursePage = ({userID}) => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [selectType, setSelectType] = useState(1);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [courseInfo, setCourseInfo] = useState(null); 
+
+    const handlePopoverOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+
+    const openPopover = Boolean(anchorEl);
 
     const toggleView = () => {
         setSelectType((prevType) => (prevType === 1 ? 2 : 1));
     };
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
-      };
+    };
+
+    const fetchCourseInfo = async (courseId) => {
+        try {
+          const response = await instance.get(`/info/course/${courseId}`);
+          if (response.data.success) {
+            setCourseInfo(response.data.data);
+          }
+        } catch (error) {
+          console.error('Error fetching course information:', error);
+        }
+    };
 
     const fetchEnrolledCourses = async () => {
         try {
@@ -52,7 +76,7 @@ const CoursePage = ({userID}) => {
                 let groups = [];
                 let selectedcourseGroups = response.data.data.groups;
                 selectedcourseGroups.forEach((group) => {
-                    groups.push({groupId: group[0], groupName: group[1], currentCnt: group[2], groupCapacity: 5})
+                    groups.push({groupId: group[0], groupName: group[1], currentCnt: group[2], groupCapacity: group[3]})
                 })
                 setCourseGroups([...groups]);
             }
@@ -105,6 +129,7 @@ const CoursePage = ({userID}) => {
     
     useEffect(() => {
         if (selectedCourse !== null) {
+            fetchCourseInfo(selectedCourse.id);
             switch (selectType) {
                 case 1:
                     fetchGroupsInCourse();
@@ -133,7 +158,7 @@ const CoursePage = ({userID}) => {
             </Button>
             <Autocomplete
                 size='small'
-                sx={{ width: '400px', marginTop: '25px', marginBottom: '30px' }}
+                sx={{ width: '600px', marginTop: '25px', marginBottom: '5px' }}
                 options={courseOptions}
                 getOptionLabel={(option) => `${option.id} ${option.label}`}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -143,6 +168,25 @@ const CoursePage = ({userID}) => {
                 }}
                 value={selectedCourse}
             />
+            {selectedCourse && courseInfo && 
+                <Box p={2}>
+                    {/* <Typography variant="subtitle1">
+                    Course ID: {courseInfo.course_id}
+                    </Typography>
+                    <Typography variant="subtitle1">
+                    Course Name: {courseInfo.course_name}
+                    </Typography> */}
+                    <Typography variant="subtitle1">
+                        Semester: {courseInfo.semester}
+                    </Typography>
+                    <Typography variant="subtitle1">
+                        教授姓名：{courseInfo.instructor_name}
+                    </Typography>
+                    <Typography variant="subtitle1">
+                        開課系所：{courseInfo.department_name}
+                    </Typography>
+                </Box>                       
+            }
             {
                 selectType == 1 && selectedCourse ? 
                 <CourseGroupView selectedCourse={selectedCourse} courseGroups={courseGroups} sendJoinGroupRequest={sendJoinGroupRequest}/>

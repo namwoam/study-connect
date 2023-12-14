@@ -1,19 +1,28 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Paper, Grid, Snackbar } from '@mui/material';
+import { fetchUserInfo } from '../utils/fetchUser';
 
-const Login = ({setLogin, setuser}) => {
+const adminIDs = ['B10101025'];
+
+const Login = ({setLogin, setuser, setIsadmin, setUserInfo}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin =  async () => {
     // Implement your login logic here
     console.log('Username:', username);
     console.log('Password:', password);
     
     if (username === password) {
+        if (adminIDs.includes(username)) {
+          localStorage.setItem('isAdmin', 'true');
+          setIsadmin(true);
+        }
         setLogin(true);
         setuser(username);
+        setUserInfo(JSON.stringify(await fetchUserInfo(username)));
+        console.log('login user info:', await fetchUserInfo(username));
     }
     else {
         setOpenSnackbar(true);

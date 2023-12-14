@@ -5,7 +5,7 @@ import pandas as pd
 
 def query_database(query: str):
     con = sqlite3.connect(os.path.join(
-        os.path.dirname(__file__), "./db/db.sqlite"))
+        os.path.dirname(__file__), "./db/data.db"))
     df = pd.read_sql(query, con)
     return df
     raise NotImplementedError
@@ -13,11 +13,12 @@ def query_database(query: str):
 
 def update_database(query: str):
     con = sqlite3.connect(os.path.join(
-        os.path.dirname(__file__), "./db/db.sqlite"))
+        os.path.dirname(__file__), "./db/data.db"))
     cur = con.cursor()
     cur.execute(query)
+    affected_rows = cur.rowcount
     con.commit()
-    return
+    return affected_rows
 
 
 if __name__ == "__main__":

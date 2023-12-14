@@ -13,6 +13,7 @@ import { fetchCourseInfo } from '../utils/fetchCourse';
 
 import InformationModal from '../components/InformationModal';
 
+
 const MainContainer = {
   display: 'flex',
   flexDirection: 'column',
@@ -96,9 +97,8 @@ const previousCourseRecords = [//create 10 course 1nfo
   {uid: 9, coursename: 'course9', semester: '112-1', grade: 'A', visibility: 0},
 ]
 
-const UserPage = () => {
-  const userID = localStorage.getItem('userID')
 
+const UserPage = ({userID}) => {
   const [openModel, setOpenModel] = useState(false);
   const [editingIntro, setEditingIntro] = useState(currentUser.selfIntro);
   const [editingFB, setEditingFB] = useState(currentUser.FB);
@@ -107,6 +107,10 @@ const UserPage = () => {
   const [previousCourse, setPreviousCourse] = useState([]);
   const [currentCourse, setCurrentCourse] = useState([]);
   const [editingSetCourseHistory, SetCourseHistory] = useState("");
+  const [editIGSuccess, setEditIGSuccess] = useState(false);
+  const [editFBSuccess, setEditFBSuccess] = useState(false);
+  const [editIntroSuccess, setEditIntroSuccess] = useState(false);
+  const [userInfo, setUserInfo] = useState(localStorage.getItem("userInfo"));
 
   const handleIntroChange = (event) => {
     setEditingIntro(event.target.value);
@@ -159,7 +163,6 @@ const UserPage = () => {
         console.log(error);
     }
   };
-
 
 
   const handleConfirmUpdate = () => {
