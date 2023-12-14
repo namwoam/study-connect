@@ -19,7 +19,7 @@ def student_info(student_id: str):
         LEFT JOIN DEPARTMENT AS D ON D.department_ID = U.department_ID
         WHERE student_id = "{student_id}"
         ''')
-    print(student_info)
+    #print(student_info)
     if len(student_info) == 0:
         return ok_respond({})
     return ok_respond({

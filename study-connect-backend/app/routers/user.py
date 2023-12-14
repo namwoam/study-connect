@@ -86,14 +86,14 @@ def edit_name(useri: UserUpdate):
 def enrolled_course(student_id: str):
     courses = query_database(
         f"""
-        SELECT TC.course_id , C.course_name
+        SELECT TC.course_id, C.course_name, semester, TC.grade, TC.display_on_introduction
         FROM TAKE_COURSE AS TC
         JOIN COURSE AS C ON C.course_id = TC.course_id
         WHERE TC.user_ID = '{student_id}'
         """
     )
     return ok_respond({
-        "courses": courses[["course_ID", "course_name"]].values.tolist()
+        "courses": courses[["course_ID", "course_name", "semester", "grade", "display_on_introduction"]].values.tolist()
     })
 
 
