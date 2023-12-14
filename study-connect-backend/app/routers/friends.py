@@ -74,6 +74,27 @@ def list_friends(student_id: str):
         "friends": friends_relationship["friend_id"].unique().tolist()
     })
 
+
 @router.get("/recommend/{student_id}")
-def recommend(student_id:str):
-    pass
+def recommend(student_id: str, limit: int = 10):
+    query_limit = limit*10
+    friends = query_database(
+        f"""
+        SELECT CASE WHEN user1_ID='{student_id}' THEN user2_ID
+                    WHEN user2_ID='{student_id}' THEN user1_ID
+                    END AS friend_id
+        FROM IS_FRIEND_OF
+        WHERE confirm_status = 'Agree' AND (user1_ID='{student_id}' OR user2_ID='{student_id}')
+        """)
+    users = query_database(
+        f"""
+        SELECT student_id FROM USER
+        ORDER BY RANDOM()
+        LIMIT {query_limit}
+        """
+    )
+    if len(friends) != 0:
+        users = users[~users["student_ID"].isin(friends["friend_id"])]
+    return ok_respond({
+        "recommendations": users["student_ID"].unique().tolist()[:limit]
+    })
