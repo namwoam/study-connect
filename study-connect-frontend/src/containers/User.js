@@ -1,5 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Grid, Typography, Button, Container, TextField, Paper, Snackbar } from '@mui/material';
+import { React, useEffect, useState } from 'react';
+import {
+  Box,
+  Grid,
+  Typography,
+  Button,
+  Container,
+  TextField,
+  Paper
+} from '@mui/material';
 import instance from '../instance';
 import { fetchUserInfo } from '../utils/fetchUser'; 
 
@@ -16,11 +24,9 @@ const BigCard = {
   width: '45%',
   margin: '20px',
   alignItems: 'center',
-  borderRadius: '10px',
-  border: '1px solid #ccc',
   display: 'flex', 
   flexDirection: 'column',
-  paddingBottom: '25px'
+  paddingBottom: '20px'
 };
 
 const InfoCard = {
@@ -29,7 +35,7 @@ const InfoCard = {
   marginTop: '25px',
   alignItems: 'center',
   borderRadius: '10px',
-  border: '1px solid #ccc',
+  boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
 };
 
 const BigCourseCard = {
@@ -38,7 +44,7 @@ const BigCourseCard = {
   marginTop: '25px',
   alignItems: 'center',
   borderRadius: '10px',
-  border: '1px solid #ccc',
+  boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
   overflowY: 'auto',
   maxHeight: '50vh'
 };
@@ -49,7 +55,6 @@ const CourseCard = {
   margin: '5px',
   alignItems: 'center',
   borderRadius: '10px',
-  // border: '1px solid #ccc',
   flexDirection: 'row',
   justifyContent: 'space-between',
 };
@@ -90,37 +95,15 @@ const previousCourseRecords = [//create 10 course 1nfo
 ]
 
 const UserPage = ({userID}) => {
-  const [editingIntro, setEditingIntro] = useState("");
-  const [editingFB, setEditingFB] = useState("");
-  const [editingIG, setEditingIG] = useState("");
+  const [openModel, setOpenModel] = useState(false);
+  const [editingIntro, setEditingIntro] = useState(currentUser.selfIntro);
+  const [editingFB, setEditingFB] = useState(currentUser.FB);
+  const [editingIG, setEditingIG] = useState(currentUser.IG);
   const [editingSetCourseHistory, SetCourseHistory] = useState("");
   const [editIGSuccess, setEditIGSuccess] = useState(false);
   const [editFBSuccess, setEditFBSuccess] = useState(false);
   const [editIntroSuccess, setEditIntroSuccess] = useState(false);
-  const [userInfo, setUserInfo] = useState({});
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-
-  useEffect(() => {
-    const fetchUser = async () => {
-        try {
-            const getUserInfo = await fetchUserInfo(userID);
-            console.log("Userpage user info:",getUserInfo);
-            setUserInfo(getUserInfo);
-            setEditingIntro(userInfo.self_introduction);
-            setEditingIG(userInfo.ig);
-            setEditingFB(userInfo.fb);
-        }
-        catch (error) {
-            console.error('Error fetching userinfo:', error);
-        }
-    }
-    fetchUser();
-  }, []);
-
-  const handleCloseSnackbar = () => {
-    setOpenSnackbar(false);
-  };
+  const [userInfo, setUserInfo] = useState(localStorage.getItem("userInfo"));
 
   const handleIntroChange = (event) => {
     setEditingIntro(event.target.value);
@@ -138,77 +121,28 @@ const UserPage = ({userID}) => {
     console.log('Toggle visibility', courseHistoryID);
   }
 
-  const sendEditIGRequest = async (editingIG) => {
+  const updateUserSelfIntroduction = async () => {
     try {
         const response = await instance.post('/user/edit_contact/IG', {
-          user_id: userID,
-          update_content: toString(editingIG),
+            user_id: userID,
+            update_content: toString(editingIG),
         });
         if (response.data.success) {
-          setEditIGSuccess(true);
+            
         } else {
-          setEditIGSuccess(false);
+            
         }
     } catch (error) {
         console.log(error);
     }
-  };
+};
 
-  const sendEditFBRequest = async (editingFB) => {
-    try {
-        const response = await instance.post('/user/edit_contact/IG', {
-          user_id: userID,
-          update_content: toString(editingFB),
-        });
-        if (response.data.success) {
-          setEditFBSuccess(true);
-        } else {
-          setEditFBSuccess(false);
-        }
-    } catch (error) {
-        console.log(error);
-    }
-  };
-
-  const sendEditIntroRequest = async (editingIntro) => {
-    try {
-        const response = await instance.post('/user/edit_intro', {
-          user_id: userID,
-          update_content: toString(editingIntro),
-        });
-        if (response.data.success) {
-          setEditIntroSuccess(true);
-        } else {
-          setEditIntroSuccess(false);
-        }
-    } catch (error) {
-        console.log(error);
-    }
-  };
-
-  const handleConfirmUpdate = async () => {
-    //console.log('Updating self introduction:', editingIntro);
-    //console.log('Updating self introduction:', editingIG);
-    //console.log('Updating self introduction:', editingFB);
-    try {
-      await sendEditIGRequest(editingIG);
-      await sendEditFBRequest(editingFB);
-      await sendEditIntroRequest(editingIntro);
-      if (editFBSuccess && editIGSuccess && editIntroSuccess) {
-        setAlertMessage('Update done successfully');
-        setOpenSnackbar(true);
-      }
-      else {
-        setAlertMessage('Failed to update data');
-        setOpenSnackbar(true);
-      }
-      setEditFBSuccess(false);
-      setEditIGSuccess(false);
-      setEditIntroSuccess(false);
-    }
-    catch (error) {
-      console.log("user update error: ",error);
-    }
+  const handleConfirmUpdate = () => {
+    console.log('Updating self introduction:', editingIntro);
+    console.log('Updating self introduction:', editingIG);
+    console.log('Updating self introduction:', editingFB);
+    // TODO: Make API request to update the self introduction
+    // After the update, you may want to fetch the updated user information
   };
 
   return (
@@ -292,7 +226,7 @@ const UserPage = ({userID}) => {
               onClick={handleConfirmUpdate}
               sx={{
                 width: '200px',
-                mt: '25px',
+                mt: '35px',
                 textTransform: 'none',
                 color: '#fff',
                 fontSize: '14px',
