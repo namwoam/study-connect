@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Box, Grid, Typography, Button, Container, TextField, Paper } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Grid, Typography, Button, Container, TextField, Paper, Snackbar } from '@mui/material';
 import instance from '../instance';
+import { fetchUserInfo } from '../utils/fetchUser'; 
 
 const MainContainer = {
   display: 'flex',
@@ -89,15 +90,37 @@ const previousCourseRecords = [//create 10 course 1nfo
 ]
 
 const UserPage = ({userID}) => {
-  const [openModel, setOpenModel] = useState(false);
-  const [editingIntro, setEditingIntro] = useState(currentUser.selfIntro);
-  const [editingFB, setEditingFB] = useState(currentUser.FB);
-  const [editingIG, setEditingIG] = useState(currentUser.IG);
+  const [editingIntro, setEditingIntro] = useState("");
+  const [editingFB, setEditingFB] = useState("");
+  const [editingIG, setEditingIG] = useState("");
   const [editingSetCourseHistory, SetCourseHistory] = useState("");
   const [editIGSuccess, setEditIGSuccess] = useState(false);
   const [editFBSuccess, setEditFBSuccess] = useState(false);
   const [editIntroSuccess, setEditIntroSuccess] = useState(false);
-  const [userInfo, setUserInfo] = useState(localStorage.getItem("userInfo"));
+  const [userInfo, setUserInfo] = useState({});
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+        try {
+            const getUserInfo = await fetchUserInfo(userID);
+            console.log("Userpage user info:",getUserInfo);
+            setUserInfo(getUserInfo);
+            setEditingIntro(userInfo.self_introduction);
+            setEditingIG(userInfo.ig);
+            setEditingFB(userInfo.fb);
+        }
+        catch (error) {
+            console.error('Error fetching userinfo:', error);
+        }
+    }
+    fetchUser();
+  }, []);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   const handleIntroChange = (event) => {
     setEditingIntro(event.target.value);
@@ -118,25 +141,74 @@ const UserPage = ({userID}) => {
   const sendEditIGRequest = async (editingIG) => {
     try {
         const response = await instance.post('/user/edit_contact/IG', {
-            user_id: userID,
-            update_content: toString(editingIG),
+          user_id: userID,
+          update_content: toString(editingIG),
         });
         if (response.data.success) {
-            
+          setEditIGSuccess(true);
         } else {
-            
+          setEditIGSuccess(false);
         }
     } catch (error) {
         console.log(error);
     }
-};
+  };
 
-  const handleConfirmUpdate = () => {
-    console.log('Updating self introduction:', editingIntro);
-    console.log('Updating self introduction:', editingIG);
-    console.log('Updating self introduction:', editingFB);
-    // TODO: Make API request to update the self introduction
-    // After the update, you may want to fetch the updated user information
+  const sendEditFBRequest = async (editingFB) => {
+    try {
+        const response = await instance.post('/user/edit_contact/IG', {
+          user_id: userID,
+          update_content: toString(editingFB),
+        });
+        if (response.data.success) {
+          setEditFBSuccess(true);
+        } else {
+          setEditFBSuccess(false);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+  };
+
+  const sendEditIntroRequest = async (editingIntro) => {
+    try {
+        const response = await instance.post('/user/edit_intro', {
+          user_id: userID,
+          update_content: toString(editingIntro),
+        });
+        if (response.data.success) {
+          setEditIntroSuccess(true);
+        } else {
+          setEditIntroSuccess(false);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+  };
+
+  const handleConfirmUpdate = async () => {
+    //console.log('Updating self introduction:', editingIntro);
+    //console.log('Updating self introduction:', editingIG);
+    //console.log('Updating self introduction:', editingFB);
+    try {
+      await sendEditIGRequest(editingIG);
+      await sendEditFBRequest(editingFB);
+      await sendEditIntroRequest(editingIntro);
+      if (editFBSuccess && editIGSuccess && editIntroSuccess) {
+        setAlertMessage('Update done successfully');
+        setOpenSnackbar(true);
+      }
+      else {
+        setAlertMessage('Failed to update data');
+        setOpenSnackbar(true);
+      }
+      setEditFBSuccess(false);
+      setEditIGSuccess(false);
+      setEditIntroSuccess(false);
+    }
+    catch (error) {
+      console.log("user update error: ",error);
+    }
   };
 
   return (
@@ -160,7 +232,7 @@ const UserPage = ({userID}) => {
               >
                 ID
               </Typography>
-              <Typography sx={{ mt: 2 }}>{currentUser.uid}</Typography>
+              <Typography sx={{ mt: 2 }} >{userInfo.student_id ?? "User ID"}</Typography>
               <Typography
                 sx={{
                   mt: 2,
@@ -170,7 +242,7 @@ const UserPage = ({userID}) => {
               >
                 Username
               </Typography>
-              <Typography sx={{ mt: 2 }}>{currentUser.uid}</Typography>
+              <Typography sx={{ mt: 2 }}>{userInfo.student_name ?? "User Name"}</Typography>
             </Box>
             <Box sx={InfoCard}>
               <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
@@ -204,7 +276,6 @@ const UserPage = ({userID}) => {
               <TextField
                 multiline
                 rows={4}
-                label="Self Introduction"
                 variant="outlined"
                 fullWidth
                 value={editingIntro}
@@ -267,12 +338,12 @@ const UserPage = ({userID}) => {
                               size='small'
                               variant="contained"
                               // if visibility == 1, color = primary, else color = secondary
-                              color={course.visibility == 1 ? 'primary' : 'secondary'}
+                              color={course.visibility === 1 ? 'primary' : 'secondary'}
                               onClick={() => handleUpdateVisibility(course.uid)}
                               sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                           >
                               {/* if visibility == 1, "Show", else Hide */}
-                              {course.visibility == 1 ? 'Show' : 'Hide'}
+                              {course.visibility === 1 ? 'Show' : 'Hide'}
                           </Button>
                       </Grid>
                   </Grid>
@@ -313,12 +384,12 @@ const UserPage = ({userID}) => {
                               size='small'
                               variant="contained"
                               // if visibility == 1, color = primary, else color = secondary
-                              color={course.visibility == 1 ? 'primary' : 'secondary'}
+                              color={course.visibility === 1 ? 'primary' : 'secondary'}
                               onClick={() => handleUpdateVisibility(course.uid)}
                               sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                           >
                               {/* if visibility == 1, "Show", else Hide */}
-                              {course.visibility == 1 ? 'Show' : 'Hide'}
+                              {course.visibility === 1 ? 'Show' : 'Hide'}
                           </Button>
                       </Grid>
                   </Grid>
@@ -326,6 +397,16 @@ const UserPage = ({userID}) => {
             </Box>
           </Box>
       </Box>
+      <Snackbar
+        anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+        }}
+        open={openSnackbar}
+        autoHideDuration={3000} // Adjust the duration as needed
+        onClose={handleCloseSnackbar}
+        message={alertMessage}
+      />
     </Container>
   );
 };
