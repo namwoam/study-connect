@@ -14,6 +14,12 @@ class UserUpdate(BaseModel):
     update_content: str
 
 
+class ChangeVisibility(BaseModel):
+    user_id: str
+    course_id: str
+    visibility: bool
+
+
 @router.post("/edit_intro")
 def edit_intro(useri: UserUpdate):
     try:
@@ -90,41 +96,64 @@ def enrolled_course(student_id: str):
         "courses": courses[["course_ID", "course_name"]].values.tolist()
     })
 
+
 @router.get("/joined_groups/{student_id}")
 def joined_groups(student_id: str):
     groups = query_database(
         f"""
-        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity , course_name , semester
         FROM STUDY_GROUP SG
+        JOIN COURSE AS C ON SG.course_id = C.course_id
         JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Join"
         GROUP BY JG.group_id
         """)
     return ok_respond({
-        "groups": groups[["group_ID", "group_name", "group_member" , "capacity"]].values.tolist()
+        "groups": groups[["group_ID", "group_name", "group_member", "capacity", "course_name", "semester"]].values.tolist()
     })
 
+
 @router.get("/waiting_groups/{student_id}")
-def waiting_groups(student_id:str):
+def waiting_groups(student_id: str):
     groups = query_database(
         f"""
-        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity, course_name, semester
         FROM STUDY_GROUP SG
+        JOIN COURSE AS C ON SG.course_id = C.course_id
         JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Waiting"
         GROUP BY JG.group_id
         """)
     return ok_respond({
-        "groups": groups[["group_ID", "group_name", "group_member" , "capacity"]].values.tolist()
+        "groups": groups[["group_ID", "group_name", "group_member", "capacity", "course_name", "semester"]].values.tolist()
     })
 
+
 @router.get("/left_groups/{student_id}")
-def waiting_groups(student_id:str):
+def waiting_groups(student_id: str):
     groups = query_database(
         f"""
-        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member , capacity
+        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity, course_name, semester
         FROM STUDY_GROUP SG
+        JOIN COURSE AS C ON SG.course_id = C.course_id
         JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Leave"
         GROUP BY JG.group_id
         """)
     return ok_respond({
-        "groups": groups[["group_ID", "group_name", "group_member" , "capacity"]].values.tolist()
+        "groups": groups[["group_ID", "group_name", "group_member", "capacity", "course_name", "semester"]].values.tolist()
     })
+
+
+@router.post("/change_visibility")
+def change_visibility(cv: ChangeVisibility):
+    try:
+        r = update_database(
+            f'''
+            UPDATE TAKE_COURSE
+            SET display_on_introduction = {1 if cv.visibility else 0}
+            WHERE user_id = "{cv.user_id}" AND course_id = "{cv.course_id}"
+            '''
+        )
+        if r == 0:
+            raise BaseException("Invalid target")
+    except BaseException as err:
+        return HTTPException(status_code=403, detail="Forbidden")
+    return ok_respond()

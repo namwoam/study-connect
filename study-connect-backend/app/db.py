@@ -16,8 +16,9 @@ def update_database(query: str):
         os.path.dirname(__file__), "./db/data.db"))
     cur = con.cursor()
     cur.execute(query)
+    affected_rows = cur.rowcount
     con.commit()
-    return
+    return affected_rows
 
 
 if __name__ == "__main__":
