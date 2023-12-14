@@ -51,15 +51,24 @@ def instructor_info(instructor_id: str):
 def course_info(course_id: str):
     course_info = query_database(
         f'''
-        SELECT c.course_id, of.instructor_id, c.course_name, c.semester, i.department_id
+        SELECT c.course_id, of.instructor_id, c.course_name, c.semester,
+        c.department_id, i.instructor_name, department_name
         FROM COURSE as c
         JOIN OFFER_COURSE as of ON c.course_id = of.course_id
         JOIN INSTRUCTOR as i ON of.instructor_id = i.instructor_id
+        JOIN Department as D ON d.department_id = c.department_id
         WHERE c.course_id = "{course_id}";
         '''
     )
+    print(course_info)
     return ok_respond({
-        "course": course_info["course_id"].unique().tolist()
+        "course_id": course_info["course_ID"].tolist()[0],
+        "course_name": course_info["course_name"].tolist()[0],
+        "semester": course_info["semester"].tolist()[0],
+        "instructor_id": course_info["instructor_ID"].tolist()[0],
+        "instructor_name": course_info["instructor_name"].tolist()[0],
+        "department_id": course_info["department_ID"].tolist()[0],
+        "department_name": course_info["department_name"].tolist()[0],
     })
 
 
