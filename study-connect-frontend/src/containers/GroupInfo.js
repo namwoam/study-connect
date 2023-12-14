@@ -402,7 +402,7 @@ const GroupInfoPage = ({userID, groupID}) => {
                 onClick={handleOpenMeeting}
                 sx={{
                     width: '100px',
-                    height: '50px',
+                    height: '30px',
                     borderRadius: '30px',
                     mt: '25px',
                     textTransform: 'none',
@@ -423,9 +423,10 @@ const GroupInfoPage = ({userID, groupID}) => {
                 onClick={handleOpenAnnouncement}
                 sx={{
                     width: '100px',
-                    height: '50px',
+                    height: '30px',
                     borderRadius: '30px',
-                    mt: '25px',
+                    mt: '10px',
+                    mb: '25px',
                     textTransform: 'none',
                     color: '#fff',
                     fontSize: '14px',
