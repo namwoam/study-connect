@@ -9,11 +9,12 @@ const pages = ['Home', 'Friend', 'Course', 'Group'];
 
 const Header = ({ userID, currentPage, onPageChange, setIslogin, isAdmin}) => {
     const [username, setUsername] = useState("USERNAME");
-
+    const getUsername = async() => {
+        const userInfo = await fetchUserInfo(userID);
+        setUsername(userInfo.student_name);
+    }
     useEffect(() => {
-        const userInfo = fetchUserInfo(userID);
-        console.log(userInfo);
-        // SET username here
+        getUsername();
     }, []);
 
     useEffect(() => {
@@ -61,7 +62,7 @@ const Header = ({ userID, currentPage, onPageChange, setIslogin, isAdmin}) => {
                     <Button
                         sx={{ margin: 1}}
                         onClick={() => handlePageClick(4)}>
-                        <Avatar size="small" sx={{ marginRight: 1, bgcolor: deepOrange[400] }} />
+                        <Avatar size="small" sx={{ height:'24px', width: '24px', marginRight: 1, bgcolor: deepOrange[400] }} />
                         <Typography variant="subtitle2" color='black'>
                             {username ?? 'userA'}
                         </Typography>
