@@ -27,6 +27,7 @@ const ModelStyle = {
     flexDirection: 'column',
     alignItems: 'center', // Center horizontally
     justifyContent: 'center', // Center vertically
+    borderRadius: '30px',
 };
 
 const MeetingModal = ({open, setOpen}) => {
@@ -103,6 +104,7 @@ const MeetingModal = ({open, setOpen}) => {
         console.log(selectedEndMonth);
         console.log(selectedEndDay);
         console.log(selectedEndTime);
+        handleClose();
     };
 
     return (
@@ -111,6 +113,9 @@ const MeetingModal = ({open, setOpen}) => {
             onClose={handleClose}
         >
             <Box sx={ModelStyle}>
+                <Typography variant="h4" align="center" color="primary" sx={{mb: '20px'}}>
+                    Arange Meeting
+                </Typography>
                 <TextField
                     multiline
                     rows={1}

@@ -26,6 +26,7 @@ const ModelStyle = {
     flexDirection: 'column',
     alignItems: 'center', // Center horizontally
     justifyContent: 'center', // Center vertically
+    borderRadius: '30px',
 };
 
 const AnnouncementModal = ({open, setOpen}) => {
@@ -47,6 +48,7 @@ const AnnouncementModal = ({open, setOpen}) => {
         console.log(editingTitle);
         console.log('Description:');
         console.log(editingDescription);
+        handleClose();
     };
 
     return (
@@ -55,6 +57,9 @@ const AnnouncementModal = ({open, setOpen}) => {
             onClose={handleClose}
         >
             <Box sx={ModelStyle}>
+                <Typography variant="h4" align="center" color="primary" sx={{mb: '20px'}}>
+                    Publish an Announcement
+                </Typography>
                 <TextField
                     multiline
                     rows={1}
