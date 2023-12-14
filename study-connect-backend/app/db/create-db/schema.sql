@@ -1,4 +1,3 @@
-PRAGMA foreign_keys = ON;
 -- Table 3: DEPARTMENT
 CREATE TABLE DEPARTMENT (
     department_ID CHAR(20) PRIMARY KEY NOT NULL,
@@ -7,7 +6,7 @@ CREATE TABLE DEPARTMENT (
 -- Table 1: USER
 CREATE TABLE USER (
     student_ID CHAR(9) PRIMARY KEY NOT NULL,
-    name VARCHAR(20) NOT NULL,
+    student_name VARCHAR(20),
     self_introduction VARCHAR(300),
     department_ID CHAR(20) NOT NULL,
     FOREIGN KEY (department_ID) REFERENCES DEPARTMENT(department_ID) ON DELETE
@@ -23,17 +22,14 @@ CREATE TABLE CONTACT (
 -- Table 4: INSTRUCTOR
 CREATE TABLE INSTRUCTOR (
     instructor_ID INT PRIMARY KEY NOT NULL,
-    instructor_name VARCHAR(20) NOT NULL,
-    department_ID VARCHAR(20) NOT NULL,
-    FOREIGN KEY (department_ID) REFERENCES DEPARTMENT(department_ID) ON DELETE
-    SET NULL ON UPDATE CASCADE
+    instructor_name VARCHAR(20) NOT NULL
 );
 -- Table 5: IS_FRIEND_OF
 CREATE TABLE IS_FRIEND_OF (
     user1_ID CHAR(9) NOT NULL,
     user2_ID CHAR(9) NOT NULL,
     confirm_status VARCHAR(11) NOT NULL CHECK (
-        confirm_status IN ('Agree', 'Disagree', 'Unconfirmed', 'Unfriend')
+        confirm_status IN ('Agree', 'Disagree', 'Unconfirm', 'Unfriend')
     ),
     PRIMARY KEY (user1_ID, user2_ID),
     FOREIGN KEY (user1_ID) REFERENCES USER(student_ID) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -43,13 +39,14 @@ CREATE TABLE IS_FRIEND_OF (
 CREATE TABLE COURSE (
     course_ID CHAR(20) PRIMARY KEY NOT NULL,
     course_name VARCHAR(20) NOT NULL,
-    semester CHAR(5) NOT NULL
+    semester CHAR(5) NOT NULL,
+    department_ID VARCHAR(20)
 );
 -- Table 7: TAKE_COURSE
 CREATE TABLE TAKE_COURSE (
     user_ID CHAR(9) NOT NULL,
     course_ID CHAR(20) NOT NULL,
-    grade VARCHAR(2) NOT NULL DEFAULT 'I' CHECK (
+    grade VARCHAR(2) DEFAULT 'I' CHECK (
         grade IN (
             'A+',
             'A',
@@ -75,7 +72,6 @@ CREATE TABLE TAKE_COURSE (
 CREATE TABLE OFFER_COURSE (
     instructor_ID INT NOT NULL,
     course_ID CHAR(20) NOT NULL,
-    PRIMARY KEY (instructor_ID, course_ID),
     FOREIGN KEY (instructor_ID) REFERENCES INSTRUCTOR(instructor_ID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (course_ID) REFERENCES COURSE(course_ID) ON DELETE
     SET NULL ON UPDATE CASCADE
@@ -85,14 +81,13 @@ CREATE TABLE STUDY_GROUP (
     group_ID INT PRIMARY KEY NOT NULL,
     group_name VARCHAR(20) NOT NULL,
     group_status VARCHAR(11) DEFAULT 'In progress' NOT NULL CHECK (
-        group_status IN ('In progress', 'Finished', 'Deleted')
+        group_status IN ('In_progress', 'Finished', 'Deleted')
     ),
     capacity INT NOT NULL,
     creator_ID CHAR(9) NOT NULL,
     course_ID CHAR(20) NOT NULL,
-    FOREIGN KEY (creator_ID) REFERENCES USER(student_ID) ON DELETE
-    SET NULL ON UPDATE CASCADE,
-        FOREIGN KEY (course_ID) REFERENCES COURSE(course_ID) ON DELETE
+    FOREIGN KEY (creator_ID) REFERENCES USER(student_ID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (course_ID) REFERENCES COURSE(course_ID) ON DELETE
     SET NULL ON UPDATE CASCADE
 );
 -- Table 10: JOIN_GROUP
@@ -124,13 +119,13 @@ CREATE TABLE MEET (
     host_ID CHAR(9) NOT NULL,
     start_time TIMESTAMP,
     end_time TIMESTAMP,
-    vote_from TIMESTAMP NOT NULL,
-    vote_to TIMESTAMP NOT NULL,
+    vote_from TIMESTAMP,
+    vote_to TIMESTAMP,
     FOREIGN KEY (group_ID) REFERENCES STUDY_GROUP(group_ID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (host_ID) REFERENCES USER(student_ID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 -- Table 13: MEET_AVAILABLE_TIME
-CREATE TABLE MEET_AVAILABLE_TIME (
+CREATE TABLE MEET_AVAILABLE (
     meet_ID INT NOT NULL,
     user_ID CHAR(9) NOT NULL,
     available_from TIMESTAMP NOT NULL,

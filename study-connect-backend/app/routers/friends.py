@@ -73,3 +73,7 @@ def list_friends(student_id: str):
     return ok_respond({
         "friends": friends_relationship["friend_id"].unique().tolist()
     })
+
+@router.get("/recommend/{student_id}")
+def recommend(student_id:str):
+    pass
