@@ -60,28 +60,6 @@ const GroupPage = ({userID}) => {
                     <GroupCard group={group} id={index} key={index} />
                 ))}
             </Box>
-            {/* <Grid container spacing={2} sx={{ mt: '30px' }}>
-                <Grid item md={6}>
-                    <Typography variant="h5" fontWeight={800} sx={{textAlign: 'center'}}>
-                        Your Groups
-                    </Typography>
-                    <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
-                        {Groups.map((group, index) => (
-                            <GroupCard group={group} id={index} key={index} />
-                        ))}
-                    </Box>
-                </Grid>
-                <Grid item md={6}>
-                    <Typography variant="h5" fontWeight={800} sx={{textAlign: 'center'}}>
-                        Course Groups Open To You
-                    </Typography>
-                    <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
-                        {Groups.map((group, index) => (
-                            <GroupCard group={group} id={index} key={index} />
-                        ))}
-                    </Box>
-                </Grid>
-            </Grid> */}
         </Container>
     );
 }
