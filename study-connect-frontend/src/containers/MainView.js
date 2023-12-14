@@ -14,7 +14,7 @@ const MainView = ({ currentPage, userID }) => {
         case 1:
         return <FriendPage userID={userID}/>;
         case 2:
-        return <GroupInfoPage userID={userID}/>;
+        return <CoursePage userID={userID}/>;
         case 3:
         return <GroupPage userID={userID}/>;
         case 4:
