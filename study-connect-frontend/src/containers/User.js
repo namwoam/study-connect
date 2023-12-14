@@ -6,7 +6,8 @@ import {
   Button,
   Container,
   TextField,
-  Paper
+  Paper, 
+  Snackbar
 } from '@mui/material';
 import instance from '../instance';
 import { fetchUserInfo } from '../utils/fetchUser'; 
@@ -96,14 +97,38 @@ const previousCourseRecords = [//create 10 course 1nfo
 
 const UserPage = ({userID}) => {
   const [openModel, setOpenModel] = useState(false);
-  const [editingIntro, setEditingIntro] = useState(currentUser.selfIntro);
-  const [editingFB, setEditingFB] = useState(currentUser.FB);
-  const [editingIG, setEditingIG] = useState(currentUser.IG);
+  const [editingIntro, setEditingIntro] = useState("");
+  const [editingFB, setEditingFB] = useState("");
+  const [editingIG, setEditingIG] = useState("");
   const [editingSetCourseHistory, SetCourseHistory] = useState("");
   const [editIGSuccess, setEditIGSuccess] = useState(false);
   const [editFBSuccess, setEditFBSuccess] = useState(false);
   const [editIntroSuccess, setEditIntroSuccess] = useState(false);
-  const [userInfo, setUserInfo] = useState(localStorage.getItem("userInfo"));
+  const [userInfo, setUserInfo] = useState({});
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+        try {
+            const getUserInfo = await fetchUserInfo(userID);
+            console.log("userpage user info:",getUserInfo);
+            setUserInfo(getUserInfo);
+            setEditingFB(userInfo.fb);
+            setEditingIG(userInfo.ig);
+            setEditingIntro(userInfo.self_introduction);
+        }
+        catch (error) {
+            console.error('Error fetching userinfo:', error);
+        }            
+    }
+    fetchUser();
+    
+}, []);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   const handleIntroChange = (event) => {
     setEditingIntro(event.target.value);
@@ -116,6 +141,7 @@ const UserPage = ({userID}) => {
   const handleFBChange = (event) => {
     setEditingFB(event.target.value);
   };
+
   const handleUpdateVisibility = (courseHistoryID, visibility) => {
     SetCourseHistory(courseHistoryID, visibility);
     console.log('Toggle visibility', courseHistoryID);
