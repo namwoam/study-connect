@@ -50,6 +50,8 @@ function App() {
   const [currentPage, setCurrentPage] = useState(initialPage);
   const storedAuthen = localStorage.getItem('isAdmin');
   const [isAdmin, setIsadmin] = useState(storedAuthen == null ? false : true);
+  const storedUserInfo = localStorage.getItem('userInfo');
+  const [userInfo, setUserInfo] = useState(storedUserInfo? storedUserInfo : {});
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -57,7 +59,8 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem('userID', userID);
-  }, [userID])
+    localStorage.setItem('userInfo', userInfo);
+  }, [userID, userInfo])
 
   return (
     <ThemeProvider theme={theme}>
@@ -69,7 +72,7 @@ function App() {
             {islogin ? 
             <Route path="/" element={<MainView currentPage={currentPage} userID={userID}/> } />
             : 
-            <Route path="/" element={<Login setLogin={setIslogin} setuser={setUserID} setIsadmin={setIsadmin}/>}></Route>
+            <Route path="/" element={<Login setLogin={setIslogin} setuser={setUserID} setIsadmin={setIsadmin} setUserInfo={setUserInfo} />}></Route>
             }            
           </Routes>
         </div>

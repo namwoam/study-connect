@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Grid,
-  Typography,
-  Button,
-  Container,
-  TextField,
-  Paper
-} from '@mui/material';
-
-import InformationModal from '../components/InformationModal';
+import { Box, Grid, Typography, Button, Container, TextField, Paper } from '@mui/material';
+import instance from '../instance';
 
 const MainContainer = {
   display: 'flex',
@@ -97,12 +88,16 @@ const previousCourseRecords = [//create 10 course 1nfo
   {uid: 9, coursename: 'course9', semester: '112-1', grade: 'A', visibility: 0},
 ]
 
-const UserPage = () => {
+const UserPage = ({userID}) => {
   const [openModel, setOpenModel] = useState(false);
   const [editingIntro, setEditingIntro] = useState(currentUser.selfIntro);
   const [editingFB, setEditingFB] = useState(currentUser.FB);
   const [editingIG, setEditingIG] = useState(currentUser.IG);
   const [editingSetCourseHistory, SetCourseHistory] = useState("");
+  const [editIGSuccess, setEditIGSuccess] = useState(false);
+  const [editFBSuccess, setEditFBSuccess] = useState(false);
+  const [editIntroSuccess, setEditIntroSuccess] = useState(false);
+  const [userInfo, setUserInfo] = useState(localStorage.getItem("userInfo"));
 
   const handleIntroChange = (event) => {
     setEditingIntro(event.target.value);
@@ -119,6 +114,22 @@ const UserPage = () => {
     SetCourseHistory(courseHistoryID, visibility);
     console.log('Toggle visibility', courseHistoryID);
   }
+
+  const sendEditIGRequest = async (editingIG) => {
+    try {
+        const response = await instance.post('/user/edit_contact/IG', {
+            user_id: userID,
+            update_content: toString(editingIG),
+        });
+        if (response.data.success) {
+            
+        } else {
+            
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
 
   const handleConfirmUpdate = () => {
     console.log('Updating self introduction:', editingIntro);

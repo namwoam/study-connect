@@ -17,7 +17,7 @@ const GroupCard = ({ group, id }) => {
   return (
     <Grid container spacing={3} sx={GroupCardStyle}>
         {/* Group Name, Semester, Course Name */}
-        <Grid md={10}>
+        <Grid item md={10}>
             <Typography variant="h5" gutterBottom>
                 {group.groupName}
             </Typography>
@@ -41,7 +41,7 @@ const GroupCard = ({ group, id }) => {
         </Grid> */}
 
         {/* Enter Button */}
-        <Grid md={2} container style={{ alignItems: 'center', justifyContent: 'center'}}>
+        <Grid item md={2} container style={{ alignItems: 'center', justifyContent: 'center'}}>
             <Button
                 size='small'
                 maxHeight='10px'
