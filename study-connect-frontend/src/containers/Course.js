@@ -189,28 +189,7 @@ const CoursePage = ({userID}) => {
             }
             {
                 selectType == 1 && selectedCourse && courseGroups.length > 0? 
-                <>
-                    <Button
-                        // size="small"
-                        variant="contained"
-                        color='secondary'
-                        // onClick={handleOpenCreateGroup}
-                        sx={{
-                            size: 'small',
-                            width: '150px',
-                            textTransform: 'none',
-                            color: '#fff',
-                            fontSize: '14px',
-                            fontWeight: 600,
-                            position: 'fixed',
-                            top: '310px',
-                            right: '30%'
-                        }}
-                    >
-                        創建我的課程小組
-                    </Button> 
-                    <CourseGroupView courseGroups={courseGroups} sendJoinGroupRequest={sendJoinGroupRequest}/>
-                </>
+                <CourseGroupView courseGroups={courseGroups} sendJoinGroupRequest={sendJoinGroupRequest}/>
                 :
                 selectType == 2 && selectedCourse && courseMembers.length > 0?
                 <CourseMemberView courseMembers={courseMembers} sendJoinGroupRequest={sendJoinGroupRequest}/>
