@@ -16,9 +16,10 @@ def student_info(student_id: str):
         SELECT U.student_id, U.student_name , U.self_introduction, D.department_ID , D.department_name , C.ig_account AS ig , C.fb_account AS fb
         FROM USER AS U
         JOIN CONTACT AS C ON U.student_id = C.user_id
-        JOIN DEPARTMENT AS D ON D.department_ID = U.department_ID
+        LEFT JOIN DEPARTMENT AS D ON D.department_ID = U.department_ID
         WHERE student_id = "{student_id}"
         ''')
+    print(student_info)
     if len(student_info) == 0:
         return ok_respond({})
     return ok_respond({
@@ -75,7 +76,7 @@ def course_info(course_id: str):
         FROM COURSE as c
         JOIN OFFER_COURSE as of ON c.course_id = of.course_id
         JOIN INSTRUCTOR as i ON of.instructor_id = i.instructor_id
-        JOIN Department as D ON d.department_id = c.department_id
+        LEFT JOIN Department as D ON d.department_id = c.department_id
         WHERE c.course_id = "{course_id}";
         '''
     )
