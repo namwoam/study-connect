@@ -26,18 +26,10 @@ const MainContainer = {
 const HomePage = () => {
     const userID = localStorage.getItem('userID')
     const [openModel, setOpenModel] = useState(false);
-    const [selectedUser, setSelectedUser] = useState("");
+    const [selectedUser, setSelectedUser] = useState(null);
     const [recommends, setRecommends] = useState([]);
 
-    const handleOpen = (uid) => {
-        let selectedUser = fetchUserInfo(uid);
-        let user = {
-            student_id: "B101039992",
-            self_introduction: 'Hi, my name is.......',
-            department: '資管系',
-            ig_account: "B101039992__",
-            fb_account: "王小明"
-        }
+    const handleOpen = (user) => {
         setSelectedUser(user);
         setOpenModel(true);
     }
@@ -48,12 +40,25 @@ const HomePage = () => {
             if (response.data.success) {
                 let recommends = [];
                 let recommendIDs = response.data.data.recommendations;
-                console.log(recommendIDs);
-                recommendIDs.forEach((recommendID) => {
-                    const friendInfo = fetchUserInfo(recommendID);
-                    recommends.push({uid: recommendID, username: friendInfo.student_name, selfIntro: friendInfo.self_introduction})
-                })
-                setRecommends([...recommends]);
+
+                const fetchRecommendInfo = async (recommendID) => {
+                    const friendInfo = await fetchUserInfo(recommendID);
+                    if (friendInfo){
+                        return { uid: recommendID, 
+                            username: friendInfo.student_name, 
+                            department: friendInfo.department_name, 
+                            selfIntro: friendInfo.self_introduction ?? "" 
+                        };
+                    }
+                    else {
+                        return null;
+                    }
+                };
+    
+                const recommendInfoArray = await Promise.all(recommendIDs.map(fetchRecommendInfo));
+                // Filter out undefined items
+                recommends = recommendInfoArray.filter(info => info !== null);
+                setRecommends(recommends);
             }
         } catch (error) {
             console.log(error);
@@ -74,7 +79,7 @@ const HomePage = () => {
                 <UserCard user={recommend} handleOpen={handleOpen} key={index} id={index}/>
             ))}
             </Box>
-            <InformationModal open={openModel} setOpen={setOpenModel} user={selectedUser}/>
+            {selectedUser && <InformationModal open={openModel} setOpen={setOpenModel} user={selectedUser}/>}
         </Container>
         
     );

@@ -26,7 +26,7 @@ const Header = ({ userID, currentPage, onPageChange, setIslogin, isAdmin}) => {
         }
         fetchUser();
         
-    }, []);
+    }, [userID]);
 
     useEffect(() => {
         console.log("header:", currentPage);

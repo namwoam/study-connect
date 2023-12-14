@@ -3,6 +3,7 @@ import { Grid, Paper, Typography, Button } from '@mui/material';
 
 const UserCardStyle = {
     padding: '15px', 
+    paddingTop: '0px',
     width: '800px', 
     margin: '20px',
     boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
@@ -44,7 +45,7 @@ export const UserCard = (props) => {
                     size='small'
                     variant="contained"
                     color='secondary'
-                    onClick={() => handleOpen(user.uid)}
+                    onClick={() => handleOpen(user)}
                     sx={{width: '120px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                 >
                     Show More

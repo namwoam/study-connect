@@ -13,6 +13,10 @@ const ModalStyle = {
     p: 4,
 };
 
+const spanStype = {
+    color: '#6e6d6d'
+}
+
 const InformationModal = ({ open, setOpen, user }) => {
     const handleClose = () => setOpen(false);
 
@@ -25,12 +29,12 @@ const InformationModal = ({ open, setOpen, user }) => {
         >
             <Box sx={ModalStyle}>
                 <Typography id="modal-title" variant="h6" component="h2">
-                    使用者詳細資訊
+                {user.username}
                 </Typography>
                 <Typography id="modal-description" sx={{ mt: 2 }}>
-                    <p>學號: {user.student_id}</p>
-                    <p>系所: {user.department}</p>
-                    <p>修課檢視: {user.self_introduction}</p>
+                    <p><span style={{spanStype}}>學號：</span>{user.uid}</p>
+                    <p><span style={{spanStype}}>系所：</span>{user.department}</p>
+                    <p><span style={{spanStype}}>修課檢視：</span>{user.self_introduction}</p>
                     
                     {/* <p>Instagram 帳號: {user.ig_account}</p>
                     <p>Facebook 帳號: {user.fb_account}</p> */}
