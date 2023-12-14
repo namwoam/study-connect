@@ -1,6 +1,18 @@
-import React, { useState } from 'react';
-import { Box, Grid, Typography, Button, Container, TextField, Paper } from '@mui/material';
+import { React, useEffect, useState } from 'react';
+import {
+  Box,
+  Grid,
+  Typography,
+  Button,
+  Container,
+  TextField,
+  Paper
+} from '@mui/material';
 import instance from '../instance';
+import { fetchCourseInfo } from '../utils/fetchCourse';
+
+import InformationModal from '../components/InformationModal';
+
 
 const MainContainer = {
   display: 'flex',
@@ -15,8 +27,6 @@ const BigCard = {
   width: '45%',
   margin: '20px',
   alignItems: 'center',
-  borderRadius: '10px',
-  border: '1px solid #ccc',
   display: 'flex', 
   flexDirection: 'column',
   paddingBottom: '25px'
@@ -28,7 +38,7 @@ const InfoCard = {
   marginTop: '25px',
   alignItems: 'center',
   borderRadius: '10px',
-  border: '1px solid #ccc',
+  boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
 };
 
 const BigCourseCard = {
@@ -37,7 +47,7 @@ const BigCourseCard = {
   marginTop: '25px',
   alignItems: 'center',
   borderRadius: '10px',
-  border: '1px solid #ccc',
+  boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
   overflowY: 'auto',
   maxHeight: '50vh'
 };
@@ -48,7 +58,6 @@ const CourseCard = {
   margin: '5px',
   alignItems: 'center',
   borderRadius: '10px',
-  // border: '1px solid #ccc',
   flexDirection: 'row',
   justifyContent: 'space-between',
 };
@@ -88,11 +97,15 @@ const previousCourseRecords = [//create 10 course 1nfo
   {uid: 9, coursename: 'course9', semester: '112-1', grade: 'A', visibility: 0},
 ]
 
+
 const UserPage = ({userID}) => {
   const [openModel, setOpenModel] = useState(false);
   const [editingIntro, setEditingIntro] = useState(currentUser.selfIntro);
   const [editingFB, setEditingFB] = useState(currentUser.FB);
   const [editingIG, setEditingIG] = useState(currentUser.IG);
+  const [userInfo, setUserInfo] = useState();
+  const [previousCourse, setPreviousCourse] = useState([]);
+  const [currentCourse, setCurrentCourse] = useState([]);
   const [editingSetCourseHistory, SetCourseHistory] = useState("");
   const [editIGSuccess, setEditIGSuccess] = useState(false);
   const [editFBSuccess, setEditFBSuccess] = useState(false);
@@ -115,29 +128,95 @@ const UserPage = ({userID}) => {
     console.log('Toggle visibility', courseHistoryID);
   }
 
-  const sendEditIGRequest = async (editingIG) => {
+  const updateUserSelfIntroduction = async () => {
     try {
-        const response = await instance.post('/user/edit_contact/IG', {
-            user_id: userID,
-            update_content: toString(editingIG),
-        });
+      //pass User ID and new self introduction to backend
+        const response = await instance.post('/user/edit_intro', {"user_id": userID, "update_content": editingIntro});
         if (response.data.success) {
-            
-        } else {
-            
+            console.log('Update success');
         }
     } catch (error) {
         console.log(error);
     }
-};
+  };
+
+  const updateUserIG = async () => {
+    try {
+      //pass User ID and new self introduction to backend
+        const response = await instance.post('/user/edit_contact/IG', {"user_id": userID, "update_content": editingIntro});
+        if (response.data.success) {
+            console.log('Update success');
+        }
+    } catch (error) {
+        console.log(error);
+    }
+  };
+
+  const updateUserFB = async () => {
+    try {
+      //pass User ID and new self introduction to backend
+        const response = await instance.post('/user/edit_contact/FB', {"user_id": userID, "update_content": editingIntro});
+        if (response.data.success) {
+            console.log('Update success');
+        }
+    } catch (error) {
+        console.log(error);
+    }
+  };
+
 
   const handleConfirmUpdate = () => {
-    console.log('Updating self introduction:', editingIntro);
-    console.log('Updating self introduction:', editingIG);
-    console.log('Updating self introduction:', editingFB);
-    // TODO: Make API request to update the self introduction
-    // After the update, you may want to fetch the updated user information
+    // console.log('Updating self introduction:', editingIntro);
+    // console.log('Updating self introduction:', editingIG);
+    // console.log('Updating self introduction:', editingFB);
+    updateUserSelfIntroduction();
+    updateUserIG();
+    updateUserFB();
   };
+
+  const fetchUserInfo = async () => {
+    try {
+        const response = await instance.get(`/info/user/info/${userID}`);
+        if (response.data.success) {
+            let userID = response.data.data.id;
+            console.log(userID);
+            setUserInfo(response.data.data);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+  };
+
+  const fetchEnrolledCourse = async () => {
+    try {
+      const response = await instance.get(`/user/enrolled_course/${userID}`);
+      if (response.data.success) {
+          let currentCourse = [];
+          let previousCourse = [];
+          let courseIDs = response.data.data.course_ids;
+          console.log(courseIDs);
+          courseIDs.forEach((courseID) => {
+            const courseInfo = fetchCourseInfo(courseID);
+            if (courseInfo.semester == '112-1') {
+              currentCourse.push({uid: courseID, coursename: courseInfo.name, semester: courseInfo.semester, grade: 'Null', visibility: 1});
+            } else {
+              previousCourse.push({uid: courseID, coursename: courseInfo.name, semester: courseInfo.semester, grade: courseInfo.grade, visibility: 1});
+            }
+          })
+          setCurrentCourse([...currentCourse]);
+          setPreviousCourse([...previousCourse]);
+      }
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+useEffect(()=>{
+  fetchUserInfo()}, [userID]);
+
+useEffect(()=>{
+  fetchEnrolledCourse()}, [userID]);
+
 
   return (
     <Container sx={MainContainer}>
