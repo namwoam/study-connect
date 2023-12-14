@@ -13,6 +13,12 @@ class AdminGroupAction(BaseModel):
     user: str
     group_id: str
 
+class GroupAction(BaseModel):
+    user: str
+    group_name: str
+    capacity: int
+    course_id: str
+
 
 @router.post("/send_request")
 def send_request(aga: AdminGroupAction):
@@ -66,5 +72,19 @@ def kick(aga: AdminGroupAction):
             """
         )
     except BaseException as err:
+        return HTTPException(status_code=403, detail="Forbidden")
+    return ok_respond()
+
+
+@router.post("/create")
+def create(ga: GroupAction):
+    try:
+        update_database(
+            f"""
+            INSERT OR IGNORE INTO STUDY_GROUP VALUES ('{ga.user}', '{ga.group_name}' , '{ga.capacity}', '{ga.course_id}')
+            """
+        )
+    except BaseException as err:
+        print(err)
         return HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
