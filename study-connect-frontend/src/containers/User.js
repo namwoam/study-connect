@@ -96,35 +96,33 @@ const previousCourseRecords = [//create 10 course 1nfo
 ]
 
 const UserPage = ({userID}) => {
-  const [openModel, setOpenModel] = useState(false);
   const [editingIntro, setEditingIntro] = useState("");
   const [editingFB, setEditingFB] = useState("");
   const [editingIG, setEditingIG] = useState("");
   const [editingSetCourseHistory, SetCourseHistory] = useState("");
-  const [editIGSuccess, setEditIGSuccess] = useState(false);
-  const [editFBSuccess, setEditFBSuccess] = useState(false);
-  const [editIntroSuccess, setEditIntroSuccess] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
 
-  useEffect(() => {
-    const fetchUser = async () => {
-        try {
-            const getUserInfo = await fetchUserInfo(userID);
-            console.log("userpage user info:",getUserInfo);
-            setUserInfo(getUserInfo);
-            setEditingFB(userInfo.fb);
-            setEditingIG(userInfo.ig);
-            setEditingIntro(userInfo.self_introduction);
-        }
-        catch (error) {
-            console.error('Error fetching userinfo:', error);
-        }            
+  const fetchUser = async () => {
+    try {
+      const getUserInfo = await fetchUserInfo(userID);
+      //console.log("userpage user info:",getUserInfo);
+      setUserInfo(getUserInfo);
+      setEditingFB(getUserInfo.fb);
+      setEditingIG(getUserInfo.ig);
+      setEditingIntro(getUserInfo.self_introduction);
+      return getUserInfo;
     }
-    fetchUser();
-    
-}, []);
+    catch (error) {
+      console.error('Error fetching userinfo:', error);
+      throw error;
+    }            
+  }
+
+  useEffect(() => {    
+    fetchUser();    
+  }, [userID]);
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
@@ -132,43 +130,72 @@ const UserPage = ({userID}) => {
 
   const handleIntroChange = (event) => {
     setEditingIntro(event.target.value);
+    //console.log("Intro change:",editingIntro);
   };
   
   const handleIGChange = (event) => {
     setEditingIG(event.target.value);
+    //console.log("IG change:",editingIG);
   };
 
   const handleFBChange = (event) => {
     setEditingFB(event.target.value);
+    //console.log("FB change:",editingFB);
   };
 
   const handleUpdateVisibility = (courseHistoryID, visibility) => {
     SetCourseHistory(courseHistoryID, visibility);
-    console.log('Toggle visibility', courseHistoryID);
+    //console.log('Toggle visibility', courseHistoryID);
   }
 
-  const updateUserSelfIntroduction = async () => {
+  const updateUserIG = async () => {
     try {
-        const response = await instance.post('/user/edit_contact/IG', {
-            user_id: userID,
-            update_content: toString(editingIG),
-        });
-        if (response.data.success) {
-            
-        } else {
-            
-        }
+      const updateContent = editingIG !== undefined && editingIG !== null ? editingIG.toString() : null;
+      const response = await instance.post('/user/edit_contact/IG', {
+          user_id: userID,
+          update_content: updateContent
+      });
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
-};
+  };
 
-  const handleConfirmUpdate = () => {
-    console.log('Updating self introduction:', editingIntro);
-    console.log('Updating self introduction:', editingIG);
-    console.log('Updating self introduction:', editingFB);
-    // TODO: Make API request to update the self introduction
-    // After the update, you may want to fetch the updated user information
+  const updateUserFB = async () => {
+    try {
+      const updateContent = editingFB !== undefined && editingFB !== null ? editingFB.toString() : null;
+      const response = await instance.post('/user/edit_contact/FB', {
+          user_id: userID,
+          update_content: updateContent
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateUserIntro = async () => {
+    try {
+      const updateContent = editingIntro !== undefined && editingIntro !== null ? editingIntro.toString() : null;
+      const response = await instance.post('/user/edit_intro', {
+          user_id: userID,
+          update_content: updateContent
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleConfirmUpdate = async () => {
+    try {
+      await updateUserFB();
+      await updateUserIG();
+      await updateUserIntro();
+      setAlertMessage('Update data successfully');
+      setOpenSnackbar(true);
+    }
+    catch (error) {
+      setAlertMessage('Failed to update data');
+      setOpenSnackbar(true);
+    }
   };
 
   return (
