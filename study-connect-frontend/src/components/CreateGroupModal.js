@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import {
     Box,
     Grid,
@@ -7,7 +7,7 @@ import {
     Container,
     Modal,
     TextField,
-    Paper
+    MenuItem
   } from '@mui/material';
 
 const ModelStyle = {
@@ -15,7 +15,7 @@ const ModelStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 650,
+    width: 500,
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
@@ -26,14 +26,14 @@ const ModelStyle = {
     flexDirection: 'column',
     alignItems: 'center', // Center horizontally
     justifyContent: 'center', // Center vertically
-    borderRadius: '30px',
+    borderRadius: '10px',
 };
 
 // 應該要用userID去取user這學期有修的課程 開一個下拉式選單讓他選
 // 除了那個 其他地方應該都是完成的了
 
 
-const CreateGroupModal = ({open, setOpen, userID}) => {
+const CreateGroupModal = ({open, setOpen, courseOptions, handlePublish}) => {
     const handleClose = () => setOpen(false);
 
     const [editingGroupName, setEditingGroupName] = useState("");
@@ -52,25 +52,10 @@ const CreateGroupModal = ({open, setOpen, userID}) => {
         setEditingCourseID(event.target.value);
     }
 
-    const handlePublish = () => {
-        console.log('Publish');
-        try {
-            const response = instance.post('/group/create', {
-                user: userID,
-                group_name: editingGroupName,
-                Capacity: editingMaximumMember,
-                course_id: editingCourseID,
-            });
-            if (response.data.success) {
-                setAlertMessage('Request sent successfully');
-            } else {
-                setAlertMessage('Failed to send request');
-            }
-        } catch (error) {
-            console.log(error);
-        }
+    const handleSubmit = () => {
+        handlePublish(editingGroupName, editingMaximumMember, editingCourseID);
         handleClose();
-    };
+    }
 
     return (
         <Modal
@@ -78,26 +63,42 @@ const CreateGroupModal = ({open, setOpen, userID}) => {
             onClose={handleClose}
         >
             <Box sx={ModelStyle}>
-                <Typography variant="h4" align="center" color="primary" sx={{mb: '20px'}}>
-                    Create group
+                <Typography variant="h6" color="primary" sx={{fontWeight: 700, mb: '20px'}}>
+                    創立課程小組
                 </Typography>
-                <TextField
-                    multiline
-                    rows={1}
-                    label="小組名稱"
-                    variant="outlined"
-                    fullWidth
-                    value={editingGroupName}
-                    onChange={handleGroupNameCHange}
-                    sx={{ mt: 2 }}
-                />
 
                 <TextField
+                    id="outlined-select-currency"
+                    size='small'
                     select
+                    label="請選擇課程"
+                    value={editingCourseID}
+                    onChange={handleCourseIDChange}
+                    sx={{width: '90%'}}
+                >
+                    {courseOptions.map((course) => (
+                        <MenuItem key={course.id} value={course.id}>
+                            {course.label}
+                        </MenuItem>
+                    ))}
+                </TextField>
+
+                <TextField
+                    size='small'
+                    label="小組名稱"
+                    variant="outlined"
+                    value={editingGroupName}
+                    onChange={handleGroupNameCHange}
+                    sx={{width: '90%', my: '20px'}}
+                />
+                <TextField
+                    select
+                    size='small'
                     label="成員上限"
                     value={editingMaximumMember}
                     onChange={handleMaximumMemberChange}
                     helperText="Please select maximum number of member"
+                    sx={{width: '90%'}}
                 >
                     {[2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) => (
                         <MenuItem key={number} value={number}>
@@ -110,11 +111,9 @@ const CreateGroupModal = ({open, setOpen, userID}) => {
                         size="small"
                         variant="contained"
                         color="secondary"
-                        onClick={handlePublish}
+                        onClick={handleSubmit}
                         sx={{
                             width: '100px',
-                            height: '50px',
-                            borderRadius: '30px',
                             mt: '25px',
                             textTransform: 'none',
                             color: '#fff',
