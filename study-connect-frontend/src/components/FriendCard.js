@@ -16,7 +16,7 @@ const FriendCardStyle = {
 const FriendCard = ({friend, handleInfoOpen}) => {
     return (
         <Paper elevation={3} sx={FriendCardStyle}>
-            <Grid container spacing={0} alignItems="center" justifyContent="center">
+            <Grid container spacing={0} alignItems="center" justifyContent="center" sx={{marginBottom: '10px'}}>
                 <Grid item xs={4} md={4} sx={{display: 'flex'}}>
                     <Typography variant="h6">
                         {friend.username}
@@ -25,7 +25,7 @@ const FriendCard = ({friend, handleInfoOpen}) => {
                         size='small'
                         color='gray'
                         sx={{marginLeft: 1}}
-                        onClick={() => handleInfoOpen(friend.uid)}
+                        onClick={() => handleInfoOpen(friend)}
                     >
                         <InfoIcon />
                     </IconButton>

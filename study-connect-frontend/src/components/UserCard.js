@@ -22,7 +22,7 @@ export const UserCard = (props) => {
                 <Typography variant="h6">
                     {user.username}
                 </Typography>
-                <Typography>
+                <Typography variant="body1" color="textSecondary" paragraph>
                     {user.selfIntro}
                 </Typography>
             </Grid>
