@@ -19,6 +19,15 @@ class FriendAction(BaseModel):
 @router.post("/send_request")
 def send_request(fa: FriendAction):
     try:
+        prev = query_database(
+            f"""
+            SELECT *
+            FROM IS_FRIEND_OF
+            WHERE user2_ID = "{fa.user}" AND user1_ID = "{fa.target}";
+            """
+        )
+        if len(prev) > 0:
+            raise "can't send request, relationship already exist"
         update_database(
             f"""
         INSERT OR IGNORE INTO IS_FRIEND_OF VALUES ('{fa.user}', '{fa.target}' , 'Unconfirm')
@@ -36,7 +45,7 @@ def approve_request(fa: FriendAction):
             f"""
             UPDATE IS_FRIEND_OF
             SET confirm_status = 'Agree'
-            WHERE user1_ID = "{fa.user}" AND user2_ID = "{fa.target}";
+            WHERE user2_ID = "{fa.user}" AND user1_ID = "{fa.target}";
             """
         )
     except BaseException as err:
@@ -72,6 +81,20 @@ def list_friends(student_id: str):
     # print(friends_relationship.head())
     return ok_respond({
         "friends": friends_relationship["friend_id"].unique().tolist()
+    })
+
+
+@router.get("/list_requests/{student_id}")
+def list_requests(student_id: str):
+    friends_relationship = query_database(
+        f"""
+        SELECT user1_id AS requests
+        FROM IS_FRIEND_OF
+        WHERE confirm_status = 'Unconfirm' AND user2_ID='{student_id}'
+        """)
+    # print(friends_relationship.head())
+    return ok_respond({
+        "requests": friends_relationship["requests"].unique().tolist()
     })
 
 
