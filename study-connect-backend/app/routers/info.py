@@ -96,7 +96,7 @@ def course_info(course_id: str):
 def group_info(group_id: str):
     group_info = query_database(
         f"""
-        SELECT SG.group_id , group_name , capacity , course_id , U.student_id , name , role , job
+        SELECT SG.group_id, group_name, capacity, course_id, U.student_id, U.student_name, role, job
         FROM STUDY_GROUP AS SG
         JOIN JOIN_GROUP AS JG ON SG.group_id = JG.group_id AND SG.group_id = "{group_id}" AND JG.join_status = "Join"
         JOIN USER AS U ON JG.user_id = U.student_id
@@ -134,7 +134,7 @@ def group_info(group_id: str):
         "course_name": course_name,
         "members": [{
             "student_id": group_info["student_ID"].to_list()[i],
-            "name": group_info["name"].to_list()[i],
+            "name": group_info["student_name"].to_list()[i],
             "role": group_info["role"].to_list()[i],
             "job": group_info["job"].to_list()[i],
         }
