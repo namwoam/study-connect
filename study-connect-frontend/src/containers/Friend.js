@@ -42,16 +42,8 @@ const FriendPage = () => {
     const [openInfoModel, setOpenInfoModel] = useState(false);
     const [selectedUser, setSelectedUser] = useState("");
 
-    const handleInfoOpen = (uid) => {
-        let selectedUser = fetchUserInfo(uid);
-        let user = {
-            student_id: "B101039992",
-            self_introduction: 'Hi, my name is.......',
-            department: '資管系',
-            ig_account: "B101039992__",
-            fb_account: "王小明"
-        }
-        setSelectedUser(user);
+    const handleInfoOpen = (friend) => {
+        setSelectedUser(friend);
         setOpenInfoModel(true);
     }
 
@@ -63,15 +55,21 @@ const FriendPage = () => {
                 let friendIDs = response.data.data.friends;
                 const fetchFriendInfo = async (fid) => {
                     const friendInfo = await fetchUserInfo(fid);
-                    if (friendInfo){
-                        return { uid: fid, 
-                            username: friendInfo.student_name, 
-                            department: friendInfo.department_name, 
-                            selfIntro: friendInfo.self_introduction ?? "" 
-                        };
-                    }
-                    else {
-                        return null;
+                    const courseResponse = await instance.get(`/user/enrolled_courses/${fid}`);
+                    if (courseResponse.data.success) {
+                        if (friendInfo){
+                            return { uid: fid, 
+                                username: friendInfo.student_name, 
+                                department: friendInfo.department_name, 
+                                selfIntro: friendInfo.self_introduction ?? "",
+                                courseRecords: courseResponse.data.data.courses,
+                                ig_account: friendInfo.ig,
+                                fb_account: friendInfo.fb
+                            };
+                        }
+                        else {
+                            return null;
+                        }
                     }
                 };
     

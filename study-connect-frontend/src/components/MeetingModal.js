@@ -30,7 +30,7 @@ const ModelStyle = {
     borderRadius: '30px',
 };
 
-const MeetingModal = ({open, setOpen}) => {
+const MeetingModal = ({open, setOpen, handlePublishMeeting}) => {
     const handleClose = () => setOpen(false);
 
     const [editingTitle, setEditingTitle] = useState("");
@@ -86,24 +86,30 @@ const MeetingModal = ({open, setOpen}) => {
         setSelectedEndTime(event.target.value);
     };
 
+    const formatTime = (minutes) => {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+      };
 
+    const formatDateTime = (year, month, day, time) => {
+        const formattedMonth = String(month).padStart(2, '0');
+        const formattedDay = String(day).padStart(2, '0');
+        const formattedTime = formatTime(time);
+
+        const dateString = `${year}-${formattedMonth}-${formattedDay}`;
+        return `${dateString} ${formattedTime}`;
+    };
 
     const handlePublish = () => {
-        console.log('Publish an announcements');
-        console.log('Title:');
-        console.log(editingTitle);
-        console.log('Description:');
-        console.log(editingDescription);
-        console.log('Start Time:');
-        console.log(selectedStartYear);
-        console.log(selectedStartMonth);
-        console.log(selectedStartDay);
-        console.log(selectedStartTime);
-        console.log('End Time:');
-        console.log(selectedEndYear);
-        console.log(selectedEndMonth);
-        console.log(selectedEndDay);
-        console.log(selectedEndTime);
+        const startTime = formatDateTime(selectedStartYear, selectedStartMonth, selectedStartDay, selectedStartTime);
+        const endTime = formatDateTime(selectedEndYear, selectedEndMonth, selectedEndDay, selectedEndTime);
+        const meetInfo = {
+            meetName: editingTitle,
+            startTime: startTime,
+            endTime: endTime
+        }
+        handlePublishMeeting(meetInfo);
         handleClose();
     };
 
@@ -113,11 +119,12 @@ const MeetingModal = ({open, setOpen}) => {
             onClose={handleClose}
         >
             <Box sx={ModelStyle}>
-                <Typography variant="h4" align="center" color="primary" sx={{mb: '20px'}}>
-                    Arange Meeting
+                <Typography variant="h6" color="primary" sx={{fontWeight: 700, mb: '20px'}}>
+                    發起會議
                 </Typography>
                 <TextField
                     multiline
+                    size='small'
                     rows={1}
                     label="會議名稱"
                     variant="outlined"
@@ -126,20 +133,21 @@ const MeetingModal = ({open, setOpen}) => {
                     onChange={handleTitleChange}
                     sx={{ mt: 2 }}
                 />
-                <TextField
+                {/* <TextField
                     multiline
-                    rows={4}
+                    rows={3}
                     label="會議內容"
                     variant="outlined"
                     fullWidth
                     value={editingDescription}
                     onChange={handleDescriptionChange}
                     sx={{ mt: 2 }}
-                />
+                /> */}
 
                 <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
                     <TextField
                         select
+                        size='small'
                         label="開始年分"
                         value={selectedStartYear}
                         onChange={handleStartYearChange}
@@ -158,6 +166,7 @@ const MeetingModal = ({open, setOpen}) => {
                     <TextField
                         select
                         label="開始月分"
+                        size='small'
                         value={selectedStartMonth}
                         onChange={handleStartMonthChange}
                         variant="outlined"
@@ -175,6 +184,7 @@ const MeetingModal = ({open, setOpen}) => {
                     <TextField
                         select
                         label="開始日"
+                        size='small'
                         value={selectedStartDay}
                         onChange={handleStartDayChange}
                         variant="outlined"
@@ -191,6 +201,7 @@ const MeetingModal = ({open, setOpen}) => {
                         <TextField
                         select
                         label="開始時間"
+                        size='small'
                         value={selectedStartTime}
                         onChange={handleStartTimeChange}
                         variant="outlined"
@@ -210,6 +221,7 @@ const MeetingModal = ({open, setOpen}) => {
                     <TextField
                         select
                         label="結束年分"
+                        size='small'
                         value={selectedEndYear}
                         onChange={handleEndYearChange}
                         variant="outlined"
@@ -227,6 +239,7 @@ const MeetingModal = ({open, setOpen}) => {
                     <TextField
                         select
                         label="結束月分"
+                        size='small'
                         value={selectedEndMonth}
                         onChange={handleEndMonthChange}
                         variant="outlined"
@@ -244,6 +257,7 @@ const MeetingModal = ({open, setOpen}) => {
                     <TextField
                         select
                         label="結束日"
+                        size='small'
                         value={selectedEndDay}
                         onChange={handleEndDayChange}
                         variant="outlined"
@@ -260,6 +274,7 @@ const MeetingModal = ({open, setOpen}) => {
                         <TextField
                         select
                         label="結束時間"
+                        size='small'
                         value={selectedEndTime}
                         onChange={handleEndTimeChange}
                         variant="outlined"
@@ -283,8 +298,6 @@ const MeetingModal = ({open, setOpen}) => {
                         onClick={handlePublish}
                         sx={{
                             width: '100px',
-                            height: '50px',
-                            borderRadius: '30px',
                             mt: '25px',
                             textTransform: 'none',
                             color: '#fff',

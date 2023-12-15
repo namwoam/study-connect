@@ -75,7 +75,7 @@ const Header = ({ userID, currentPage, onPageChange, setIslogin, isAdmin}) => {
                         onClick={() => handlePageClick(4)}>
                         <Avatar size="small" sx={{ height:'24px', width: '24px', marginRight: 1, bgcolor: deepOrange[400] }} />
                         <Typography variant="subtitle2" color='black'>
-                            {userInfo.student_name ?? 'userA'}
+                            {username ?? 'userA'}
                         </Typography>
                     </Button>
                     {isAdmin ?

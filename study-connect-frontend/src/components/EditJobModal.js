@@ -6,6 +6,9 @@ import {
   Container,
   Modal,
   TextField,
+  List,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 
 const ModelStyle = {
@@ -13,7 +16,7 @@ const ModelStyle = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 650,
+  width: 600,
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
@@ -24,24 +27,29 @@ const ModelStyle = {
   flexDirection: 'column',
   alignItems: 'center', // Center horizontally
   justifyContent: 'center', // Center vertically
-  borderRadius: '30px',
+  borderRadius: '10px',
 };
 
 const EditJobModal = ({ open, setOpen, groupMember }) => {
   const handleClose = () => setOpen(false);
 
-  // 初始化状态时遍历组成员，将每个成员的默认工作添加到状态中
-  const initialEditingJobs = groupMember.map((member) => member.job || ''); // Use member.job or an empty string if job is undefined
+  const initialEditingJobs = groupMember.reduce((acc, member) => {
+    acc[member.student_id] = member.job || '';
+    return acc;
+  }, {});
+
+  const [selectedMembers, setSelectedMembers] = useState([]);
   const [editingJobs, setEditingJobs] = useState(initialEditingJobs);
 
-  const handleEditingJobs = (event, memberId) => {
-    const updatedJobs = [...editingJobs];
-    updatedJobs[memberId] = event.target.value;
-    setEditingJobs(updatedJobs);
+  const handleMemberClick = (memberId) => {
+    if (selectedMembers.includes(memberId)) {
+      setSelectedMembers(selectedMembers.filter((id) => id !== memberId));
+    } else {
+      setSelectedMembers([...selectedMembers, memberId]);
+    }
   };
 
   const handlePublish = () => {
-    console.log('Publish an announcement');
     console.log(editingJobs);
     handleClose();
   };
@@ -49,42 +57,61 @@ const EditJobModal = ({ open, setOpen, groupMember }) => {
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={ModelStyle}>
-        <Typography variant="h4" align="center" color="primary" sx={{ mb: '20px' }}>
-          Edit Job
+        <Typography variant="h6" color="primary" sx={{ fontWeight: 700, mb: '20px' }}>
+          編輯成員分工
         </Typography>
 
-        {groupMember.map((member, index) => (
-          <Box
-            key={index}
-            display="flex"
-            flexDirection="row"
-            alignItems="center"
-            justifyContent="center"
-            sx={{ mb: '20px' }}
-          >
-            <Typography variant="h6" align="center" color="primary" sx={{ width: '50%', paddingLeft: '10px' }}>
-              {member.name}
-            </Typography>
-            <TextField
-              id={`outlined-basic-${index}`}
-              label="Job"
-              variant="outlined"
-              value={editingJobs[index] || ''}
-              onChange={(e) => handleEditingJobs(e, index)}
-              sx={{ width: '50%', paddingRight: '10px' }}
-            />
+        <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
+          {/* Left side: List of members */}
+          <List sx={{ width: '50%', borderRight: 1, borderColor: 'divider' }}>
+            {groupMember.map((member) => (
+              <ListItem
+                key={member.student_id}
+                button
+                selected={selectedMembers.includes(member.student_id)}
+                onClick={() => handleMemberClick(member.student_id)}
+              >
+                <ListItemText primary={member.name} />
+              </ListItem>
+            ))}
+          </List>
+
+          {/* Right side: Job editing fields */}
+          <Box sx={{ width: '50%', paddingLeft: '10px' }}>
+            {selectedMembers.map((memberId) => (
+              <Box
+                key={memberId}
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="center"
+                sx={{ mb: '20px' }}
+              >
+                <Typography variant="body1" align="center" sx={{ width: '50%' }}>
+                  {groupMember.find((member) => member.student_id === memberId)?.name || ''}
+                </Typography>
+                <TextField
+                  id={`outlined-basic-${memberId}`}
+                  size="small"
+                  label="Job"
+                  variant="outlined"
+                  value={editingJobs[memberId] || ''}
+                  onChange={(e) => setEditingJobs({ ...editingJobs, [memberId]: e.target.value })}
+                  sx={{ width: '50%', paddingRight: '10px' }}
+                />
+              </Box>
+            ))}
           </Box>
-        ))}
+        </Box>
+
         <Button
           id="confirm-update-button"
           size="small"
           variant="contained"
-          color="secondary"
+          color="primary"
           onClick={handlePublish}
           sx={{
             width: '100px',
-            height: '50px',
-            borderRadius: '30px',
             mt: '25px',
             textTransform: 'none',
             color: '#fff',
@@ -92,7 +119,7 @@ const EditJobModal = ({ open, setOpen, groupMember }) => {
             fontWeight: 600,
           }}
         >
-          Confirm
+          確認編輯
         </Button>
       </Box>
     </Modal>

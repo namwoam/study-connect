@@ -7,7 +7,8 @@ import {
     Container,
     Modal,
     TextField,
-    Paper
+    Paper,
+    MenuItem
   } from '@mui/material';
 
 const ModelStyle = {
@@ -15,7 +16,7 @@ const ModelStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 650,
+    // width: 500,
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
@@ -26,20 +27,14 @@ const ModelStyle = {
     flexDirection: 'column',
     alignItems: 'center', // Center horizontally
     justifyContent: 'center', // Center vertically
-    borderRadius: '30px',
+    borderRadius: '10px',
 };
 
-const AnnouncementModal = ({open, setOpen, handlePublishAnnouncement}) => {
+const KickMemberModal = ({open, setOpen, member, handleKickMember}) => {
     const handleClose = () => setOpen(false);
 
-    const [editingDescription, setEditingDesciption] = useState("");
-
-    const handleDescriptionChange = (event) => {
-        setEditingDesciption(event.target.value);
-    };
-
-    const handlePublish = () => {
-        handlePublishAnnouncement(editingDescription);
+    const handleKick = () => {
+        handleKickMember(member);
         handleClose();
     };
 
@@ -48,39 +43,52 @@ const AnnouncementModal = ({open, setOpen, handlePublishAnnouncement}) => {
             open={open}
             onClose={handleClose}
         >
+            {member && 
             <Box sx={ModelStyle}>
-                <Typography variant="h6" color="primary" sx={{fontWeight: 700, mb: '20px'}}>
-                    發起會議
+                <Typography id="modal-description" component="h2">
+                    確認移除{member.name}？
                 </Typography>
-                <TextField
-                    multiline
-                    rows={2}
-                    label="公告內容"
-                    variant="outlined"
-                    fullWidth
-                    value={editingDescription}
-                    onChange={handleDescriptionChange}
-                />
+                
+                <Box sx={{display: 'flex'}}>
+                    <Button
+                        id="confirm-update-button"
+                        size="small"
+                        variant="outlined"
+                        color="primary"
+                        onClick={handleClose}
+                        sx={{
+                            width: '60px',
+                            mt: '20px',
+                            mr: '10px',
+                            textTransform: 'none',
+                            fontSize: '14px',
+                            fontWeight: 600,
+                        }}
+                    >
+                        取消
+                    </Button>
                     <Button
                         id="confirm-update-button"
                         size="small"
                         variant="contained"
                         color="primary"
-                        onClick={handlePublish}
+                        onClick={handleKick}
                         sx={{
-                            width: '100px',
-                            mt: '25px',
+                            width: '60px',
+                            mt: '20px',
                             textTransform: 'none',
                             color: '#fff',
                             fontSize: '14px',
                             fontWeight: 600,
                         }}
                     >
-                        發起公告
+                        確認
                     </Button>
+                </Box>
             </Box>
+            }
         </Modal>
     );
 }
 
-export default AnnouncementModal;
+export default KickMemberModal;

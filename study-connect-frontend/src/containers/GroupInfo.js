@@ -6,7 +6,7 @@ import {
   Button,
   Container,
   Modal,
-  TextField,
+  Snackbar,
   Paper
 } from '@mui/material';
 import instance from '../instance';
@@ -14,6 +14,7 @@ import MeetingModal from '../components/MeetingModal';
 import AnnouncementModal from '../components/AnnouncementModal';
 import EditRoleModal from '../components/EditRoleModal';
 import EditJobModal from '../components/EditJobModal';
+import KickMemberModal from '../components/KickMemberModal';
 
 
 const MainContainer = {
@@ -78,62 +79,81 @@ const Normaltext = {
     fontSize: 15,
     paddingBottom: '5px',
 }
-
-const announcement = [
-    {uid: 1, announcement: '資料庫是一門好課'},
-    {uid: 2, announcement: '十分推薦大家修習資料庫'},
-    {uid: 3, announcement: '孔令傑是一位好老師'},
-    {uid: 4, announcement: '我喜歡資料庫'},
-]
-
-const userInfo = {Name: "黃偉祥", ID: "B10705010", Role: '組長', Job: '買便當'}
-
-const groupMember = [
-    {Name: "黃偉祥", ID: "B10705010", Role: '組長', Job: '買便當'},
-    {Name: "簡睦人", ID: "B10705009", Role: '組員', Job: '丟垃圾'},
-    {Name: "陳冠廷", ID: "B10705008", Role: '組員', Job: '買飲料'},
-    {Name: "陳宜君", ID: "B10705008", Role: '組員', Job: '哭一整天'},
-    {Name: "陳玉翰", ID: "B10705007", Role: '組員', Job: '請假'},
-]
-
-
-const Meeting = [
-    {uid: 4, meetingName: '第四次會議', date: '2021/10/10', from_time: '10:00', to_time: '12:00'},
-    {uid: 5, meetingName: '吃午餐', date: '2021/10/11', from_time: '10:00', to_time: '12:00'},
-    {uid: 6, meetingName: '哭一整天', date: '2021/10/12', from_time: '10:00', to_time: '12:00'},
-]
-
-const course = {semester: '110-1', courseName: '資料庫管理', courseID: 'CSIE5430', 
-courseInfo: "打開系網➡️系所成員➡️專任師資➡️找到教授➡️複製他的email➡️打開gmail ➡️收件者欄位貼上email➡️開始寫信 \n Dear 教授 嗚嗚嗚拜託不要當我好不好🥺 我都有去上課欸😭😭期中我已經唸的很認真了😢😢差這一門課就可以畢業了🥺🥺我會好好認真讀書😭不要當我好嗎😭😭🙏🙏嗚嗚嗚"}
-
     
 const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
+    const [groupName, setGroupName] = useState("");
+    const [courseID, setCourseID] = useState("");
+    const [courseInfo, setCourseInfo] = useState(null);
+    const [userInfo, setUserInfo] = useState(null);
+    const [groupMember, setGroupMember] = useState([]);
+    const [announcements, setAnnouncements] = useState([]);
+    const [meetings, setMeetings] = useState([]);
 
+    const fetchGroupInfo = async () => {
+        try {
+            const response = await instance.get(`/info/group/info/${groupID}`);
+            if (response.data.success) {
+                let courseGroup = response.data.data;
+                let members = courseGroup.members;
+                console.log(courseGroup);
+                setGroupName(courseGroup.group_name);
+                setCourseID(courseGroup.course_id);
+                setGroupMember([...courseGroup.members]);
+                setAnnouncements([...courseGroup.announcements]);
+                setMeetings([...courseGroup.meets]);
 
-    // userInfo = groupMember.filter((member) => member.ID === userID)[0];
+                const user = members.filter(member => member.student_id === userID)[0];
+                setUserInfo(user);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        fetchGroupInfo();
+    }, [groupID]);
+
+    const fetchCourseInfo = async (cid) => {
+        try {
+          const response = await instance.get(`/info/course/${cid}`);
+          if (response.data.success) {
+            setCourseInfo(response.data.data);
+          }
+        } catch (error) {
+          console.error('Error fetching course information:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (courseID != "") {
+            fetchCourseInfo(courseID);
+        }
+    }, [courseID])
 
     const renderMembers = (role) => {
+        console.log(role)
         return groupMember.map((member) => {
-            if ((userInfo.Role === "組長") && (member.Role === "組員") && (member.Role === role)) {
+            if ((userInfo.role === "Leader") && (member.role === "Member") && (member.role === role)) {
                 return (
                     <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between',alignItems: 'center', paddingBottom: '5px',}}>
                         <Box sx={{fontSize: 15, width: "30%"}}>
-                        {member.ID} {member.Name}
+                            {member.student_id} {member.name}
                         </Box>
-                        <Box sx={{width: "30%"}} flex = {0.5}>
-                            <Button sx={{borderRadius: '30px', height:"20px", width:"50px",fontWeight:400, color:"white", fontSize: "12px"}} variant="contained" color="secondary"
-                            onClick={() => handleRemoveMember(member.ID)}>
+                        <Box sx={{width: "50%"}} flex = {0.5}>
+                            <Button sx={{ height:"20px", width:"60px",fontWeight:400, fontSize: "12px"}} variant="contained" color="inherit"
+                            onClick={() => handleRemoveMember(member)}>
                                 Remove
                             </Button>
                         </Box>
                     </Box>
                 )
             }
-            else if (member.Role === role) {
+            else if (member.role === role) {
                 return (
                     <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between',alignItems: 'center', paddingBottom: '5px',}}>
                         <Box sx={{fontSize: 15, width: "30%"}}>
-                        {member.ID} {member.Name}
+                        {member.student_id} {member.name}
                         </Box>
                         <Box sx={{width: "30%"}} flex = {0.5}>
                     </Box>
@@ -149,6 +169,14 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
     const [openAnnouncementModel, setOpenAnnouncementModel] = useState(false);
     const [openEditRoleModel, setOpenEditRoleModel] = useState(false);
     const [openEditJobModel, setOpenEditJobModel] = useState(false);
+    const [openKickMemberModal, setOpenKickMemberModal] = useState(false);
+    const [kickedMember, setKickedMember] = useState(null);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -188,12 +216,80 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
         setOpenEditJobModel(true);
     }
 
-    const handleRemoveMember = (memberID) => {
-        console.log("remove member", memberID);
+    const handleRemoveMember = (member) => {
+        setKickedMember(member);
+        setOpenKickMemberModal(true);
     }
+
+    const handleKickMember = async () => {
+        try {
+            const response = await instance.post('/group/kick',
+                {
+                    user: kickedMember.student_id,
+                    group_id: String(groupID),
+                });
+            if (response.status == 200) {
+                fetchGroupInfo();
+                setAlertMessage(`Kicked Member ${kickedMember.name} successfully`);
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage(`Failed to kick Member ${kickedMember.name}`);
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    const handlePublishMeeting = async (meetInfo) => {
+        try {
+            const response = await instance.post('/group/meeting/create',
+                {
+                    user: userID,
+                    meet_name: meetInfo.meetName,
+                    group_id: String(groupID),
+                    start_time: meetInfo.startTime,
+                    end_time: meetInfo.endTime
+                });
+            if (response.status == 200) {
+                fetchGroupInfo();
+                setAlertMessage('Meeting published successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Failed to publish a meeting');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handlePublishAnnouncement = async (content) => {
+    try {
+        const response = await instance.post('/group/announcement/create',
+            {
+                user: userID,
+                content: content,
+                group_id: String(groupID),
+            });
+        if (response.status == 200) {
+            fetchGroupInfo();
+            setAlertMessage('Announcement published successfully');
+            setOpenSnackbar(true);
+        } else {
+            setAlertMessage('Failed to publish announcement');
+            setOpenSnackbar(true);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+    };
+
     
     return (
         <Container sx={MainContainer}>
+        { courseInfo && 
+        <>
             {/* Course Group Title */}
             <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', paddingTop: '50px', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box sx={{width: "30%"}}>
@@ -204,7 +300,7 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                 </Box>
                 <Box sx={{width: "30%"}}>
                     <Typography variant="h5" fontWeight={800} sx={{ textAlign: 'center' }}>
-                        Course Group 1
+                        {groupName}
                     </Typography>
                 </Box>
                 <Box sx={{width: "30%", display:'flex', justifyContent: 'right', paddingRight: '15px'}}>
@@ -251,81 +347,91 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
 
             {/* on hover, show more course info */}
             <Grid item xs={12} sx={{ cursor: 'help', paddingTop: '20px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', position: 'relative'}}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            >
-            {isHovered && (
-                <span
-                style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: '50%',
-                    width: '300px',
-                    transform: 'translateX(-50%)',
-                    background: '#fff',
-                    padding: '10px',
-                    borderRadius: '5px',
-                    boxShadow: '0 0 5px rgba(0, 0, 0, 0.3)',
-                    zIndex: 1,
-                }}>
-                <Box>
-                    <Typography sx={GreySubtitle}>
-                        課程名稱
-                    </Typography>
-                    <Box sx={Normaltext}>
-                        {course.courseName}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                >
+                {isHovered && (
+                    <span
+                    style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: '50%',
+                        width: '300px',
+                        transform: 'translateX(-50%)',
+                        background: '#fff',
+                        padding: '10px',
+                        borderRadius: '5px',
+                        boxShadow: '0 0 5px rgba(0, 0, 0, 0.3)',
+                        zIndex: 1,
+                    }}>
+                    <Box>
+                        <Typography sx={GreySubtitle}>
+                            課程名稱
+                        </Typography>
+                        <Box sx={Normaltext}>
+                            {courseInfo.course_name}
+                        </Box>
+                        <Typography sx={GreySubtitle}>
+                            課程學期
+                        </Typography>
+                        <Box sx={Normaltext}>
+                            {courseInfo.semester}
+                        </Box>
+                        <Typography sx={GreySubtitle}>
+                            課程代碼
+                        </Typography>
+                        <Box sx={Normaltext}>
+                            {courseInfo.course_id}
+                        </Box>
+                        <Typography sx={GreySubtitle}>
+                            教授姓名
+                        </Typography>
+                        <Box sx={Normaltext}>
+                            {courseInfo.instructor_name}
+                        </Box>
+                        <Typography sx={GreySubtitle}>
+                            開課系所
+                        </Typography>
+                        <Box sx={Normaltext}>
+                            {courseInfo.department_name}
+                        </Box>
                     </Box>
-                    <Typography sx={GreySubtitle}>
-                        課程學期
-                    </Typography>
-                    <Box sx={Normaltext}>
-                        {course.semester}
-                    </Box>
-                    <Typography sx={GreySubtitle}>
-                        課程代碼
-                    </Typography>
-                    <Box sx={Normaltext}>
-                        {course.courseID}
-                    </Box>
-                    <Typography sx={GreySubtitle}>
-                        課程資訊
-                    </Typography>
-                    <Box sx={Normaltext}>
-                        {course.courseInfo}
-                    </Box>
-                </Box>
-        </span>
-      )}
+                    </span>
+                )}
                 <Paper elevation={0} style={{ paddingTop: '2px', paddingBottom: '2px', paddingLeft: '5px', paddingRight: '20px' }}>
-                    {/* Semester Badge */}
                     <Typography variant="body1" style={{ borderRadius: '20px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', border: '1px solid #ccc', fontSize: "13px" }}>
-                        {course.semester} <br />
+                        {courseInfo.semester} <br />
                     </Typography>
                 </Paper>
-                {/* Course Name */}
                 <Typography variant="subtitle2" sx={{ lineHeight: '1.6' }}>
-                    {course.courseName}
+                    {courseInfo.course_name}
                 </Typography>
             </Grid>
 
             {/* Announcements */}
-            <Grid item xs={12} sx={{paddingBottom: "20px"}}>
-                {announcement.map((item) => (
-                    <Box key={item.uid} sx={{ paddingTop: '20px', display: 'flex', flexDirection: 'row', alignItems: 'left' }}>
+            <Grid item xs={12} sx={{ paddingTop: '10px', paddingBottom: "20px"}}>
+                {announcements.length > 0 ? announcements.map((item, idex) => (
+                    <Box key={idex} sx={{ paddingTop: '20px', display: 'flex', flexDirection: 'row', alignItems: 'left' }}>
                         {/* Announcement Badge */}
                         <Box style={{ paddingRight: '40px' }}>
                             <Typography backgroundColor="#F5F5F5" style={{ borderRadius: '20px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', fontSize: "13px" }}>
                                 公告
                             </Typography>
                         </Box>
-                        {item.announcement}
+                        {item}
                     </Box>
-                ))}
+                ))
+                :
+                <Box sx={Normaltext}>
+                    目前尚無公告事項！
+                </Box>
+                }
             </Grid>
 
             {/* Group Information and Meetings */}
             <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
-                {/* Left side: Group Information */}
+                {
+                userInfo &&
                 <Grid sx={BigCard}>
                     <Box sx={GroupInfoCard}>
                         <Typography sx={SmallTitle}>
@@ -336,17 +442,17 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between',alignItems: 'center', paddingBottom: '5px',}}>
                             <Box sx={{fontSize: 15, width: "30%"}}>
-                                {userInfo.Role}
+                                {userInfo.role}
                             </Box>
                             <Box sx={{width: "30%"}} flex = {0.5}>
-                            {userInfo.Role === '組長' && (
+                            {userInfo.role === 'Leader' && (
                                 <Box>
                                     <Button 
-                                    sx={{ borderRadius: '30px', height: "20px", width: "50px", fontWeight: 400, color: "white", fontSize: "12px" }}
-                                    variant="contained"
-                                    color="secondary"
-                                    onClick={handleOpenEditRole}>
-                                        Edit
+                                        sx={{ height: "20px", width: "50px", fontWeight: 400, fontSize: "12px" }}
+                                        variant="contained"
+                                        color="inherit"
+                                        onClick={handleOpenEditRole}>
+                                            Edit
                                     </Button>
                                     <EditRoleModal open={openEditRoleModel} setOpen={setOpenEditRoleModel} groupMember={groupMember} groupID={groupID}/>
                                 </Box>
@@ -362,13 +468,13 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                                 {userInfo.Job}
                             </Box>
                             <Box sx={{width: "30%"}} flex = {0.5}>
-                                {userInfo.Role === '組長' && (
+                                {userInfo.role === 'Leader' && (
                                 <Box>
                                     <Button 
-                                    sx={{ borderRadius: '30px', height: "20px", width: "50px", fontWeight: 400, color: "white", fontSize: "12px" }}
-                                    variant="contained"
-                                    color="secondary"
-                                    onClick={handleOpenEditJob}>
+                                    sx={{ height: "20px", width: "50px", fontWeight: 400, fontSize: "12px" }}
+                                        variant="contained"
+                                        color="inherit"
+                                        onClick={handleOpenEditJob}>
                                         Edit
                                     </Button>
                                     <EditJobModal open={openEditJobModel} setOpen={setOpenEditJobModel} groupMember={groupMember} groupID={groupID}/>
@@ -387,16 +493,16 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                         <Typography sx={GreySubtitle}>
                             組長
                         </Typography>
-                        {renderMembers('組長')}
+                        {renderMembers('Leader')}
 
                         <Typography sx={GreySubtitle}>
                             組員
                         </Typography>
-                        {renderMembers('組員')}
+                        {renderMembers('Member')}
 
                     </Box>
                 </Grid>
-
+                }
                 {/* Right side: Meetings Information */}
                 <Grid sx={BigCard}>
                     <Box sx={MeetingInfoCard}>
@@ -406,8 +512,8 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                                 已排定會議
                             </Typography>
                             
-                            {Meeting.map((meeting) => (
-                                <Box key={meeting.uid} sx={{
+                            {meetings.length > 0 ? meetings.map((meeting, index) => (
+                                <Box key={index} sx={{
                                     display: 'flex',
                                     flexDirection: 'row',
                                     width: '100%',
@@ -416,23 +522,41 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                                 }}>
                                     <Box sx={{ paddingLeft: "10px" , width: "30%"}}>
                                         <Typography sx={Normaltext} >
-                                            {meeting.meetingName}
+                                            {meeting.meet_name}
                                         </Typography>
                                     </Box>
-                                    <Box sx={{ textAlign: 'left', width: "45%"}}>
+                                    <Box sx={{ textAlign: 'left', width: "55%"}}>
                                         <Typography sx={Normaltext}>
-                                            {meeting.date} {meeting.from_time} - {meeting.to_time}
+                                            {meeting.start_time} - {meeting.end_time}
                                         </Typography>
                                     </Box>
                                 </Box>
-                            ))}
+                            ))
+                            :
+                            <Box sx={Normaltext}>
+                                目前尚無排定之會議！
+                            </Box>
+                            }
                         </Box>
                     </Box>
                 </Grid>
             </Box>
 
-            <MeetingModal open={openMeetingModel} setOpen={setOpenMeetingModel} />
-            <AnnouncementModal open={openAnnouncementModel} setOpen={setOpenAnnouncementModel}/>
+            <MeetingModal open={openMeetingModel} setOpen={setOpenMeetingModel} handlePublishMeeting={handlePublishMeeting} />
+            <AnnouncementModal open={openAnnouncementModel} setOpen={setOpenAnnouncementModel} handlePublishAnnouncement={handlePublishAnnouncement}/>
+            {openKickMemberModal && <KickMemberModal open={openKickMemberModal} setOpen={setOpenKickMemberModal} member={kickedMember} handleKickMember={handleKickMember}/>}
+            <Snackbar
+                anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+                }}
+                open={openSnackbar}
+                autoHideDuration={3000} // Adjust the duration as needed
+                onClose={handleCloseSnackbar}
+                message={alertMessage}
+            />
+        </>
+        }
         </Container>
     );
 }
