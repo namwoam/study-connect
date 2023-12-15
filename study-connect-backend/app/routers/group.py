@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from ..db import query_database, update_database
 from ..utils import ok_respond
+import datetime
 router = APIRouter(
     prefix="/group",
     tags=["groups"],
@@ -31,8 +32,8 @@ class Meeting(BaseModel):
     user: str
     meet_name: str
     group_id: str
-    start_time: str
-    end_time: str
+    start_time: datetime.datetime
+    end_time: datetime.datetime
 
 
 @router.post("/send_request")
@@ -110,11 +111,10 @@ def announcement_create(a: Announcement):
     try:
         update_database(
             f"""
-            INSERT OR IGNORE INTO ANNOUNCEMENT VALUES('{a.user}', '{a.content}', '{a.group_id}')
+            INSERT OR IGNORE INTO ANNOUNCEMENT (group_id,publisher_id,publish_time,content) VALUES('{a.group_id}','{a.user}',datetime('now','localtime'),'{a.content}')
             """
         )
     except BaseException as err:
-        print(err)
         return HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
@@ -124,7 +124,7 @@ def meeting_create(m: Meeting):
     try:
         update_database(
             f"""
-            INSERT OR IGNORE INTO MEET () VALUES('{m.user}', '{m.meet_name}', '{m.group_id}', '{m.start_time}', '{m.end_time}')
+            INSERT OR IGNORE INTO MEET (meet_name,group_id,host_ID,start_time,end_time) VALUES('{m.meet_name}', '{m.group_id}', '{m.user}', '{m.start_time}', '{m.end_time}')
             """
         )
     except BaseException as err:
