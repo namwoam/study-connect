@@ -91,7 +91,7 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
 
     const fetchGroupInfo = async () => {
         try {
-            const response = await instance.get(`/info/group/info/${groupID}`);
+            const response = await instance.get(`/info/group/${groupID}`);
             if (response.data.success) {
                 let courseGroup = response.data.data;
                 let members = courseGroup.members;
