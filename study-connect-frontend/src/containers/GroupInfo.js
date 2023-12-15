@@ -6,7 +6,7 @@ import {
   Button,
   Container,
   Modal,
-  TextField,
+  Snackbar,
   Paper
 } from '@mui/material';
 import instance from '../instance';
@@ -171,6 +171,12 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
     const [openEditJobModel, setOpenEditJobModel] = useState(false);
     const [openKickMemberModal, setOpenKickMemberModal] = useState(false);
     const [kickedMember, setKickedMember] = useState(null);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -214,6 +220,71 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
         setKickedMember(member);
         setOpenKickMemberModal(true);
     }
+
+    const handleKickMember = async () => {
+        try {
+            const response = await instance.post('/group/kick',
+                {
+                    user: kickedMember.student_id,
+                    group_id: String(groupID),
+                });
+            if (response.status == 200) {
+                fetchGroupInfo();
+                setAlertMessage(`Kicked Member ${kickedMember.name} successfully`);
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage(`Failed to kick Member ${kickedMember.name}`);
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    const handlePublishMeeting = async (meetInfo) => {
+        try {
+            const response = await instance.post('/group/meeting/create',
+                {
+                    user: userID,
+                    meet_name: meetInfo.meetName,
+                    group_id: String(groupID),
+                    start_time: meetInfo.startTime,
+                    end_time: meetInfo.endTime
+                });
+            if (response.status == 200) {
+                fetchGroupInfo();
+                setAlertMessage('Meeting published successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Failed to publish a meeting');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handlePublishAnnouncement = async (content) => {
+    try {
+        const response = await instance.post('/group/announcement/create',
+            {
+                user: userID,
+                content: content,
+                group_id: String(groupID),
+            });
+        if (response.status == 200) {
+            fetchGroupInfo();
+            setAlertMessage('Announcement published successfully');
+            setOpenSnackbar(true);
+        } else {
+            setAlertMessage('Failed to publish announcement');
+            setOpenSnackbar(true);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+    };
+
     
     return (
         <Container sx={MainContainer}>
@@ -338,7 +409,7 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
             </Grid>
 
             {/* Announcements */}
-            <Grid item xs={12} sx={{ paddingTop: '20px', paddingBottom: "20px"}}>
+            <Grid item xs={12} sx={{ paddingTop: '10px', paddingBottom: "20px"}}>
                 {announcements.length > 0 ? announcements.map((item, idex) => (
                     <Box key={idex} sx={{ paddingTop: '20px', display: 'flex', flexDirection: 'row', alignItems: 'left' }}>
                         {/* Announcement Badge */}
@@ -471,9 +542,19 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                 </Grid>
             </Box>
 
-            <MeetingModal open={openMeetingModel} setOpen={setOpenMeetingModel} />
-            <AnnouncementModal open={openAnnouncementModel} setOpen={setOpenAnnouncementModel}/>
-            {openKickMemberModal && <KickMemberModal open={openKickMemberModal} setOpen={setOpenKickMemberModal} member={kickedMember} />}
+            <MeetingModal open={openMeetingModel} setOpen={setOpenMeetingModel} handlePublishMeeting={handlePublishMeeting} />
+            <AnnouncementModal open={openAnnouncementModel} setOpen={setOpenAnnouncementModel} handlePublishAnnouncement={handlePublishAnnouncement}/>
+            {openKickMemberModal && <KickMemberModal open={openKickMemberModal} setOpen={setOpenKickMemberModal} member={kickedMember} handleKickMember={handleKickMember}/>}
+            <Snackbar
+                anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+                }}
+                open={openSnackbar}
+                autoHideDuration={3000} // Adjust the duration as needed
+                onClose={handleCloseSnackbar}
+                message={alertMessage}
+            />
         </>
         }
         </Container>

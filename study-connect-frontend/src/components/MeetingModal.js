@@ -30,7 +30,7 @@ const ModelStyle = {
     borderRadius: '30px',
 };
 
-const MeetingModal = ({open, setOpen}) => {
+const MeetingModal = ({open, setOpen, handlePublishMeeting}) => {
     const handleClose = () => setOpen(false);
 
     const [editingTitle, setEditingTitle] = useState("");
@@ -86,24 +86,30 @@ const MeetingModal = ({open, setOpen}) => {
         setSelectedEndTime(event.target.value);
     };
 
+    const formatTime = (minutes) => {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+      };
 
+    const formatDateTime = (year, month, day, time) => {
+        const formattedMonth = String(month).padStart(2, '0');
+        const formattedDay = String(day).padStart(2, '0');
+        const formattedTime = formatTime(time);
+
+        const dateString = `${year}-${formattedMonth}-${formattedDay}`;
+        return `${dateString} ${formattedTime}`;
+    };
 
     const handlePublish = () => {
-        console.log('Publish an announcements');
-        console.log('Title:');
-        console.log(editingTitle);
-        console.log('Description:');
-        console.log(editingDescription);
-        console.log('Start Time:');
-        console.log(selectedStartYear);
-        console.log(selectedStartMonth);
-        console.log(selectedStartDay);
-        console.log(selectedStartTime);
-        console.log('End Time:');
-        console.log(selectedEndYear);
-        console.log(selectedEndMonth);
-        console.log(selectedEndDay);
-        console.log(selectedEndTime);
+        const startTime = formatDateTime(selectedStartYear, selectedStartMonth, selectedStartDay, selectedStartTime);
+        const endTime = formatDateTime(selectedEndYear, selectedEndMonth, selectedEndDay, selectedEndTime);
+        const meetInfo = {
+            meetName: editingTitle,
+            startTime: startTime,
+            endTime: endTime
+        }
+        handlePublishMeeting(meetInfo);
         handleClose();
     };
 
@@ -127,7 +133,7 @@ const MeetingModal = ({open, setOpen}) => {
                     onChange={handleTitleChange}
                     sx={{ mt: 2 }}
                 />
-                <TextField
+                {/* <TextField
                     multiline
                     rows={3}
                     label="會議內容"
@@ -136,7 +142,7 @@ const MeetingModal = ({open, setOpen}) => {
                     value={editingDescription}
                     onChange={handleDescriptionChange}
                     sx={{ mt: 2 }}
-                />
+                /> */}
 
                 <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
                     <TextField

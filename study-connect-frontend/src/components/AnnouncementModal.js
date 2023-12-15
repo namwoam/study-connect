@@ -29,25 +29,17 @@ const ModelStyle = {
     borderRadius: '30px',
 };
 
-const AnnouncementModal = ({open, setOpen}) => {
+const AnnouncementModal = ({open, setOpen, handlePublishAnnouncement}) => {
     const handleClose = () => setOpen(false);
 
-    const [editingTitle, setEditingTitle] = useState("");
     const [editingDescription, setEditingDesciption] = useState("");
-
-    const handleTitleChange = (event) => {
-        setEditingTitle(event.target.value);
-    };
 
     const handleDescriptionChange = (event) => {
         setEditingDesciption(event.target.value);
     };
 
     const handlePublish = () => {
-        console.log('Publish an announcements:\n Title:');
-        console.log(editingTitle);
-        console.log('Description:');
-        console.log(editingDescription);
+        handlePublishAnnouncement(editingDescription);
         handleClose();
     };
 
@@ -62,24 +54,12 @@ const AnnouncementModal = ({open, setOpen}) => {
                 </Typography>
                 <TextField
                     multiline
-                    size='small'
-                    rows={1}
-                    label="公告標題"
-                    variant="outlined"
-                    fullWidth
-                    value={editingTitle}
-                    onChange={handleTitleChange}
-                    sx={{ mt: 2 }}
-                />
-                <TextField
-                    multiline
-                    rows={3}
+                    rows={2}
                     label="公告內容"
                     variant="outlined"
                     fullWidth
                     value={editingDescription}
                     onChange={handleDescriptionChange}
-                    sx={{ mt: 2 }}
                 />
                     <Button
                         id="confirm-update-button"

@@ -30,11 +30,11 @@ const ModelStyle = {
     borderRadius: '10px',
 };
 
-const KickMemberModal = ({open, setOpen, member}) => {
+const KickMemberModal = ({open, setOpen, member, handleKickMember}) => {
     const handleClose = () => setOpen(false);
 
-    const handlePublish = () => {
-        console.log(`剔除${member.name}`);
+    const handleKick = () => {
+        handleKickMember(member);
         handleClose();
     };
 
@@ -45,8 +45,8 @@ const KickMemberModal = ({open, setOpen, member}) => {
         >
             {member && 
             <Box sx={ModelStyle}>
-                <Typography id="modal-title" variant="h6" component="h2">
-                    確認移除 {member.name} ？
+                <Typography id="modal-description" component="h2">
+                    確認移除{member.name}？
                 </Typography>
                 
                 <Box sx={{display: 'flex'}}>
@@ -57,8 +57,8 @@ const KickMemberModal = ({open, setOpen, member}) => {
                         color="primary"
                         onClick={handleClose}
                         sx={{
-                            width: '80px',
-                            mt: '25px',
+                            width: '60px',
+                            mt: '20px',
                             mr: '10px',
                             textTransform: 'none',
                             fontSize: '14px',
@@ -72,10 +72,10 @@ const KickMemberModal = ({open, setOpen, member}) => {
                         size="small"
                         variant="contained"
                         color="primary"
-                        onClick={handlePublish}
+                        onClick={handleKick}
                         sx={{
-                            width: '80px',
-                            mt: '25px',
+                            width: '60px',
+                            mt: '20px',
                             textTransform: 'none',
                             color: '#fff',
                             fontSize: '14px',
