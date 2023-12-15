@@ -200,190 +200,196 @@ const UserPage = ({userID}) => {
 
   return (
     <Container sx={MainContainer}>
-      <Typography variant="h5" fontWeight={800} sx={{ mt: '30px' }}>
-        Edit Your Personal Info Here
-      </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between'}}>
-          {/* 左側部分，顯示個人資訊 */}
-          <Box sx={BigCard}>
-            <Box sx={InfoCard}>
-              <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
-                Personal Info
-              </Typography>
-              <Typography 
-                sx={{ 
-                  mt: 2,
-                  fontSize: 12,
-                  color: '#BBB'
+      {
+        userInfo && 
+        <>
+        <Typography variant="h5" fontWeight={800} sx={{ mt: '30px' }}>
+          Edit Your Personal Info Here
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between'}}>
+            {/* 左側部分，顯示個人資訊 */}
+            <Box sx={BigCard}>
+              <Box sx={InfoCard}>
+                <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
+                  Personal Info
+                </Typography>
+                <Typography 
+                  sx={{ 
+                    mt: 2,
+                    fontSize: 12,
+                    color: '#BBB'
+                  }}
+                >
+                  ID
+                </Typography>
+                <Typography sx={{ mt: 2 }} >{userInfo.student_id ?? "User ID"}</Typography>
+                <Typography
+                  sx={{
+                    mt: 2,
+                    fontSize: 12,
+                    color: '#BBB'  
+                  }}  
+                >
+                  Username
+                </Typography>
+                <Typography sx={{ mt: 2 }}>{userInfo.student_name ?? "User Name"}</Typography>
+              </Box>
+              <Box sx={InfoCard}>
+                <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
+                  Contact
+                </Typography>
+                <TextField
+                  multiline
+                  rows={1}
+                  label="Instagram帳號"
+                  variant="outlined"
+                  fullWidth
+                  value={editingIG}
+                  onChange={handleIGChange}
+                  sx={{ mt: 2 }}
+                />
+                <TextField
+                  multiline
+                  rows={1}
+                  label="Facebook帳號"
+                  variant="outlined"
+                  fullWidth
+                  value={editingFB}
+                  onChange={handleFBChange}
+                  sx={{ mt: 2 }}
+                />
+              </Box>
+              <Box sx={InfoCard}>
+                <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
+                  Self Introduction
+                </Typography>
+                <TextField
+                  multiline
+                  rows={4}
+                  variant="outlined"
+                  fullWidth
+                  value={editingIntro}
+                  onChange={handleIntroChange}
+                  sx={{ mt: 2 }}
+                />
+              </Box>
+                    {/* Confirm Update Button */}
+              <Button
+                id="confirm-update-button"
+                size="small"
+                variant="contained"
+                color="primary"
+                onClick={handleConfirmUpdate}
+                sx={{
+                  width: '200px',
+                  mt: '35px',
+                  textTransform: 'none',
+                  color: '#fff',
+                  fontSize: '14px',
+                  fontWeight: 600,
                 }}
               >
-                ID
-              </Typography>
-              <Typography sx={{ mt: 2 }} >{userInfo.student_id ?? "User ID"}</Typography>
-              <Typography
-                sx={{
-                  mt: 2,
-                  fontSize: 12,
-                  color: '#BBB'  
-                }}  
-              >
-                Username
-              </Typography>
-              <Typography sx={{ mt: 2 }}>{userInfo.student_name ?? "User Name"}</Typography>
+                Confirm Update
+              </Button>
             </Box>
-            <Box sx={InfoCard}>
-              <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
-                Contact
-              </Typography>
-              <TextField
-                multiline
-                rows={1}
-                label="Instagram帳號"
-                variant="outlined"
-                fullWidth
-                value={editingIG}
-                onChange={handleIGChange}
-                sx={{ mt: 2 }}
-              />
-              <TextField
-                multiline
-                rows={1}
-                label="Facebook帳號"
-                variant="outlined"
-                fullWidth
-                value={editingFB}
-                onChange={handleFBChange}
-                sx={{ mt: 2 }}
-              />
-            </Box>
-            <Box sx={InfoCard}>
-              <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
-                Self Introduction
-              </Typography>
-              <TextField
-                multiline
-                rows={4}
-                variant="outlined"
-                fullWidth
-                value={editingIntro}
-                onChange={handleIntroChange}
-                sx={{ mt: 2 }}
-              />
-            </Box>
-                  {/* Confirm Update Button */}
-            <Button
-              id="confirm-update-button"
-              size="small"
-              variant="contained"
-              color="primary"
-              onClick={handleConfirmUpdate}
-              sx={{
-                width: '200px',
-                mt: '35px',
-                textTransform: 'none',
-                color: '#fff',
-                fontSize: '14px',
-                fontWeight: 600,
-              }}
-            >
-              Confirm Update
-            </Button>
-          </Box>
 
-          {/* 右側部分，顯示修課紀錄 */}
-          <Box sx={BigCard}>
-            <Box sx={BigCourseCard}>
-              <Typography variant="h6" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
-                Current Course Records
-              </Typography>
-              {currentCourseRecords.map((course, index) => (
-                  <Grid container spacing={2} sx={CourseCard}>
-                      <Paper elevation={0} style={{ border: '1px #d0d0d0 solid', borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', margin: '3px', textAlign: 'center'}}>
-                        <Typography>
-                          {course.semester}
-                        </Typography>
-                      </Paper>
-                      <Grid>
+            {/* 右側部分，顯示修課紀錄 */}
+            <Box sx={BigCard}>
+              <Box sx={BigCourseCard}>
+                <Typography variant="h6" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
+                  Current Course Records
+                </Typography>
+                {currentCourseRecords.map((course, index) => (
+                    <Grid container spacing={2} sx={CourseCard}>
+                        <Paper elevation={0} style={{ border: '1px #d0d0d0 solid', borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', margin: '3px', textAlign: 'center'}}>
                           <Typography>
-                              {course.coursename}
-                          </Typography>
-                      </Grid>
-                      <Grid>
-                          <Typography>
-                              {/* {course.grade} */}
-                          </Typography>
-                      </Grid>
-                      <Grid
-                          sx={{ 
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'space-between',
-                              alignItems: 'flex-end' 
-                          }}
-                      >
-                          <Button
-                              size='small'
-                              variant="contained"
-                              // if visibility == 1, color = primary, else color = secondary
-                              color={course.visibility === 1 ? 'primary' : 'secondary'}
-                              onClick={() => handleUpdateVisibility(course.uid)}
-                              sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
-                          >
-                              {/* if visibility == 1, "Show", else Hide */}
-                              {course.visibility === 1 ? 'Show' : 'Hide'}
-                          </Button>
-                      </Grid>
-                  </Grid>
-              ))}
-            </Box>
-            <Box sx={BigCourseCard}>
-              <Typography variant="h6" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
-                History Course Records
-              </Typography>
-              {previousCourseRecords.map((course, index) => (
-                  <Grid container spacing={2} sx={CourseCard}>
-                      <Paper elevation={0} style={{ border: '1px #d0d0d0 solid', borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', margin: '3px', textAlign: 'center'}}>
-                        <Typography>
-                          {course.semester}
-                        </Typography>
-                      </Paper>
-                      <Grid>
-                          <Typography>
-                              {course.coursename}
-                          </Typography>
-                      </Grid>
-                      <Grid>
-                        <Paper elevation={0} style={{ borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '8px', paddingRight: '8px', textAlign: 'center', background: '#F5E9D3' }}>
-                          <Typography variant='subtitle2'>
-                            {course.grade}
+                            {course.semester}
                           </Typography>
                         </Paper>
-                      </Grid>
-                      <Grid
-                          sx={{ 
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'space-between',
-                              alignItems: 'flex-end' 
-                          }}
-                      >
-                          <Button
-                              size='small'
-                              variant="contained"
-                              // if visibility == 1, color = primary, else color = secondary
-                              color={course.visibility === 1 ? 'primary' : 'secondary'}
-                              onClick={() => handleUpdateVisibility(course.uid)}
-                              sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
-                          >
-                              {/* if visibility == 1, "Show", else Hide */}
-                              {course.visibility === 1 ? 'Show' : 'Hide'}
-                          </Button>
-                      </Grid>
-                  </Grid>
-              ))}
+                        <Grid>
+                            <Typography>
+                                {course.coursename}
+                            </Typography>
+                        </Grid>
+                        <Grid>
+                            <Typography>
+                                {/* {course.grade} */}
+                            </Typography>
+                        </Grid>
+                        <Grid
+                            sx={{ 
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between',
+                                alignItems: 'flex-end' 
+                            }}
+                        >
+                            <Button
+                                size='small'
+                                variant="contained"
+                                // if visibility == 1, color = primary, else color = secondary
+                                color={course.visibility === 1 ? 'primary' : 'secondary'}
+                                onClick={() => handleUpdateVisibility(course.uid)}
+                                sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
+                            >
+                                {/* if visibility == 1, "Show", else Hide */}
+                                {course.visibility === 1 ? 'Show' : 'Hide'}
+                            </Button>
+                        </Grid>
+                    </Grid>
+                ))}
+              </Box>
+              <Box sx={BigCourseCard}>
+                <Typography variant="h6" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
+                  History Course Records
+                </Typography>
+                {previousCourseRecords.map((course, index) => (
+                    <Grid container spacing={2} sx={CourseCard}>
+                        <Paper elevation={0} style={{ border: '1px #d0d0d0 solid', borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', margin: '3px', textAlign: 'center'}}>
+                          <Typography>
+                            {course.semester}
+                          </Typography>
+                        </Paper>
+                        <Grid>
+                            <Typography>
+                                {course.coursename}
+                            </Typography>
+                        </Grid>
+                        <Grid>
+                          <Paper elevation={0} style={{ borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '8px', paddingRight: '8px', textAlign: 'center', background: '#F5E9D3' }}>
+                            <Typography variant='subtitle2'>
+                              {course.grade}
+                            </Typography>
+                          </Paper>
+                        </Grid>
+                        <Grid
+                            sx={{ 
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between',
+                                alignItems: 'flex-end' 
+                            }}
+                        >
+                            <Button
+                                size='small'
+                                variant="contained"
+                                // if visibility == 1, color = primary, else color = secondary
+                                color={course.visibility === 1 ? 'primary' : 'secondary'}
+                                onClick={() => handleUpdateVisibility(course.uid)}
+                                sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
+                            >
+                                {/* if visibility == 1, "Show", else Hide */}
+                                {course.visibility === 1 ? 'Show' : 'Hide'}
+                            </Button>
+                        </Grid>
+                    </Grid>
+                ))}
+              </Box>
             </Box>
-          </Box>
-      </Box>
+        </Box>
+        </>
+      }
+      
       <Snackbar
         anchorOrigin={{
         vertical: 'bottom',

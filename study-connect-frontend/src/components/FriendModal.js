@@ -7,7 +7,7 @@ const ModelStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 650,
+    maxWidth: 600,
     bgcolor: 'background.paper',
     boxShadow: 24,
     borderRadius: '10px',
@@ -16,7 +16,7 @@ const ModelStyle = {
     overflowY: 'auto',
 };
 
-const FriendModal = ({open, setOpen, invatations, accept_friend, reject_friend}) => {
+const FriendModal = ({open, setOpen, invatations, accept_friend, reject_friend, handleInfoOpen}) => {
     const handleClose = () => setOpen(false);
 
     return (
@@ -25,9 +25,13 @@ const FriendModal = ({open, setOpen, invatations, accept_friend, reject_friend})
             onClose={handleClose}
         >
             <Box sx={ModelStyle}>
-                {invatations.map((invatation, index) => (
-                    <InvatationCard invatation={invatation} accept_friend={accept_friend} reject_friend={reject_friend} />
-                ))}
+            {
+                invatations.length > 0 ? invatations.map((invatation, index) => (
+                    <InvatationCard invatation={invatation} accept_friend={accept_friend} reject_friend={reject_friend} handleInfoOpen={handleInfoOpen}/>
+                ))
+                :
+                <Typography>You don't have any friend requests now. QQ</Typography>
+            }
             </Box>
         </Modal>
     );

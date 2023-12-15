@@ -13,16 +13,6 @@ const MainContainer = {
     alignItems: 'center',
 }
 
-const friends = [
-    {uid: 1, username: 'user1', selfIntro: 'Hi, my name is ...', ig_account: 'user1_ig', fb_account: 'user1_fb'},
-    {uid: 2, username: 'user2', selfIntro: 'Hi, my name is ...', ig_account: 'user2_ig', fb_account: 'user2_fb'},
-    {uid: 3, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user3_ig', fb_account: 'user3_fb'},
-    {uid: 4, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user4_ig', fb_account: 'user4_fb'},
-    {uid: 5, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user5_ig', fb_account: 'user5_fb'},
-    {uid: 6, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user6_ig', fb_account: 'user6_fb'},
-    {uid: 7, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user7_ig', fb_account: 'user7_fb'}
-]
-
 const invites = [
     {uid: 1, username: 'user1', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
     {uid: 2, username: 'user2', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
@@ -36,7 +26,7 @@ const invites = [
 const FriendPage = () => {
     const userID = localStorage.getItem('userID')
     const [openModel, setOpenModel] = useState(false);
-    //const [invatations, setInvatations] = useState(invites);
+    const [invatations, setInvatations] = useState([]);
     const [userFriends, setUserFriends] = useState([]);
     const [alerts, setAlerts] = useState(false);
     const [openInfoModel, setOpenInfoModel] = useState(false);
@@ -47,12 +37,12 @@ const FriendPage = () => {
         setOpenInfoModel(true);
     }
 
-    // WIP
     const fetchUserFriends = async () => {
         try {
             const response = await instance.get(`/user/friend/list/${userID}`);
             if (response.data.success) {
                 let friendIDs = response.data.data.friends;
+                
                 const fetchFriendInfo = async (fid) => {
                     const friendInfo = await fetchUserInfo(fid);
                     const courseResponse = await instance.get(`/user/enrolled_courses/${fid}`);
@@ -82,13 +72,43 @@ const FriendPage = () => {
         }
     };
 
+    const fetchFriendRequests = async (userID) => {
+        try {
+            const response = await instance.get(`/user/friend/list_requests/${userID}`);
+            if (response.data.success) {
+                let requestIDs = response.data.requests;
+
+                const fetchFriendRequestInfo = async (requestID) => {
+                    const friendInfo = await fetchUserInfo(requestID);
+                    const courseResponse = await instance.get(`/user/enrolled_courses/${requestID}`);
+                    if (courseResponse.data.success) {
+                        return friendInfo ? {
+                            uid: requestID,
+                            username: friendInfo.student_name,
+                            department: friendInfo.department_name,
+                            selfIntro: friendInfo.self_introduction ?? "",
+                            courseRecords: courseResponse.data.data.courses,
+                        } : null;
+                    }
+                };
+    
+                const friendRequestInfoArray = await Promise.all(requestIDs.map(fetchFriendRequestInfo));
+                const friendRequests = friendRequestInfoArray.filter(info => info !== null);
+    
+                setInvatations([...friendRequests]);
+            }
+        } catch (error) {
+            console.log(error);
+            // Handle error as needed
+        }
+    };
+
     useEffect(()=>{
         fetchUserFriends()
     }, [userID]);
 
     const handleOpen = () => {
-        //setInvatations();
-        console.log(invites);
+        fetchFriendRequests(userID);
         setOpenModel(true);
     };
 
@@ -124,7 +144,7 @@ const FriendPage = () => {
             }
             </Box>
             <InformationModal open={openInfoModel} setOpen={setOpenInfoModel} user={selectedUser}/>
-            <FriendModal open={openModel} setOpen={setOpenModel} invatations={friends} accept_friend={accept_friend} reject_friend={reject_friend} />
+            <FriendModal open={openModel} setOpen={setOpenModel} invatations={invatations} accept_friend={accept_friend} reject_friend={reject_friend} handleInfoOpen={handleInfoOpen}/>
         </Container>
         
     );

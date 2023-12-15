@@ -1,5 +1,6 @@
 import React from 'react';
-import { Grid, Typography, Button } from '@mui/material';
+import { Grid, Typography, Button, IconButton, Box } from '@mui/material';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
 
 const InvatationStyle = {
     padding: '15px', 
@@ -11,21 +12,36 @@ const InvatationStyle = {
     justifyContent: 'center'
 }
 
-export const InvatationCard = ({invatation, accept_friend, reject_friend}) => {
+export const InvatationCard = ({invatation, accept_friend, reject_friend, handleInfoOpen}) => {
     
-    //{uid: 1, username: 'user1', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
-
     return (
         <Grid key={invatation.uid} container spacing={2} sx={InvatationStyle}>
-            <Grid md={8}>
-                <Typography variant="h6">
-                    {invatation.username}
-                </Typography>
-                <Typography>
+            <Grid item md={8} 
+                sx={{ 
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start' 
+                }}
+            >
+                <Box sx={{display: 'flex'}}>
+                    <Typography variant="h6">
+                        {invatation.username}
+                    </Typography>
+                    <IconButton
+                        size='small'
+                        color='gray'
+                        sx={{marginLeft: 1}}
+                        onClick={() => handleInfoOpen(invatation)}
+                    >
+                        <InfoIcon />
+                    </IconButton>
+                </Box>
+                <Typography variant="body1" color="textSecondary" paragraph>
                     {invatation.selfIntro}
                 </Typography>
             </Grid>
-            <Grid md={4} 
+            <Grid item md={4} 
                 sx={{ 
                     display: 'flex',
                     flexDirection: 'column',
