@@ -92,7 +92,7 @@ def course_info(course_id: str):
     })
 
 
-@router.get("/group/info/{group_id}")
+@router.get("/group/{group_id}")
 def group_info(group_id: str):
     group_info = query_database(
         f"""
