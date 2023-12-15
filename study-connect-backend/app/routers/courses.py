@@ -8,6 +8,7 @@ router = APIRouter(
 )
 
 
+
 @router.get("/list_groups/{course_id}")
 def list_groups(course_id: str):
     groups = query_database(

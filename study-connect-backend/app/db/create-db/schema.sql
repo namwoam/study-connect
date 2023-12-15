@@ -78,9 +78,9 @@ CREATE TABLE OFFER_COURSE (
 );
 -- Table 9: GROUP
 CREATE TABLE STUDY_GROUP (
-    group_ID INT PRIMARY KEY NOT NULL,
+    group_ID INTEGER PRIMARY KEY NOT NULL,
     group_name VARCHAR(20) NOT NULL,
-    group_status VARCHAR(11) DEFAULT 'In progress' NOT NULL CHECK (
+    group_status VARCHAR(11) DEFAULT 'In_progress' NOT NULL CHECK (
         group_status IN ('In_progress', 'Finished', 'Deleted')
     ),
     capacity INT NOT NULL,
@@ -92,7 +92,7 @@ CREATE TABLE STUDY_GROUP (
 );
 -- Table 10: JOIN_GROUP
 CREATE TABLE JOIN_GROUP (
-    group_ID INT NOT NULL,
+    group_ID INTEGER NOT NULL,
     user_ID CHAR(9) NOT NULL,
     join_status VARCHAR(5) NOT NULL DEFAULT 'Waiting' CHECK (join_status IN ('Join', 'Leave', 'Waiting')),
     role CHAR(6) NOT NULL DEFAULT 'Member' CHECK (role IN ('Member', 'Leader')),
@@ -103,7 +103,7 @@ CREATE TABLE JOIN_GROUP (
 );
 -- Table 11: ANNOUNCEMENT
 CREATE TABLE ANNOUNCEMENT (
-    group_ID INT NOT NULL,
+    group_ID INTEGER NOT NULL,
     publisher_ID CHAR(9) NOT NULL,
     publish_time TIMESTAMP NOT NULL,
     content VARCHAR(200) NOT NULL,

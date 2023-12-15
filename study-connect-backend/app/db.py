@@ -17,6 +17,8 @@ def update_database(query: str):
     cur = con.cursor()
     cur.execute(query)
     affected_rows = cur.rowcount
+    if affected_rows == 0:
+        raise f"Database not effected by:{query}"
     con.commit()
     return affected_rows
 
