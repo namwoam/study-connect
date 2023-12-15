@@ -42,9 +42,25 @@ const GroupPage = ({userID}) => {
                 <GroupInfoPage userID={userID} groupID={groupDetailId} setEnterGroup={setEnterGroup}/>
                 :
                 <>
-                    <Typography variant="h5" fontWeight={800} sx={{mt: '30px', textAlign: 'center'}}>
+                    <Typography variant="h5" fontWeight={800} sx={{my: '30px', textAlign: 'center'}}>
                         Your Groups
                     </Typography>
+                    <Button
+                        // size="small"
+                        variant="contained"
+                        color='primary'
+                        // onClick={handleOpenCreateGroup}
+                        sx={{
+                            size: 'small',
+                            width: '150px',
+                            textTransform: 'none',
+                            color: '#fff',
+                            fontSize: '14px',
+                            fontWeight: 600,
+                        }}
+                    >
+                        創建新課程小組
+                    </Button> 
                     <Box sx={{ maxHeight: '80vh', overflowY: 'auto', mt: '20px' }}>
                         {joinedGroups.length > 0 && joinedGroups.map((group, index) => (
                             <GroupCard group={group} setGroupDetailId={setGroupDetailId} setEnterGroup={setEnterGroup} id={index} key={index} />

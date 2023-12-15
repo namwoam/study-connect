@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { Typography, Button, Container, TextField, Autocomplete, Snackbar, IconButton, Popover, Box} from '@mui/material';
+import { Typography, Button, Container, TextField, Autocomplete, Snackbar, IconButton, Paper, Box} from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import CourseGroupView from '../components/CourseGroupView';
 import CourseMemberView from '../components/CourseMemberView';
@@ -81,15 +81,19 @@ const CoursePage = ({userID}) => {
                 let selectedcourseMembers = response.data.data.students;
                 const fetchMemberInfo = async (uid) => {
                     const friendInfo = await fetchUserInfo(uid);
-                    if (friendInfo){
-                        return { uid: uid,
-                            username: friendInfo.student_name, 
-                            department: friendInfo.department_name, 
-                            selfIntro: friendInfo.self_introduction ?? "" 
-                        };
-                    }
-                    else {
-                        return null;
+                    const courseResponse = await instance.get(`/user/enrolled_courses/${uid}`);
+                    if (courseResponse.data.success) {
+                        if (friendInfo){
+                            return { uid: uid,
+                                username: friendInfo.student_name, 
+                                department: friendInfo.department_name, 
+                                selfIntro: friendInfo.self_introduction ?? "" ,
+                                courseRecords: courseResponse.data.data.courses
+                            };
+                        }
+                        else {
+                            return null;
+                        }
                     }
                 };
     
@@ -166,23 +170,22 @@ const CoursePage = ({userID}) => {
                 value={selectedCourse}
             />
             {selectedCourse && courseInfo && 
-                <Box p={2}>
-                    {/* <Typography variant="subtitle1">
-                    Course ID: {courseInfo.course_id}
+            <Box p={2}>
+                <Paper elevation={0} style={{ display: 'flex', paddingBottom: '10px' }}>
+                    <Typography style={{ marginRight: '10px', borderRadius: '20px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', textAlign: 'center', border: '1px solid #ccc', fontSize: "13px" }}>
+                        {courseInfo.semester}
                     </Typography>
-                    <Typography variant="subtitle1">
-                    Course Name: {courseInfo.course_name}
-                    </Typography> */}
-                    <Typography variant="subtitle1">
-                        Semester: {courseInfo.semester}
+                    <Typography variant="subtitle3">
+                        {courseInfo.course_name}
                     </Typography>
-                    <Typography variant="subtitle1">
-                        教授姓名：{courseInfo.instructor_name}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                        開課系所：{courseInfo.department_name}
-                    </Typography>
-                </Box>                       
+                </Paper>
+                <Typography variant="subtitle2">
+                    教授姓名：{courseInfo.instructor_name}
+                </Typography>
+                <Typography variant="subtitle2">
+                    開課系所：{courseInfo.department_name}
+                </Typography>
+            </Box>
             }
             {
                 selectType == 1 && selectedCourse && courseGroups.length > 0? 

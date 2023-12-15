@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { Box, Grid, Paper, Typography, Button, Container } from '@mui/material';
+import { Box, Typography, Snackbar, Container } from '@mui/material';
 
 import { UserCard } from '../components/UserCard';
 import InformationModal from '../components/InformationModal';
@@ -28,6 +28,12 @@ const HomePage = () => {
     const [openModel, setOpenModel] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [recommends, setRecommends] = useState([]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
 
     const handleOpen = (user) => {
         setSelectedUser(user);
@@ -43,15 +49,19 @@ const HomePage = () => {
 
                 const fetchRecommendInfo = async (recommendID) => {
                     const friendInfo = await fetchUserInfo(recommendID);
-                    if (friendInfo){
-                        return { uid: recommendID, 
-                            username: friendInfo.student_name, 
-                            department: friendInfo.department_name, 
-                            selfIntro: friendInfo.self_introduction ?? "" 
-                        };
-                    }
-                    else {
-                        return null;
+                    const courseResponse = await instance.get(`/user/enrolled_courses/${recommendID}`);
+                    if (courseResponse.data.success) {
+                        if (friendInfo){
+                            return { uid: recommendID, 
+                                username: friendInfo.student_name, 
+                                department: friendInfo.department_name, 
+                                selfIntro: friendInfo.self_introduction ?? "",
+                                courseRecords: courseResponse.data.data.courses
+                            };
+                        }
+                        else {
+                            return null;
+                        }
                     }
                 };
     
@@ -69,17 +79,45 @@ const HomePage = () => {
         fetchUserRecommends()
     }, [userID]);
 
+    const sendFriendRequest = async (targetID) => {
+        try {
+            const response = await instance.post('/user/friend/send_request', {
+                user: userID,
+                target: targetID,
+            });
+            if (response.data.success) {
+                setAlertMessage('Request sent successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Failed to send request');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return(
         <Container sx={MainContainer}>
             <Typography variant="h5" fontWeight={800} sx={{mt: '30px'}}>
                 Discover Your Friends Now
             </Typography>
             <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
-            {recommends && recommends.map((recommend, index) => (
-                <UserCard user={recommend} handleOpen={handleOpen} key={index} id={index}/>
+            {recommends.length > 0 && recommends.map((recommend, index) => (
+                <UserCard user={recommend} handleOpen={handleOpen} key={index} id={index} sendFriendRequest={sendFriendRequest}/>
             ))}
             </Box>
             {selectedUser && <InformationModal open={openModel} setOpen={setOpenModel} user={selectedUser}/>}
+            <Snackbar
+                anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+                }}
+                open={openSnackbar}
+                autoHideDuration={3000} // Adjust the duration as needed
+                onClose={handleCloseSnackbar}
+                message={alertMessage}
+            />
         </Container>
         
     );

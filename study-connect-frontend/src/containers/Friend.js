@@ -104,14 +104,15 @@ const FriendPage = () => {
 
     return(
         <Container sx={MainContainer}>
-            <Typography variant="h5" fontWeight={800} sx={{mt: '30px'}}>
+            <Typography variant="h5" fontWeight={800} sx={{my: '30px'}}>
                 Your Friends
             </Typography>
             <Button size='small'
                 maxHeight='10px'
                 variant="contained"
                 color='primary'
-                sx={{width: '160px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600, position: 'absolute', top: '94px', right: '24%'}}
+                sx={{width: '160px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
+                // position: 'absolute', top: '94px', right: '24%'
                 onClick={handleOpen}
             >
                 View Invitations

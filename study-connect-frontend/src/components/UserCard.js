@@ -14,9 +14,10 @@ const UserCardStyle = {
 export const UserCard = (props) => {
     const user = props.user;
     const handleOpen = props.handleOpen;
+    const sendFriendRequest = props.sendFriendRequest;
 
     return (
-        <Grid container spacing={2} sx={UserCardStyle}>
+        <Grid container spacing={2} sx={UserCardStyle} key={props.id}>
             <Grid item md={8}>
                 <Typography variant="h6">
                     {user.username}
@@ -38,6 +39,7 @@ export const UserCard = (props) => {
                     variant="contained"
                     color='primary'
                     sx={{width: '120px', mb: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
+                    onClick={() => sendFriendRequest(user.uid)}
                 >
                     Send Request
                 </Button>

@@ -16,7 +16,7 @@ const GroupCard = {
 const CourseGroupView = ({courseGroups, sendJoinGroupRequest}) => {
     
     return(
-        <Box sx={{ maxHeight: '55vh', overflowY: 'auto'}}>
+        <Box sx={{ maxHeight: '50vh', overflowY: 'auto'}}>
             {courseGroups.map((group, index) => (
                 <Grid container spacing={2} sx={GroupCard} key={index}>
                     <Grid item md={8}>
