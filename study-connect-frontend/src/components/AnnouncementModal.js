@@ -57,11 +57,12 @@ const AnnouncementModal = ({open, setOpen}) => {
             onClose={handleClose}
         >
             <Box sx={ModelStyle}>
-                <Typography variant="h4" align="center" color="primary" sx={{mb: '20px'}}>
-                    Publish an Announcement
+                <Typography variant="h6" color="primary" sx={{fontWeight: 700, mb: '20px'}}>
+                    發起會議
                 </Typography>
                 <TextField
                     multiline
+                    size='small'
                     rows={1}
                     label="公告標題"
                     variant="outlined"
@@ -72,7 +73,7 @@ const AnnouncementModal = ({open, setOpen}) => {
                 />
                 <TextField
                     multiline
-                    rows={4}
+                    rows={3}
                     label="公告內容"
                     variant="outlined"
                     fullWidth
@@ -84,12 +85,10 @@ const AnnouncementModal = ({open, setOpen}) => {
                         id="confirm-update-button"
                         size="small"
                         variant="contained"
-                        color="secondary"
+                        color="primary"
                         onClick={handlePublish}
                         sx={{
                             width: '100px',
-                            height: '50px',
-                            borderRadius: '30px',
                             mt: '25px',
                             textTransform: 'none',
                             color: '#fff',

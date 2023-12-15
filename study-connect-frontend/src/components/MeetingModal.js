@@ -113,11 +113,12 @@ const MeetingModal = ({open, setOpen}) => {
             onClose={handleClose}
         >
             <Box sx={ModelStyle}>
-                <Typography variant="h4" align="center" color="primary" sx={{mb: '20px'}}>
-                    Arange Meeting
+                <Typography variant="h6" color="primary" sx={{fontWeight: 700, mb: '20px'}}>
+                    發起會議
                 </Typography>
                 <TextField
                     multiline
+                    size='small'
                     rows={1}
                     label="會議名稱"
                     variant="outlined"
@@ -128,7 +129,7 @@ const MeetingModal = ({open, setOpen}) => {
                 />
                 <TextField
                     multiline
-                    rows={4}
+                    rows={3}
                     label="會議內容"
                     variant="outlined"
                     fullWidth
@@ -140,6 +141,7 @@ const MeetingModal = ({open, setOpen}) => {
                 <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
                     <TextField
                         select
+                        size='small'
                         label="開始年分"
                         value={selectedStartYear}
                         onChange={handleStartYearChange}
@@ -158,6 +160,7 @@ const MeetingModal = ({open, setOpen}) => {
                     <TextField
                         select
                         label="開始月分"
+                        size='small'
                         value={selectedStartMonth}
                         onChange={handleStartMonthChange}
                         variant="outlined"
@@ -175,6 +178,7 @@ const MeetingModal = ({open, setOpen}) => {
                     <TextField
                         select
                         label="開始日"
+                        size='small'
                         value={selectedStartDay}
                         onChange={handleStartDayChange}
                         variant="outlined"
@@ -191,6 +195,7 @@ const MeetingModal = ({open, setOpen}) => {
                         <TextField
                         select
                         label="開始時間"
+                        size='small'
                         value={selectedStartTime}
                         onChange={handleStartTimeChange}
                         variant="outlined"
@@ -210,6 +215,7 @@ const MeetingModal = ({open, setOpen}) => {
                     <TextField
                         select
                         label="結束年分"
+                        size='small'
                         value={selectedEndYear}
                         onChange={handleEndYearChange}
                         variant="outlined"
@@ -227,6 +233,7 @@ const MeetingModal = ({open, setOpen}) => {
                     <TextField
                         select
                         label="結束月分"
+                        size='small'
                         value={selectedEndMonth}
                         onChange={handleEndMonthChange}
                         variant="outlined"
@@ -244,6 +251,7 @@ const MeetingModal = ({open, setOpen}) => {
                     <TextField
                         select
                         label="結束日"
+                        size='small'
                         value={selectedEndDay}
                         onChange={handleEndDayChange}
                         variant="outlined"
@@ -260,6 +268,7 @@ const MeetingModal = ({open, setOpen}) => {
                         <TextField
                         select
                         label="結束時間"
+                        size='small'
                         value={selectedEndTime}
                         onChange={handleEndTimeChange}
                         variant="outlined"
@@ -283,8 +292,6 @@ const MeetingModal = ({open, setOpen}) => {
                         onClick={handlePublish}
                         sx={{
                             width: '100px',
-                            height: '50px',
-                            borderRadius: '30px',
                             mt: '25px',
                             textTransform: 'none',
                             color: '#fff',

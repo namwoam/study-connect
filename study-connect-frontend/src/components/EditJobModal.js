@@ -13,7 +13,7 @@ const ModelStyle = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 650,
+  width: 500,
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
@@ -24,13 +24,12 @@ const ModelStyle = {
   flexDirection: 'column',
   alignItems: 'center', // Center horizontally
   justifyContent: 'center', // Center vertically
-  borderRadius: '30px',
+  borderRadius: '10px',
 };
 
 const EditJobModal = ({ open, setOpen, groupMember }) => {
   const handleClose = () => setOpen(false);
 
-  // 初始化状态时遍历组成员，将每个成员的默认工作添加到状态中
   const initialEditingJobs = groupMember.map((member) => member.job || ''); // Use member.job or an empty string if job is undefined
   const [editingJobs, setEditingJobs] = useState(initialEditingJobs);
 
@@ -49,8 +48,8 @@ const EditJobModal = ({ open, setOpen, groupMember }) => {
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={ModelStyle}>
-        <Typography variant="h4" align="center" color="primary" sx={{ mb: '20px' }}>
-          Edit Job
+        <Typography variant="h6" color="primary" sx={{fontWeight: 700, mb: '20px'}}>
+          編輯成員分工
         </Typography>
 
         {groupMember.map((member, index) => (
@@ -62,11 +61,12 @@ const EditJobModal = ({ open, setOpen, groupMember }) => {
             justifyContent="center"
             sx={{ mb: '20px' }}
           >
-            <Typography variant="h6" align="center" color="primary" sx={{ width: '50%', paddingLeft: '10px' }}>
+            <Typography variant="body1" align="center" sx={{ width: '50%'}}>
               {member.name}
             </Typography>
             <TextField
               id={`outlined-basic-${index}`}
+              size='small'
               label="Job"
               variant="outlined"
               value={editingJobs[index] || ''}
@@ -79,12 +79,10 @@ const EditJobModal = ({ open, setOpen, groupMember }) => {
           id="confirm-update-button"
           size="small"
           variant="contained"
-          color="secondary"
+          color="primary"
           onClick={handlePublish}
           sx={{
             width: '100px',
-            height: '50px',
-            borderRadius: '30px',
             mt: '25px',
             textTransform: 'none',
             color: '#fff',
@@ -92,7 +90,7 @@ const EditJobModal = ({ open, setOpen, groupMember }) => {
             fontWeight: 600,
           }}
         >
-          Confirm
+          確認編輯
         </Button>
       </Box>
     </Modal>

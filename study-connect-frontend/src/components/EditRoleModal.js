@@ -16,7 +16,7 @@ const ModelStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 650,
+    width: 500,
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
@@ -27,7 +27,7 @@ const ModelStyle = {
     flexDirection: 'column',
     alignItems: 'center', // Center horizontally
     justifyContent: 'center', // Center vertically
-    borderRadius: '30px',
+    borderRadius: '10px',
 };
 
 const EditRoleModal = ({open, setOpen, groupMember, groupID}) => {
@@ -42,7 +42,7 @@ const EditRoleModal = ({open, setOpen, groupMember, groupID}) => {
     };
 
     const handlePublish = () => {
-        console.log('Publish an announcements');
+        console.log('變更組長');
         console.log(editingLeader);
         handleClose();
     };
@@ -53,21 +53,23 @@ const EditRoleModal = ({open, setOpen, groupMember, groupID}) => {
             onClose={handleClose}
         >
             <Box sx={ModelStyle}>
-                <Typography variant="h4" align="center" color="primary" sx={{mb: '20px'}}>
-                    Edit Roles
+                <Typography variant="h6" color="primary" sx={{fontWeight: 700, mb: '20px'}}>
+                    變更組長
                 </Typography>
                 {/* set a length = numOfMember scroll down menu to select who will be the group leader */}
                 <TextField
                     id="outlined-select-currency"
+                    size='small'
                     select
                     label="Select"
                     value={editingLeader}
                     onChange={handleLeaderChange}
                     helperText="Please select who will be the group leader"
+                    sx={{width: '90%'}}
                 >
                     {groupMember.map((member) => (
-                        <MenuItem key={member.ID} value={member.Name}>
-                            {member.Name}
+                        <MenuItem key={member.student_id} value={member.name}>
+                            {member.name}
                         </MenuItem>
                     ))}
                 </TextField>
@@ -75,12 +77,10 @@ const EditRoleModal = ({open, setOpen, groupMember, groupID}) => {
                     id="confirm-update-button"
                     size="small"
                     variant="contained"
-                    color="secondary"
+                    color="primary"
                     onClick={handlePublish}
                     sx={{
                         width: '100px',
-                        height: '50px',
-                        borderRadius: '30px',
                         mt: '25px',
                         textTransform: 'none',
                         color: '#fff',
@@ -88,7 +88,7 @@ const EditRoleModal = ({open, setOpen, groupMember, groupID}) => {
                         fontWeight: 600,
                     }}
                 >
-                    變更
+                    確認變更
                 </Button>
             </Box>
         </Modal>
