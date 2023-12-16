@@ -124,6 +124,24 @@ const CoursePage = ({userID}) => {
         }
     };
 
+    const sendFriendRequest = async (targetID) => {
+        try {
+            const response = await instance.post('/user/friend/send_request', {
+                user: userID,
+                target: targetID,
+            });
+            if (response.data.success) {
+                setAlertMessage('Request sent successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Failed to send request');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     useEffect(() => {
         fetchEnrolledCourses();
     }, [userID]);
@@ -192,7 +210,7 @@ const CoursePage = ({userID}) => {
                 <CourseGroupView courseGroups={courseGroups} sendJoinGroupRequest={sendJoinGroupRequest}/>
                 :
                 selectType == 2 && selectedCourse && courseMembers.length > 0?
-                <CourseMemberView courseMembers={courseMembers} sendJoinGroupRequest={sendJoinGroupRequest}/>
+                <CourseMemberView courseMembers={courseMembers} sendFriendRequest={sendFriendRequest}/>
                 :
                 <></>
             }

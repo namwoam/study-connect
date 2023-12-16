@@ -377,7 +377,7 @@ const UserPage = ({userID}) => {
               <Typography variant="h6" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
                 History Course Records
               </Typography>
-              <Typography variant="h4" align="center" color="textSecondary" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
+              <Typography variant="h7" align="center" color="textSecondary" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
                 No Records
               </Typography>
               {/* {previousCourseRecords.map((course, index) => (
@@ -424,6 +424,8 @@ const UserPage = ({userID}) => {
             </Box>
           </Box>
       </Box>
+      </>
+      }
       <Snackbar
         anchorOrigin={{
         vertical: 'bottom',

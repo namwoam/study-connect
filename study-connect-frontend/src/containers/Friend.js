@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from 'react';
-import { Box, Grid, Paper, Typography, Button, Container } from '@mui/material';
+import { Box, Grid, Snackbar, Typography, Button, Container } from '@mui/material';
 import instance from '../instance';
 import { fetchUserInfo } from '../utils/fetchUser';
 import FriendCard from '../components/FriendCard';
@@ -13,24 +13,19 @@ const MainContainer = {
     alignItems: 'center',
 }
 
-const invites = [
-    {uid: 1, username: 'user1', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
-    {uid: 2, username: 'user2', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
-    {uid: 3, username: 'user3', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
-    {uid: 4, username: 'user3', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
-    {uid: 5, username: 'user3', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
-    {uid: 6, username: 'user3', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'},
-    {uid: 7, username: 'user3', selfIntro: 'Hi, my name is ...', status: 'Unconfirmed'}
-]
-
 const FriendPage = () => {
     const userID = localStorage.getItem('userID')
     const [openModel, setOpenModel] = useState(false);
     const [invatations, setInvatations] = useState([]);
     const [userFriends, setUserFriends] = useState([]);
-    const [alerts, setAlerts] = useState(false);
     const [openInfoModel, setOpenInfoModel] = useState(false);
     const [selectedUser, setSelectedUser] = useState("");
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
 
     const handleInfoOpen = (friend) => {
         setSelectedUser(friend);
@@ -76,8 +71,8 @@ const FriendPage = () => {
         try {
             const response = await instance.get(`/user/friend/list_requests/${userID}`);
             if (response.data.success) {
-                let requestIDs = response.data.requests;
-
+                let requestIDs = response.data.data.requests;
+                // console.log(requestIDs);
                 const fetchFriendRequestInfo = async (requestID) => {
                     const friendInfo = await fetchUserInfo(requestID);
                     const courseResponse = await instance.get(`/user/enrolled_courses/${requestID}`);
@@ -99,7 +94,6 @@ const FriendPage = () => {
             }
         } catch (error) {
             console.log(error);
-            // Handle error as needed
         }
     };
 
@@ -107,16 +101,47 @@ const FriendPage = () => {
         fetchUserFriends()
     }, [userID]);
 
-    const handleOpen = () => {
+    const handleOpen = async () => {
         fetchFriendRequests(userID);
         setOpenModel(true);
     };
 
-    const accept_friend = (studentID) => {
-        console.log("accept: ", studentID);
+    const accept_friend = async (studentID) => {
+        try{
+            const response = await instance.post('/user/friend/approve_request', {
+                user: userID,
+                target: studentID
+            })
+            if (response.status == 200) {
+                fetchUserFriends();
+                setAlertMessage('Accept friend request successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Failed to accept friend request');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    const reject_friend = (studentID) => {
+    const reject_friend = async (studentID) => {
+        try{
+            const response = await instance.post('/user/friend/unfriend', {
+                user: userID,
+                target: studentID
+            })
+            if (response.status == 200) {
+                fetchUserFriends();
+                setAlertMessage('Reject friend request successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Failed to reject friend request');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.log(error);
+        }
         console.log("reject: ", studentID);
     }
 
@@ -145,8 +170,17 @@ const FriendPage = () => {
             </Box>
             <InformationModal open={openInfoModel} setOpen={setOpenInfoModel} user={selectedUser}/>
             <FriendModal open={openModel} setOpen={setOpenModel} invatations={invatations} accept_friend={accept_friend} reject_friend={reject_friend} handleInfoOpen={handleInfoOpen}/>
+            <Snackbar
+                anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+                }}
+                open={openSnackbar}
+                autoHideDuration={3000} // Adjust the duration as needed
+                onClose={handleCloseSnackbar}
+                message={alertMessage}
+            />
         </Container>
-        
     );
 }
 

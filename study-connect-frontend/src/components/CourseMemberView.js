@@ -4,7 +4,7 @@ import { UserCard } from './UserCard';
 import InformationModal from './InformationModal';
 
 
-const CourseMemberView = ({courseMembers}) => {
+const CourseMemberView = ({courseMembers, sendFriendRequest}) => {
     const [openModel, setOpenModel] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
@@ -18,7 +18,7 @@ const CourseMemberView = ({courseMembers}) => {
         <>
             <Box sx={{ maxHeight: '52vh', overflowY: 'auto'}}>
                 {courseMembers.map((member, index) => (
-                    <UserCard user={member} handleOpen={handleOpen} key={index} id={index}/>
+                    <UserCard user={member} handleOpen={handleOpen} sendFriendRequest={sendFriendRequest} key={index} id={index}/>
                 ))}
             </Box>
             {selectedUser && <InformationModal open={openModel} setOpen={setOpenModel} user={selectedUser}/>}
