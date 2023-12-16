@@ -358,13 +358,13 @@ const UserPage = ({userID}) => {
                           <Button
                               size='small'
                               variant="contained"
-                              // if visibility == 0, color = primary, else color = secondary
-                              color={course.visibility === 0 ? 'primary' : 'secondary'}
+                              // if visibility == 1, color = primary, else color = secondary
+                              color={course.visibility === 1 ? 'primary' : 'secondary'}
                               onClick={() => handleUpdateVisibility(course.id, course.visibility)}
                               sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                           >
-                              {/* if visibility == 0, "Show", else Hide */}
-                              {course.visibility === 0 ? 'Show' : 'Hide'}
+                              {/* if visibility == 1, "Show", else Hide */}
+                              {course.visibility === 1 ? 'Show' : 'Hide'}
                           </Button>
                       </Grid>
                   </Grid>
