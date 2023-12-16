@@ -30,10 +30,11 @@ def send_request(fa: FriendAction):
             raise "can't send request, relationship already exist"
         update_database(
             f"""
-        INSERT OR IGNORE INTO IS_FRIEND_OF VALUES ('{fa.user}', '{fa.target}' , 'Unconfirm')
+        INSERT INTO IS_FRIEND_OF VALUES ('{fa.user}', '{fa.target}' , 'Unconfirm')
         """
         )
     except BaseException as err:
+        print(err)
         return HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
@@ -60,7 +61,7 @@ def unfriend(fa: FriendAction):
             f"""
             UPDATE IS_FRIEND_OF
             SET confirm_status = 'Disagree'
-            WHERE user1_ID = "{fa.user}" AND user2_ID = "{fa.target}";
+            WHERE (user1_ID = "{fa.user}" AND user2_ID = "{fa.target}") OR (user2_ID = "{fa.user}" AND user1_ID = "{fa.target}");
             """
         )
     except BaseException as err:
