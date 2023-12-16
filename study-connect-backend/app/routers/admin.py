@@ -1,7 +1,11 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from ..db import query_database, update_database
 from ..utils import ok_respond
+
+import io
+
 router = APIRouter(
     prefix="/admin",
     tags=["admin"],
@@ -90,3 +94,22 @@ def hardwork_instructor(limit: int = 10):
     return ok_respond({
         "instructors": hardwork.values.tolist()
     })
+
+
+class CustomQuery(BaseModel):
+    query: str
+
+
+@router.post("/custom_query")
+def custom_query(cq: CustomQuery):
+    try:
+        result = query_database(cq.query)
+        stream = io.StringIO()
+        result.to_csv(stream, index=False)
+        res = StreamingResponse(iter([stream.getvalue()]),
+                                media_type="text/csv"
+                                )
+        res.headers["Content-Disposition"] = "attachment; filename=export.csv"
+        return res
+    except BaseException as err:
+        return HTTPException(status_code=403, detail="Forbidden")
