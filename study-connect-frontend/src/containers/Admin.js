@@ -1,7 +1,8 @@
 import { React, useState, useEffect } from 'react';
 import { Typography, Button, Container, MenuItem, Select, FormControl, InputLabel, TextField, Autocomplete, Snackbar } from '@mui/material';
 import instance from '../instance';
-import ProfessorStatsTable from '../components/ProfessorStat';
+import ProfessorStatsTable from '../components/admin/ProfessorStat';
+import CustomQuery from '../components/admin/CustomQuery';
 
 const adminOptions = [
     {id: 0, label:"查詢、修改已刪除課程小組", value: "queryDissolvedGroups"},
@@ -9,6 +10,7 @@ const adminOptions = [
     {id: 2, label:"查詢學生的好友數量", value: "studentFriendCount"},
     {id: 3, label:"課程統計資訊", value: "courseStats"},
     {id: 4, label:"教授統計資訊", value: "ProfessorStats"},
+    {id: 5, label:"客製化 Query 執行", value: "CustomQuery"},
 ]
 const MainContainer = {
     display: 'flex',
@@ -51,6 +53,7 @@ const AdminPage = ({userID}) => {
             {selectedFunction && selectedFunction.value === 'studentFriendCount' && <StudentFriendCount />}
             {selectedFunction && selectedFunction.value === 'courseStats' && <CourseStatistics />}
             {selectedFunction && selectedFunction.value === 'ProfessorStats' && <ProfessorStatsTable />}
+            {selectedFunction && selectedFunction.value === 'CustomQuery' && <CustomQuery />}
             <Snackbar
                 anchorOrigin={{
                 vertical: 'bottom',
