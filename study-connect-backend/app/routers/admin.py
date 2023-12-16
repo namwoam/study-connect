@@ -30,12 +30,12 @@ def create_csv(cgcsv: CreateGroupCSV):
         assert group_data['role'].isin(['Leader', 'Member']).all()
         assert sum(group_data['role'] == "Leader") == 1
         assert group_data[group_data['role'] ==
-                          "Leader"]['user_id'] == cgcsv.group_data.user
+                          "Leader"]['user_id'].to_list()[0] == cgcsv.group_data.user
         group_id = query_database("SELECT group_id FROM STUDY_GROUP ORDER BY group_id DESC LIMIT 1")[
             "group_ID"].to_list()[0]
         group_data["group_id"] = group_id
         group_data["join_status"] = "Join"
-        update_database_df(group_data, "STUDY_GROUP")
+        update_database_df(group_data, "JOIN_GROUP")
         return ok_respond()
     except BaseException as err:
         print(err)
