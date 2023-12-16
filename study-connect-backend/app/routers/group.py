@@ -36,6 +36,26 @@ class Meeting(BaseModel):
     end_time: datetime.datetime
 
 
+class EditGroupNameAction(BaseModel):
+    group_id: str
+    content: str
+
+
+@router.post("/edit_name")
+def edit_name(egna: EditGroupNameAction):
+    try:
+        update_database(
+            f"""
+            UPDATE STUDY_GROUP
+            SET group_name = "{egna.content}"
+            WHERE group_id = "{egna.group_id}"
+            """
+        )
+    except BaseException as err:
+        return HTTPException(status_code=403, detail="Forbidden")
+    return ok_respond()
+
+
 @router.post("/send_request")
 def send_request(aga: AdminGroupAction):
     try:
