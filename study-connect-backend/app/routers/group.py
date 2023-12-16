@@ -56,6 +56,18 @@ def edit_name(egna: EditGroupNameAction):
     return ok_respond()
 
 
+@router.get("/pending_request/{group_id}")
+def pending_request(group_id: str):
+    requests = query_database(f"""
+        SELECT user_ID
+        FROM JOIN_GROUP
+        WHERE join_status = "Waiting" AND group_id = "{group_id}"
+    """)
+    return ok_respond({
+        "requests": requests["user_ID"].to_list()
+    })
+
+
 @router.post("/send_request")
 def send_request(aga: AdminGroupAction):
     try:
