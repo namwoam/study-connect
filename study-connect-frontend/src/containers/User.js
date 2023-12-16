@@ -103,6 +103,7 @@ const UserPage = ({userID}) => {
   const [userInfo, setUserInfo] = useState({});
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [courseRecords, setCourseRecords] = useState([]);
 
   const fetchUser = async () => {
     try {
@@ -117,11 +118,28 @@ const UserPage = ({userID}) => {
     catch (error) {
       console.error('Error fetching userinfo:', error);
       throw error;
-    }            
+    }
+  }
+
+  const fetcCourseHistory = async () => {
+    try {
+      const response = await instance.get(`/user/enrolled_courses/${userID}`);
+      if (response.data.success) {
+        let courses = [];
+        let enrolledCourses = response.data.data.courses;
+        enrolledCourses.forEach((course) => {
+            courses.push({id: course[0], courseName: course[1], semester: course[2], grade: course[3], visibility: course[4]})
+        })
+        setCourseRecords([...courses]);
+      }
+    } catch (error) {
+        console.log(error);
+    }
   }
 
   useEffect(() => {    
-    fetchUser();    
+    fetchUser();   
+    fetcCourseHistory(); 
   }, [userID]);
 
   const handleCloseSnackbar = () => {
@@ -143,9 +161,25 @@ const UserPage = ({userID}) => {
     //console.log("FB change:",editingFB);
   };
 
-  const handleUpdateVisibility = (courseHistoryID, visibility) => {
-    SetCourseHistory(courseHistoryID, visibility);
-    //console.log('Toggle visibility', courseHistoryID);
+  const handleUpdateVisibility = async (courseID, visibility) => {
+    const alterVisibility = visibility === 0 ? 1 : 0;
+    try {
+      const response = await instance.post('/user/change_visibility', {
+        user_id: userID,
+        course_id: courseID,
+        visibility: alterVisibility,
+      });
+      if (response.data.success) {
+        setAlertMessage('Change visibility successfully');
+        setOpenSnackbar(true);
+        fetcCourseHistory(); 
+      } else {
+          setAlertMessage('Failed to change visibility');
+          setOpenSnackbar(true);
+      }
+    } catch (error) {
+        console.log(error);
+    }
   }
 
   const updateUserIG = async () => {
@@ -296,7 +330,7 @@ const UserPage = ({userID}) => {
               <Typography variant="h6" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
                 Current Course Records
               </Typography>
-              {currentCourseRecords.map((course, index) => (
+              {courseRecords.map((course, index) => (
                   <Grid container spacing={2} sx={CourseCard}>
                       <Paper elevation={0} style={{ border: '1px #d0d0d0 solid', borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', margin: '3px', textAlign: 'center'}}>
                         <Typography>
@@ -305,12 +339,12 @@ const UserPage = ({userID}) => {
                       </Paper>
                       <Grid>
                           <Typography>
-                              {course.coursename}
+                              {course.courseName}
                           </Typography>
                       </Grid>
                       <Grid>
                           <Typography>
-                              {/* {course.grade} */}
+                              {course.grade === 'I' ? '' : course.grade}
                           </Typography>
                       </Grid>
                       <Grid
@@ -324,13 +358,13 @@ const UserPage = ({userID}) => {
                           <Button
                               size='small'
                               variant="contained"
-                              // if visibility == 1, color = primary, else color = secondary
-                              color={course.visibility === 1 ? 'primary' : 'secondary'}
-                              onClick={() => handleUpdateVisibility(course.uid)}
+                              // if visibility == 0, color = primary, else color = secondary
+                              color={course.visibility === 0 ? 'primary' : 'secondary'}
+                              onClick={() => handleUpdateVisibility(course.id, course.visibility)}
                               sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                           >
-                              {/* if visibility == 1, "Show", else Hide */}
-                              {course.visibility === 1 ? 'Show' : 'Hide'}
+                              {/* if visibility == 0, "Show", else Hide */}
+                              {course.visibility === 0 ? 'Show' : 'Hide'}
                           </Button>
                       </Grid>
                   </Grid>
@@ -340,7 +374,10 @@ const UserPage = ({userID}) => {
               <Typography variant="h6" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
                 History Course Records
               </Typography>
-              {previousCourseRecords.map((course, index) => (
+              <Typography variant="h4" align="center" color="textSecondary" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
+                No Records
+              </Typography>
+              {/* {previousCourseRecords.map((course, index) => (
                   <Grid container spacing={2} sx={CourseCard}>
                       <Paper elevation={0} style={{ border: '1px #d0d0d0 solid', borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', margin: '3px', textAlign: 'center'}}>
                         <Typography>
@@ -375,12 +412,12 @@ const UserPage = ({userID}) => {
                               onClick={() => handleUpdateVisibility(course.uid)}
                               sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                           >
-                              {/* if visibility == 1, "Show", else Hide */}
+                              // if visibility == 1, "Show", else Hide
                               {course.visibility === 1 ? 'Show' : 'Hide'}
                           </Button>
                       </Grid>
                   </Grid>
-              ))}
+              ))*/} 
             </Box>
           </Box>
       </Box>
