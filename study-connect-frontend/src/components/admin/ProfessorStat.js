@@ -18,7 +18,7 @@ import {
     Box,
     TablePagination,
   } from '@mui/material';
-import instance from '../instance';
+import instance from '../../instance';
 import Papa from 'papaparse';
 
 const ProfessorStatsTable = () => {
