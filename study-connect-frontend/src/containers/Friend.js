@@ -132,7 +132,6 @@ const FriendPage = () => {
                 target: studentID
             })
             if (response.status == 200) {
-                fetchUserFriends();
                 setAlertMessage('Reject friend request successfully');
                 setOpenSnackbar(true);
             } else {
