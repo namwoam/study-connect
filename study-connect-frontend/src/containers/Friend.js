@@ -132,10 +132,31 @@ const FriendPage = () => {
                 target: studentID
             })
             if (response.status == 200) {
+                fetchFriendRequests();
                 setAlertMessage('Reject friend request successfully');
                 setOpenSnackbar(true);
             } else {
                 setAlertMessage('Failed to reject friend request');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        console.log("reject: ", studentID);
+    }
+
+    const unfriend = async (studentID) => {
+        try{
+            const response = await instance.post('/user/friend/unfriend', {
+                user: userID,
+                target: studentID
+            })
+            if (response.status == 200) {
+                fetchUserFriends();
+                setAlertMessage('Unfriend successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Failed to unfriend');
                 setOpenSnackbar(true);
             }
         } catch (error) {
@@ -162,7 +183,7 @@ const FriendPage = () => {
             <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
             {userFriends.length > 0 ? 
                 userFriends.map((friend, index) => (   
-                    <FriendCard friend={friend} handleInfoOpen={handleInfoOpen}/>
+                    <FriendCard friend={friend} handleInfoOpen={handleInfoOpen} handleUnfriend={unfriend}/>
                 ))
                 : <Typography sx={{mt: '20px'}}>You don't have any friend now. QQ</Typography>
             }
