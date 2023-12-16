@@ -1,31 +1,39 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Paper, Grid, Snackbar } from '@mui/material';
 import { fetchUserInfo } from '../utils/fetchUser';
+import instance from '../instance';
 
-const adminIDs = ['B10101025'];
-
-const Login = ({setLogin, setuser, setIsadmin, setUserInfo}) => {
+const Login = ({setLogin, setuser, setIsadmin}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [loginMessage, setLoginMessage] = useState("");
 
-  const handleLogin =  async () => {
-    // Implement your login logic here
-    console.log('Username:', username);
-    console.log('Password:', password);
-    
-    if (username === password) {
-        if (adminIDs.includes(username)) {
-          localStorage.setItem('isAdmin', 'true');
+  const handleLogin = async () => {
+    try {
+      const response = await instance.post('/login', {
+        username: username,
+        password: password,
+      });
+
+      if (response.data.success) {
+        const isAdmin = response.data.data.is_admin;
+        if (isAdmin) {
           setIsadmin(true);
+          localStorage.setItem('isAdmin', 'true');
         }
+
         setLogin(true);
         setuser(username);
-        setUserInfo(JSON.stringify(await fetchUserInfo(username)));
-        console.log('login user info:', await fetchUserInfo(username));
-    }
-    else {
+        setLoginMessage('Login successful!');
         setOpenSnackbar(true);
+      } else {
+        setLoginMessage("Login failed! Please check your credentials.")
+        setOpenSnackbar(true);
+      }
+    } catch (error) {
+      setLoginMessage("Login failed! Please check your credentials.")
+      setOpenSnackbar(true);
     }
   };
 
@@ -111,7 +119,7 @@ const Login = ({setLogin, setuser, setIsadmin, setUserInfo}) => {
         open={openSnackbar}
         autoHideDuration={3000} // Adjust the duration as needed
         onClose={handleCloseSnackbar}
-        message="Login failed! Please check your credentials."
+        message={loginMessage}
       />
     </Container>
   );
