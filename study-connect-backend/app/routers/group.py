@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 
-class AdminGroupAction(BaseModel):
+class JoinGroupAction(BaseModel):
     user: str
     group_id: str
 
@@ -69,11 +69,11 @@ def pending_request(group_id: str):
 
 
 @router.post("/send_request")
-def send_request(aga: AdminGroupAction):
+def send_request(jga: JoinGroupAction):
     try:
         update_database(
             f"""
-            INSERT OR IGNORE INTO JOIN_GROUP VALUES ('{aga.group_id}', '{aga.user}' , 'Waiting' , 'Member' , 'Undecided')
+            INSERT OR IGNORE INTO JOIN_GROUP VALUES ('{jga.group_id}', '{jga.user}' , 'Waiting' , 'Member' , 'Undecided')
             """
         )
     except BaseException as err:
@@ -83,14 +83,14 @@ def send_request(aga: AdminGroupAction):
 
 
 @router.post("/approve_request")
-def approve_request(aga: AdminGroupAction):
+def approve_request(jgq: JoinGroupAction):
     try:
         df = query_database(
             f"""
             SELECT COUNT(*) AS current , capacity
             FROM JOIN_GROUP AS JG
             JOIN STUDY_GROUP AS SG ON SG.group_id = JG.group_id
-            WHERE SG.group_id = {aga.group_id} AND JG.join_status = "Join" AND SG.group_status = "In_progress"
+            WHERE SG.group_id = {jgq.group_id} AND JG.join_status = "Join" AND SG.group_status = "In_progress"
             GROUP BY JG.group_id
             """
         )
@@ -101,7 +101,7 @@ def approve_request(aga: AdminGroupAction):
             f"""
             UPDATE JOIN_GROUP
             SET join_status = "Join"
-            WHERE group_id = "{aga.group_id}" AND user_id = "{aga.user}"
+            WHERE group_id = "{jgq.group_id}" AND user_id = "{jgq.user}"
             """
         )
     except BaseException as err:
@@ -110,13 +110,13 @@ def approve_request(aga: AdminGroupAction):
 
 
 @router.post("/kick")
-def kick(aga: AdminGroupAction):
+def kick(jga: JoinGroupAction):
     try:
         update_database(
             f"""
             UPDATE JOIN_GROUP
             SET join_status = "Leave"
-            WHERE group_id = "{aga.group_id}" AND user_id = "{aga.user}" AND group_status = "In_progress"
+            WHERE group_id = "{jga.group_id}" AND user_id = "{jga.user}" AND group_status = "In_progress"
             """
         )
     except BaseException as err:
