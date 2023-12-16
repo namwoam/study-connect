@@ -460,7 +460,7 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                                 Your role
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between',alignItems: 'center', paddingBottom: '5px',}}>
-                            <Box sx={{fontSize: 15, width: "30%"}}>
+                            <Box sx={{fontSize: 15, width: "40%"}}>
                                 {userInfo.role}
                             </Box>
                             <Box sx={{width: "30%"}} flex = {0.5}>
@@ -478,9 +478,8 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                             )}
                             </Box>
                         </Box>
-                        <Typography 
-                            sx={GreySubtitle}>
-                                Your job
+                        <Typography sx={GreySubtitle}>
+                            Your job
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between',alignItems: 'center', paddingBottom: '5px',}}>
                             <Box sx={{fontSize: 15, width: "40%"}}>
