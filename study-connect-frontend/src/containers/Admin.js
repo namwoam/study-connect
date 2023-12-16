@@ -1,14 +1,14 @@
 import { React, useState, useEffect } from 'react';
 import { Typography, Button, Container, MenuItem, Select, FormControl, InputLabel, TextField, Autocomplete, Snackbar } from '@mui/material';
 import instance from '../instance';
-import { fetchUserInfo } from '../utils/fetchUser';
+import ProfessorStatsTable from '../components/ProfessorStat';
 
 const adminOptions = [
     {id: 0, label:"查詢、修改已刪除課程小組", value: "queryDissolvedGroups"},
     {id: 1, label:"查詢學生發起的課程小組數量", value: "studentGroupCount"},
     {id: 2, label:"查詢學生的好友數量", value: "studentFriendCount"},
     {id: 3, label:"課程統計資訊", value: "courseStats"},
-    {id: 4, label:"最受歡迎的教授", value: "mostAttendedProfessor"},
+    {id: 4, label:"教授統計資訊", value: "ProfessorStats"},
 ]
 const MainContainer = {
     display: 'flex',
@@ -28,6 +28,9 @@ const AdminPage = ({userID}) => {
 
     return(
         <Container sx={MainContainer}>
+            {
+
+            }
             <Typography variant="h5" fontWeight={800} sx={{mt: '30px'}}>
                 Admin Page
             </Typography>
@@ -47,7 +50,7 @@ const AdminPage = ({userID}) => {
             {selectedFunction && selectedFunction.value === 'studentGroupCount' && <StudentGroupCount />}
             {selectedFunction && selectedFunction.value === 'studentFriendCount' && <StudentFriendCount />}
             {selectedFunction && selectedFunction.value === 'courseStats' && <CourseStatistics />}
-            {selectedFunction && selectedFunction.value === 'mostAttendedProfessor' && <MostAttendedProfessor />}
+            {selectedFunction && selectedFunction.value === 'ProfessorStats' && <ProfessorStatsTable />}
             <Snackbar
                 anchorOrigin={{
                 vertical: 'bottom',
@@ -77,11 +80,7 @@ const StudentFriendCount = () => {
 };
 
 const CourseStatistics = () => {
-    return <div>Course Statistics Content</div>;
-};
-
-const MostAttendedProfessor = () => {
-    return <div>Most Attended Professor Content</div>;
+    return <div>課程統計資訊</div>;
 };
 
 export default AdminPage;
