@@ -1,16 +1,45 @@
+from .group import create, CreateGroup
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from ..db import query_database, update_database
+from ..db import query_database, update_database, update_database_df
 from ..utils import ok_respond
 
 import io
+import pandas as pd
 
 router = APIRouter(
     prefix="/admin",
     tags=["admin"],
     responses={404: {"description": "Not found"}},
 )
+
+
+class CreateGroupCSV(BaseModel):
+    csv: str
+    group_data: CreateGroup
+
+
+@router.post("/group/create_csv")
+def create_csv(cgcsv: CreateGroupCSV):
+    try:
+        create(cgcsv.group_data)
+        group_data = pd.read_csv(io.StringIO(cgcsv.csv))
+        assert "user_id" in group_data and "role" in group_data and "job" in group_data
+        group_data = group_data[["user_id", "role", "job"]]
+        assert group_data['role'].isin(['Leader', 'Member']).all()
+        assert sum(group_data['role'] == "Leader") == 1
+        assert group_data[group_data['role'] ==
+                          "Leader"]['user_id'] == cgcsv.group_data.user
+        group_id = query_database("SELECT group_id FROM STUDY_GROUP ORDER BY group_id DESC LIMIT 1")[
+            "group_ID"].to_list()[0]
+        group_data["group_id"] = group_id
+        group_data["join_status"] = "Join"
+        update_database_df(group_data, "STUDY_GROUP")
+        return ok_respond()
+    except BaseException as err:
+        print(err)
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 
 @router.get("/group/list_deleted")
@@ -41,7 +70,7 @@ def delete_group(aga: AdminGroupAction):
             """
         )
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -56,7 +85,7 @@ def restore_group(aga: AdminGroupAction):
             """
         )
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -112,4 +141,4 @@ def custom_query(cq: CustomQuery):
         res.headers["Content-Disposition"] = "attachment; filename=export.csv"
         return res
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")

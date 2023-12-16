@@ -21,7 +21,7 @@ def student_info(student_id: str):
         ''')
     # print(student_info)
     if len(student_info) != 1:
-        return HTTPException(status_code=404, detail="Not found")
+        raise HTTPException(status_code=404, detail="Not found")
     return ok_respond({
         "student_id": student_info["student_ID"].to_list()[0],
         "student_name": student_info["student_name"].to_list()[0],
@@ -44,7 +44,7 @@ def department_info(department_id: str):
         '''
     )
     if len(department_info) != 1:
-        return HTTPException(status_code=404, detail="Not found")
+        raise HTTPException(status_code=404, detail="Not found")
     return ok_respond({
         "department_id": department_info["department_ID"].to_list()[0],
         "department_name": department_info["department_name"].to_list()[0],
@@ -63,7 +63,7 @@ def instructor_info(instructor_id: str):
         '''
     )
     if len(instructor_info) != 1:
-        return HTTPException(status_code=404, detail="Not found")
+        raise HTTPException(status_code=404, detail="Not found")
     return ok_respond({
         "instructor_id": instructor_info["instructor_ID"].to_list()[0],
         "instructor_name": instructor_info["instructor_name"].to_list()[0],
@@ -85,7 +85,7 @@ def course_info(course_id: str):
         '''
     )
     if len(course_info) != 1:
-        return HTTPException(status_code=404, detail="Not found")
+        raise HTTPException(status_code=404, detail="Not found")
     # print(course_info)
     return ok_respond({
         "course_id": course_info["course_ID"].tolist()[0],
@@ -109,7 +109,7 @@ def group_info(group_id: str):
         """
     )
     if len(group_info) != 1:
-        return HTTPException(status_code=404, detail="Not found")
+        raise HTTPException(status_code=404, detail="Not found")
     course_name = query_database(
         f"""
         SELECT course_name
@@ -118,7 +118,7 @@ def group_info(group_id: str):
         """
     )["course_name"].to_list()[0]
     if len(course_name) != 1:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     announcements = query_database(
         f"""
         SELECT content

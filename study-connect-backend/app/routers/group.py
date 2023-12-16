@@ -7,6 +7,7 @@ router = APIRouter(
     prefix="/group",
     tags=["groups"],
     responses={404: {"description": "Not found"}},
+
 )
 
 
@@ -15,7 +16,7 @@ class JoinGroupAction(BaseModel):
     group_id: str
 
 
-class GroupAction(BaseModel):
+class CreateGroup(BaseModel):
     user: str
     group_name: str
     capacity: int
@@ -52,7 +53,7 @@ def edit_name(egna: EditGroupNameAction):
             """
         )
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -78,7 +79,7 @@ def send_request(jga: JoinGroupAction):
         )
     except BaseException as err:
         print(err)
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -105,7 +106,7 @@ def approve_request(jgq: JoinGroupAction):
             """
         )
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -120,21 +121,21 @@ def kick(jga: JoinGroupAction):
             """
         )
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
 @router.post("/create")
-def create(ga: GroupAction):
+def create(cg: CreateGroup):
     try:
         update_database(
             f"""
-            INSERT INTO STUDY_GROUP (group_name,capacity,creator_ID,course_ID) VALUES ('{ga.group_name}' , '{ga.capacity}','{ga.user}' ,'{ga.course_id}')
+            INSERT INTO STUDY_GROUP (group_name,capacity,creator_ID,course_ID) VALUES ('{cg.group_name}' , '{cg.capacity}','{cg.user}' ,'{cg.course_id}')
             """
         )
     except BaseException as err:
         print(err)
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -147,7 +148,7 @@ def announcement_create(a: Announcement):
             """
         )
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -161,5 +162,5 @@ def meeting_create(m: Meeting):
         )
     except BaseException as err:
         print(err)
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()

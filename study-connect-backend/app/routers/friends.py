@@ -35,7 +35,7 @@ def send_request(fa: FriendAction):
         )
     except BaseException as err:
         print(err)
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -50,7 +50,7 @@ def approve_request(fa: FriendAction):
             """
         )
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -65,7 +65,7 @@ def unfriend(fa: FriendAction):
             """
         )
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
