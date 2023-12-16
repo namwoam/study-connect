@@ -16,6 +16,7 @@ def list_groups(course_id: str):
         SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member , capacity
         FROM STUDY_GROUP SG
         JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND course_id = "{course_id}" AND JG.join_status = "Join"
+        WHERE SG.group_status = "In_progress"
         GROUP BY JG.group_id
         """)
     return ok_respond({

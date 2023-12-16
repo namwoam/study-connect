@@ -48,7 +48,7 @@ def edit_name(egna: EditGroupNameAction):
             f"""
             UPDATE STUDY_GROUP
             SET group_name = "{egna.content}"
-            WHERE group_id = "{egna.group_id}"
+            WHERE group_id = "{egna.group_id}" AND group_status = "In_progress"
             """
         )
     except BaseException as err:
@@ -61,7 +61,7 @@ def pending_request(group_id: str):
     requests = query_database(f"""
         SELECT user_ID
         FROM JOIN_GROUP
-        WHERE join_status = "Waiting" AND group_id = "{group_id}"
+        WHERE join_status = "Waiting" AND group_id = "{group_id}" AND group_status = "In_progress"
     """)
     return ok_respond({
         "requests": requests["user_ID"].to_list()
@@ -90,7 +90,7 @@ def approve_request(aga: AdminGroupAction):
             SELECT COUNT(*) AS current , capacity
             FROM JOIN_GROUP AS JG
             JOIN STUDY_GROUP AS SG ON SG.group_id = JG.group_id
-            WHERE SG.group_id = {aga.group_id} AND JG.join_status = "Join"
+            WHERE SG.group_id = {aga.group_id} AND JG.join_status = "Join" AND SG.group_status = "In_progress"
             GROUP BY JG.group_id
             """
         )
@@ -116,7 +116,7 @@ def kick(aga: AdminGroupAction):
             f"""
             UPDATE JOIN_GROUP
             SET join_status = "Leave"
-            WHERE group_id = "{aga.group_id}" AND user_id = "{aga.user}"
+            WHERE group_id = "{aga.group_id}" AND user_id = "{aga.user}" AND group_status = "In_progress"
             """
         )
     except BaseException as err:

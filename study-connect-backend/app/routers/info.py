@@ -98,7 +98,7 @@ def group_info(group_id: str):
         f"""
         SELECT SG.group_id, group_name, capacity, course_id, U.student_id, U.student_name, role, job
         FROM STUDY_GROUP AS SG
-        JOIN JOIN_GROUP AS JG ON SG.group_id = JG.group_id AND SG.group_id = "{group_id}" AND JG.join_status = "Join"
+        JOIN JOIN_GROUP AS JG ON SG.group_id = JG.group_id AND SG.group_id = "{group_id}" AND JG.join_status = "Join" AND SG.group_status = "In_progress"
         JOIN USER AS U ON JG.user_id = U.student_id
         """
     )
