@@ -64,7 +64,7 @@ const GroupPage = ({userID}) => {
 
     useEffect(() => {
         fetchJoinedGroups();
-    }, [userID]);
+    }, [userID, enterGroup]);
 
     const handlePublish = async (GroupName, MaximumMember, CourseID) => {
         try {

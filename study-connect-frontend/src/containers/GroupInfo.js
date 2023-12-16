@@ -104,6 +104,7 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
 
                 const user = members.filter(member => member.student_id === userID)[0];
                 setUserInfo(user);
+                console.log("user:", userInfo);
             }
         } catch (error) {
             console.log(error);
@@ -132,7 +133,7 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
     }, [courseID])
 
     const renderMembers = (role) => {
-        console.log(role)
+        //console.log(role)
         return groupMember.map((member) => {
             if ((userInfo.role === "Leader") && (member.role === "Member") && (member.role === role)) {
                 return (
@@ -232,6 +233,24 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                 fetchGroupInfo();
                 setAlertMessage(`Kicked Member ${kickedMember.name} successfully`);
                 setOpenSnackbar(true);
+            } else {
+                setAlertMessage(`Failed to kick Member ${kickedMember.name}`);
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    const handleLeaveGroup = async () => {
+        try {
+            const response = await instance.post('/group/kick',
+                {
+                    user: userID,
+                    group_id: String(groupID),
+                });
+            if (response.status == 200) {
+                setEnterGroup(false);
             } else {
                 setAlertMessage(`Failed to kick Member ${kickedMember.name}`);
                 setOpenSnackbar(true);
@@ -464,8 +483,8 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                                 Your job
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between',alignItems: 'center', paddingBottom: '5px',}}>
-                            <Box sx={{fontSize: 15, width: "30%"}}>
-                                {userInfo.Job}
+                            <Box sx={{fontSize: 15, width: "40%"}}>
+                                {userInfo.job === "Undecided" ? "No job :)" : userInfo.Job}
                             </Box>
                             <Box sx={{width: "30%"}} flex = {0.5}>
                                 {userInfo.role === 'Leader' && (
@@ -482,6 +501,19 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                                 )}
                             </Box>
                         </Box>
+                        {userInfo.role !== 'Leader' ? 
+                        <Button
+                            size='small'
+                            variant="contained"
+                            color='primary'
+                            onClick={() => handleLeaveGroup()}
+                            sx={{width: '100px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
+                        >
+                            退出小組
+                        </Button>
+                        : 
+                        <></>
+                        }
                     </Box>
 
                     {/* Group Members */}
