@@ -31,7 +31,7 @@ def edit_intro(useri: UserUpdate):
             '''
         )
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 # separate FB and IG into two posts
@@ -48,7 +48,7 @@ def edit_FB_contact(useri: UserUpdate):
             '''
         )
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -63,7 +63,7 @@ def edit_IG_contact(useri: UserUpdate):
             '''
         )
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -78,7 +78,7 @@ def edit_name(useri: UserUpdate):
             '''
         )
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
 
@@ -155,5 +155,5 @@ def change_visibility(cv: ChangeVisibility):
         if r == 0:
             raise BaseException("Invalid target")
     except BaseException as err:
-        return HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()

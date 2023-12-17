@@ -9,15 +9,12 @@ const pages = ['Home', 'Friend', 'Course', 'Group'];
 
 const Header = ({ userID, currentPage, onPageChange, setIslogin, isAdmin}) => {
     const [username, setUsername] = useState("USERNAME");
-    const [userInfo, setUserInfo] = useState({});
 
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
                 const getUserInfo = await fetchUserInfo(userID);
-                console.log("header user info:",getUserInfo);
-                setUserInfo(getUserInfo);
                 setUsername(getUserInfo.student_name);
             }
             catch (error) {

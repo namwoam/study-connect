@@ -19,9 +19,9 @@ def student_info(student_id: str):
         LEFT JOIN DEPARTMENT AS D ON D.department_ID = U.department_ID
         WHERE student_id = "{student_id}"
         ''')
-    #print(student_info)
-    if len(student_info) == 0:
-        return ok_respond({})
+    # print(student_info)
+    if len(student_info) != 1:
+        raise HTTPException(status_code=404, detail="Not found")
     return ok_respond({
         "student_id": student_info["student_ID"].to_list()[0],
         "student_name": student_info["student_name"].to_list()[0],
@@ -32,8 +32,9 @@ def student_info(student_id: str):
         "fb": student_info["fb"].to_list()[0]
     })
 
+
 @router.get("/department/{department_id}")
-def department_info(department_id:str):
+def department_info(department_id: str):
     department_info = query_database(
         f'''
         SELECT d.department_id, d.department_name, c.course_id
@@ -42,12 +43,13 @@ def department_info(department_id:str):
         WHERE D.department_id = "{department_id}"
         '''
     )
+    if len(department_info) != 1:
+        raise HTTPException(status_code=404, detail="Not found")
     return ok_respond({
         "department_id": department_info["department_ID"].to_list()[0],
         "department_name": department_info["department_name"].to_list()[0],
         "offer_courses": department_info["course_ID"].tolist()
     })
-
 
 
 @router.get("/instructor/{instructor_id}")
@@ -60,6 +62,8 @@ def instructor_info(instructor_id: str):
         WHERE i.instructor_id = "{instructor_id}"
         '''
     )
+    if len(instructor_info) != 1:
+        raise HTTPException(status_code=404, detail="Not found")
     return ok_respond({
         "instructor_id": instructor_info["instructor_ID"].to_list()[0],
         "instructor_name": instructor_info["instructor_name"].to_list()[0],
@@ -80,6 +84,8 @@ def course_info(course_id: str):
         WHERE c.course_id = "{course_id}";
         '''
     )
+    if len(course_info) != 1:
+        raise HTTPException(status_code=404, detail="Not found")
     # print(course_info)
     return ok_respond({
         "course_id": course_info["course_ID"].tolist()[0],
@@ -98,10 +104,12 @@ def group_info(group_id: str):
         f"""
         SELECT SG.group_id, group_name, capacity, course_id, U.student_id, U.student_name, role, job
         FROM STUDY_GROUP AS SG
-        JOIN JOIN_GROUP AS JG ON SG.group_id = JG.group_id AND SG.group_id = "{group_id}" AND JG.join_status = "Join"
+        JOIN JOIN_GROUP AS JG ON SG.group_id = JG.group_id AND SG.group_id = "{group_id}" AND JG.join_status = "Join" AND SG.group_status = "In_progress"
         JOIN USER AS U ON JG.user_id = U.student_id
         """
     )
+    if len(group_info) != 1:
+        raise HTTPException(status_code=404, detail="Not found")
     course_name = query_database(
         f"""
         SELECT course_name
@@ -109,6 +117,8 @@ def group_info(group_id: str):
         JOIN COURSE AS C ON SG.course_id = C.course_id AND SG.group_id = "{group_id}"
         """
     )["course_name"].to_list()[0]
+    if len(course_name) != 1:
+        raise HTTPException(status_code=403, detail="Forbidden")
     announcements = query_database(
         f"""
         SELECT content
