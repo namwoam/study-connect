@@ -84,7 +84,7 @@ def course_info(course_id: str):
         WHERE c.course_id = "{course_id}";
         '''
     )
-    if len(course_info) != 1:
+    if len(course_info) == 0:
         raise HTTPException(status_code=404, detail="Not found")
     # print(course_info)
     return ok_respond({
