@@ -215,12 +215,12 @@ def list_courses(limit: int = 10):
         f"""
         SELECT course_ID, course_name
         FROM COURSE
-        ORDER BY student_ID
+        ORDER BY course_ID
         LIMIT {limit}
         """
     )
     return ok_respond({
-        "students": users.values.tolist()
+        "courses": users.values.tolist()
     })
 
 
