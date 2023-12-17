@@ -55,7 +55,12 @@ const QueryDissolvedGroups = () => {
             });
             
             if (response.status === 200) {
-                setGroups(response.data.data.groups);
+                const fetchedGroup = response.data.data.groups;
+                setGroups(fetchedGroup);
+                if (fetchedGroup.length === 0){
+                    setAlertMessage('目前無資料');
+                    setOpenSnackbar(true);
+                }
             } else {
                 console.error('Failed to fetch groups');
             }
