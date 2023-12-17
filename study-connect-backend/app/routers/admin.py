@@ -220,7 +220,7 @@ def list_courses(limit: int = 10):
         """
     )
     return ok_respond({
-        "students": users.values.tolist()
+        "courses": users.values.tolist()
     })
 
 
