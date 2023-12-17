@@ -30,8 +30,33 @@ const ImportGroup = () => {
 
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
-        console.log(file);
-        setCsvFile(file);
+    
+        if (file) {
+            try {
+                const content = await readFileContent(file);
+                console.log(content);
+                setCsvFile(content);
+            } catch (error) {
+                console.error('Error reading CSV file', error);
+            }
+        }
+    };
+
+    const readFileContent = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+    
+            reader.onload = (event) => {
+                const content = event.target.result;
+                resolve(content);
+            };
+    
+            reader.onerror = (error) => {
+                reject(error);
+            };
+    
+            reader.readAsText(file, 'utf-8');
+        });
     };
 
     const handleUpload = async () => {
