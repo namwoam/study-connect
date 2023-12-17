@@ -192,3 +192,49 @@ def student_friend_num(limit: int = 10, sort: str = "desc"):
     except BaseException as err:
         print(err)
         raise HTTPException(status_code=403, detail="Forbidden")
+
+
+@router.get("/list_students")
+def list_students(limit: int = 10):
+    users = query_database(
+        f"""
+        SELECT student_ID, student_name
+        FROM USER
+        ORDER BY student_ID
+        LIMIT {limit}
+        """
+    )
+    return ok_respond({
+        "students": users.values.tolist()
+    })
+
+
+@router.get("/list_courses")
+def list_courses(limit: int = 10):
+    users = query_database(
+        f"""
+        SELECT course_ID, course_name
+        FROM COURSE
+        ORDER BY student_ID
+        LIMIT {limit}
+        """
+    )
+    return ok_respond({
+        "students": users.values.tolist()
+    })
+
+
+@router.get("/list_groups")
+def list_groups(limit: int = 10, course_id: str | None = None):
+    groups = query_database(
+        f"""
+        SELECT group_ID, group_name, creator_ID, course_ID
+        FROM STUDY_GROUP
+        {""if course_id is None else f"WHERE course_ID  ='{course_id}'"}
+        ORDER BY group_ID
+        LIMIT {limit}
+        """
+    )
+    return ok_respond({
+        "groups": groups.values.tolist()
+    })
