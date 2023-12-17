@@ -29,9 +29,6 @@ const ModelStyle = {
     borderRadius: '10px',
 };
 
-// 應該要用userID去取user這學期有修的課程 開一個下拉式選單讓他選
-// 除了那個 其他地方應該都是完成的了
-
 
 const CreateGroupModal = ({open, setOpen, courseOptions, handlePublish}) => {
     const handleClose = () => setOpen(false);
