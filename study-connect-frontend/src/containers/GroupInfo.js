@@ -550,9 +550,9 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                         <Button
                             size='small'
                             variant="contained"
-                            color='primary'
+                            color='inherit'
                             onClick={() => handleLeaveGroup()}
-                            sx={{width: '100px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
+                            sx={{width: '100px', textTransform: 'none', fontSize: '14px', fontWeight: 600, position: 'relative', top: '10%'}}
                         >
                             退出小組
                         </Button>
