@@ -260,6 +260,24 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
         }
     }
 
+    const handleDiscardGroup = async () => {
+        try {
+            const response = await instance.post('/admin/group/delete_group',
+                {
+                    user: userID,
+                    group_id: String(groupID),
+                });
+            if (response.status == 200) {
+                setEnterGroup(false);
+            } else {
+                setAlertMessage(`Failed to discard group ${groupName}`);
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
     const handleEditJob = async (editingJobs) => {
         try {
             for (const memberID in editingJobs) {
@@ -550,11 +568,24 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                         <Button
                             size='small'
                             variant="contained"
-                            color='inherit'
+                            color='primary'
                             onClick={() => handleLeaveGroup()}
-                            sx={{width: '100px', textTransform: 'none', fontSize: '14px', fontWeight: 600, position: 'relative', top: '10%'}}
+                            sx={{width: '100px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                         >
                             退出小組
+                        </Button>
+                        : 
+                        <></>
+                        }
+                        {userInfo.role == 'Leader' ? 
+                        <Button
+                            size='small'
+                            variant="contained"
+                            color='primary'
+                            onClick={() => handleDiscardGroup()}
+                            sx={{width: '100px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
+                        >
+                            解散小組
                         </Button>
                         : 
                         <></>
