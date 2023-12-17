@@ -108,8 +108,6 @@ def group_info(group_id: str):
         JOIN USER AS U ON JG.user_id = U.student_id
         """
     )
-    if len(group_info) != 1:
-        raise HTTPException(status_code=404, detail="Not found")
     course_name = query_database(
         f"""
         SELECT course_name
@@ -117,8 +115,6 @@ def group_info(group_id: str):
         JOIN COURSE AS C ON SG.course_id = C.course_id AND SG.group_id = "{group_id}"
         """
     )["course_name"].to_list()[0]
-    if len(course_name) != 1:
-        raise HTTPException(status_code=403, detail="Forbidden")
     announcements = query_database(
         f"""
         SELECT content

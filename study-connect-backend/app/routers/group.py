@@ -16,6 +16,11 @@ class JoinGroupAction(BaseModel):
     group_id: str
 
 
+class ChangeLeaderAction(BaseModel):
+    user: str
+    group_id: str
+
+
 class CreateGroup(BaseModel):
     user: str
     group_name: str
@@ -40,6 +45,49 @@ class Meeting(BaseModel):
 class EditGroupNameAction(BaseModel):
     group_id: str
     content: str
+
+
+class EditJobAction(BaseModel):
+    user: str
+    group_id: str
+    job: str
+
+
+@router.post("/change_leader")
+def change_leader(cla: ChangeLeaderAction):
+    try:
+        update_database(
+            f"""
+            UPDATE JOIN_GROUP
+            SET role = "Member"
+            WHERE group_id = "{cla.group_id}"
+            """
+        )
+        update_database(
+            f"""
+            UPDATE JOIN_GROUP
+            SET role = "Leader"
+            WHERE group_id = "{cla.group_id}" AND user_id = "{cla.user}"
+            """
+        )
+    except BaseException as err:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return ok_respond()
+
+
+@router.post("/edit_job")
+def edit_job(eja: EditJobAction):
+    try:
+        update_database(
+            f"""
+            UPDATE JOIN_GROUP
+            SET job = "{eja.job}"
+            WHERE group_id = "{eja.group_id}" AND user_id = "{eja.user}"
+            """
+        )
+    except BaseException as err:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return ok_respond()
 
 
 @router.post("/edit_name")
