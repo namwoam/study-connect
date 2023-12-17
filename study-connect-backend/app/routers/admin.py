@@ -198,7 +198,7 @@ class Group_Student_Total(BaseModel):
     group: bool
     student: bool
     return_number: int
-    Sort_Rule: str
+    Sort_Order: str
 
 @router.get("/group_student_total")
 def group_student_total(GST: Group_Student_Total):
@@ -233,8 +233,8 @@ def group_student_total(GST: Group_Student_Total):
             ) u ON c.course_id = u.course_id;
         ORDER BY
             CASE
-                WHEN {GST.Sort_Rule} = 'asc' THEN total_groups + total_students
-                WHEN {GST.Sort_Rule} = 'desc' THEN (total_groups + total_students) * -1
+                WHEN {GST.Sort_Order} = 'asc' THEN total_groups + total_students
+                WHEN {GST.Sort_Order} = 'desc' THEN (total_groups + total_students) * -1
             END
         LIMIT {GST.return_number}
         """
