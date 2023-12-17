@@ -104,7 +104,7 @@ def joined_groups(student_id: str):
         SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity , course_name , semester
         FROM STUDY_GROUP SG
         JOIN COURSE AS C ON SG.course_id = C.course_id
-        JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Join"
+        JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Join" AND SG.group_status = "In_progress"
         GROUP BY JG.group_id
         """)
     return ok_respond({
@@ -119,7 +119,7 @@ def waiting_groups(student_id: str):
         SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity, course_name, semester
         FROM STUDY_GROUP SG
         JOIN COURSE AS C ON SG.course_id = C.course_id
-        JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Waiting"
+        JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Waiting" AND SG.group_status = "In_progress"
         GROUP BY JG.group_id
         """)
     return ok_respond({
@@ -134,7 +134,7 @@ def waiting_groups(student_id: str):
         SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member, capacity, course_name, semester
         FROM STUDY_GROUP SG
         JOIN COURSE AS C ON SG.course_id = C.course_id
-        JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Leave"
+        JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND user_id = "{student_id}" AND JG.join_status = "Leave" AND SG.group_status = "In_progress"
         GROUP BY JG.group_id
         """)
     return ok_respond({
