@@ -42,6 +42,27 @@ class EditGroupNameAction(BaseModel):
     content: str
 
 
+class EditJobAction(BaseModel):
+    user_id: str
+    group_id: str
+    job: str
+
+
+@router.post("/edit_job")
+def edit_job(eja: EditJobAction):
+    try:
+        update_database(
+            f"""
+            UPDATE JOIN_GROUP
+            SET job = "{eja.job}"
+            WHERE group_id = "{eja.group_id}" AND user_ID = "{eja.user_id}"
+            """
+        )
+    except BaseException as err:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return ok_respond()
+
+
 @router.post("/edit_name")
 def edit_name(egna: EditGroupNameAction):
     try:
