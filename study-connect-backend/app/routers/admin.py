@@ -51,7 +51,7 @@ def list_deleted(limit: int = 10):
         WHERE group_status = "Deleted"
     """)
     return ok_respond({
-        "groups": deleted.values.to_list()
+        "groups": deleted.values.tolist()
     })
 
 
