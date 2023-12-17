@@ -46,12 +46,12 @@ def create_csv(cgcsv: CreateGroupCSV):
 def list_deleted(limit: int = 10):
     deleted = query_database(
         f"""
-        SELECT group_id
+        SELECT group_id, group_name, creator_id, course_id
         FROM STUDY_GROUP
         WHERE group_status = "Deleted"
     """)
     return ok_respond({
-        "groups": deleted["group_ID"].to_list()
+        "groups": deleted.values.to_list()
     })
 
 
