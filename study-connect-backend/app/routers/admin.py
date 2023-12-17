@@ -143,41 +143,52 @@ def custom_query(cq: CustomQuery):
     except BaseException as err:
         raise HTTPException(status_code=403, detail="Forbidden")
 
+
 class Sort_Rule(BaseModel):
     return_number: int
     Sort_Order: str
 
 
-@router.get("/student_create_group")
-def student_create_group(SR: Sort_Rule):
-    created_group = query_database(
-        f"""
-        SELECT U.student_ID, U.name, (COUNT *) AS create_group_count
+@router.get("/group_creator")
+def student_create_group(limit: int = 10, sort: str = "desc"):
+    try:
+        assert limit > 0 and (sort == "desc" or sort == "asc")
+        created_group = query_database(
+            f"""
+        SELECT U.student_ID, U.student_name, COUNT (*) AS create_group_count
         FROM USER AS U
         JOIN STUDY_GROUP AS SG ON U.student_ID = SG.creator_ID
-        GROUP BY U.student_ID
-        ORDER BY (COUNT *) {SR.Sort_Order}
-        LIMIT {SR.return_number}
+        GROUP BY SG.creator_ID
+        ORDER BY COUNT (*) {sort}
+        LIMIT {limit}
         """
-    )
-    return ok_respond({
-        "created group number": created_group.values.tolist()
-    })
+        )
+        return ok_respond({
+            "students": created_group.values.tolist()
+        })
+    except BaseException as err:
+        print(err)
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@router.get("/student_friend_num")
-def student_friend_num(SR: Sort_Rule):
-    student_friend = query_database(
-        f"""
-        SELECT F.user_id , COUNT (*) AS friend_count
+@router.get("/friend_count")
+def student_friend_num(limit: int = 10, sort: str = "desc"):
+    try:
+        assert limit > 0 and (sort == "desc" or sort == "asc")
+        student_friend = query_database(
+            f"""
+        SELECT U.student_id, U.student_name, COUNT (*) AS friend_count
         FROM USER AS U
-        JOIN IS_FRIEND_OF AS IFO ON U.user_id = IFO.user1_ID OR U.user_id = IFO.user2_ID
-        JOIN USER AS F ON F.user_id != U.user_id and ( F.user_id = FO.user1_ID OR F.user_id = IFO.user2_ID )
-        GROUP BY U.user_id
-        Order By (COUNT *) {SR.Sort_Order}
-        LIMIT {SR.return_number}
-        """
-    )
-    return ok_respond({
-        "student friends count": student_friend.values.tolist()
-    })
+        JOIN IS_FRIEND_OF AS IFO ON U.student_id = IFO.user1_ID OR U.student_id = IFO.user2_ID
+        JOIN USER AS F ON F.student_id != U.student_id  and ( F.student_id  = IFO.user1_ID OR F.student_id  = IFO.user2_ID )
+        GROUP BY U.student_id
+        Order By COUNT (*) {sort}
+        LIMIT {limit}
+            """
+        )
+        return ok_respond({
+            "students": student_friend.values.tolist()
+        })
+    except BaseException as err:
+        print(err)
+        raise HTTPException(status_code=403, detail="Forbidden")
