@@ -30,7 +30,7 @@ const ModelStyle = {
     borderRadius: '10px',
 };
 
-const EditRoleModal = ({open, setOpen, groupMember, groupID}) => {
+const EditRoleModal = ({open, setOpen, groupMember, handleEditRole}) => {
 
     const handleClose = () => setOpen(false);
 
@@ -42,8 +42,8 @@ const EditRoleModal = ({open, setOpen, groupMember, groupID}) => {
     };
 
     const handlePublish = () => {
-        console.log('變更組長');
         console.log(editingLeader);
+        handleEditRole(editingLeader);
         handleClose();
     };
 

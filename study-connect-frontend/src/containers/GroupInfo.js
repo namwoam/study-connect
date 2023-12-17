@@ -260,6 +260,52 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
         }
     }
 
+    const handleEditJob = async (editingJobs) => {
+        try {
+            for (const memberID in editingJobs) {
+                const job = editingJobs[memberID];
+                const response = await instance.post('/group/edit_job',
+                    {
+                        user: memberID,
+                        group_id: String(groupID),
+                        job: job
+                    });
+                if (response.status == 200) {
+                    fetchGroupInfo();
+                    setAlertMessage('Edit job successfully');
+                    setOpenSnackbar(true);
+                } else {
+                    setAlertMessage('Failed to edit job');
+                    setOpenSnackbar(true);
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handleEditRole = async (newLeader) => {
+        const newLeaderID = groupMember.filter(member => member.name === newLeader)[0].student_id;
+        
+        try {
+            const response = await instance.post('/group/change_leader',
+                {
+                    user: newLeaderID,
+                    group_id: String(groupID)
+                });
+            if (response.status == 200) {
+                fetchGroupInfo();
+                setAlertMessage('Change leader successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Failed to change leader');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     const handlePublishMeeting = async (meetInfo) => {
         try {
             const response = await instance.post('/group/meeting/create',
@@ -473,7 +519,7 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                                         onClick={handleOpenEditRole}>
                                             Edit
                                     </Button>
-                                    <EditRoleModal open={openEditRoleModel} setOpen={setOpenEditRoleModel} groupMember={groupMember} groupID={groupID}/>
+                                    <EditRoleModal open={openEditRoleModel} setOpen={setOpenEditRoleModel} groupMember={groupMember} handleEditRole={handleEditRole}/>
                                 </Box>
                             )}
                             </Box>
@@ -483,7 +529,7 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between',alignItems: 'center', paddingBottom: '5px',}}>
                             <Box sx={{fontSize: 15, width: "40%"}}>
-                                {userInfo.job === "Undecided" ? "No job :)" : userInfo.Job}
+                                {userInfo.job === "Undecided" ? "No job :)" : userInfo.job}
                             </Box>
                             <Box sx={{width: "30%"}} flex = {0.5}>
                                 {userInfo.role === 'Leader' && (
@@ -495,7 +541,7 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                                         onClick={handleOpenEditJob}>
                                         Edit
                                     </Button>
-                                    <EditJobModal open={openEditJobModel} setOpen={setOpenEditJobModel} groupMember={groupMember} groupID={groupID}/>
+                                    <EditJobModal open={openEditJobModel} setOpen={setOpenEditJobModel} groupMember={groupMember} handleEditJob={handleEditJob}/>
                                 </Box>
                                 )}
                             </Box>

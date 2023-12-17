@@ -30,7 +30,7 @@ const ModelStyle = {
   borderRadius: '10px',
 };
 
-const EditJobModal = ({ open, setOpen, groupMember, groupID }) => {
+const EditJobModal = ({ open, setOpen, groupMember, handleEditJob }) => {
   const handleClose = () => setOpen(false);
 
   const initialEditingJobs = groupMember.reduce((acc, member) => {
@@ -51,6 +51,7 @@ const EditJobModal = ({ open, setOpen, groupMember, groupID }) => {
 
   const handlePublish = () => {
     console.log(editingJobs);
+    handleEditJob(editingJobs);
     handleClose();
   };
 
