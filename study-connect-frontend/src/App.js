@@ -48,8 +48,7 @@ function App() {
   const storedPage = localStorage.getItem('currentPage');
   const initialPage = storedPage ? parseInt(storedPage, 10) : 0;
   const [currentPage, setCurrentPage] = useState(initialPage);
-  const storedAuthen = localStorage.getItem('isAdmin');
-  const [isAdmin, setIsadmin] = useState(storedAuthen ? true : false);
+  const [isAdmin, setIsadmin] = useState(false);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
