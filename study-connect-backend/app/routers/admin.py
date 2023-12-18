@@ -196,35 +196,35 @@ def group_student_total(get_group: bool = True, get_student: bool = True, limit:
             c.course_id,
             c.course_name,
             c.semester,
-        CASE
-            WHEN {get_group} = True AND {get_student} = False THEN COALESCE(g.total_groups, 0)
-            WHEN {get_student} = True AND {get_group} = False THEN COALESCE(u.total_students, 0)
-            WHEN {get_group} = True AND {get_student} = True THEN COALESCE(g.total_groups, 0)
-            ELSE 0
-        END AS total_groups,
-        CASE
-            WHEN {get_group} = True AND {get_student} = False THEN 0  -- If group is selected, set total_students to 0
-            WHEN {get_student} = True AND {get_group} = False THEN COALESCE(u.total_students, 0)
-            WHEN {get_group} = True AND {get_student} = True THEN COALESCE(u.total_students, 0)
-            ELSE 0
-        END AS total_students
+            CASE
+                WHEN {get_group} = True AND {get_student} = False THEN COALESCE(g.total_groups, 0)
+                WHEN {get_student} = True AND {get_group} = False THEN COALESCE(u.total_students, 0)
+                WHEN {get_group} = True AND {get_student} = True THEN COALESCE(g.total_groups, 0)
+                ELSE 0
+            END AS total_groups,
+            CASE
+                WHEN {get_group} = True AND {get_student} = False THEN 0  -- If group is selected, set total_students to 0
+                WHEN {get_student} = True AND {get_group} = False THEN COALESCE(u.total_students, 0)
+                WHEN {get_group} = True AND {get_student} = True THEN COALESCE(u.total_students, 0)
+                ELSE 0
+            END AS total_students
         FROM course AS c
             LEFT JOIN (
-            SELECT course_id, COUNT(group_id) AS total_groups
-            FROM group
-            GROUP BY course_id
+                SELECT course_id, COUNT(group_id) AS total_groups
+                FROM group
+                GROUP BY course_id
             ) g ON c.course_id = g.course_id
             LEFT JOIN (
-            SELECT course_id, COUNT(user_id) AS total_students
-            FROM take_course
-            GROUP BY course_id
-            ) u ON c.course_id = u.course_id;
+                SELECT course_id, COUNT(user_id) AS total_students
+                FROM take_course
+                GROUP BY course_id
+            ) u ON c.course_id = u.course_id
         ORDER BY
             CASE
                 WHEN {sort} = 'asc' THEN total_groups + total_students
                 WHEN {sort} = 'desc' THEN (total_groups + total_students) * -1
             END
-        LIMIT {limit}
+        LIMIT {limit};
         """
     )
     return ok_respond({
