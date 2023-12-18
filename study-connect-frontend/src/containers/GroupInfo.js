@@ -7,7 +7,9 @@ import {
   Container,
   Modal,
   Snackbar,
-  Paper
+  Paper,
+  TextField,
+  IconButton
 } from '@mui/material';
 import instance from '../instance';
 import MeetingModal from '../components/MeetingModal';
@@ -15,6 +17,7 @@ import AnnouncementModal from '../components/AnnouncementModal';
 import EditRoleModal from '../components/EditRoleModal';
 import EditJobModal from '../components/EditJobModal';
 import KickMemberModal from '../components/KickMemberModal';
+import EditIcon from '@mui/icons-material/Edit';
 
 
 const MainContainer = {
@@ -79,6 +82,26 @@ const Normaltext = {
     fontSize: 15,
     paddingBottom: '5px',
 }
+
+const ModelStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    // width: 500,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    maxHeight: '70vh',
+    overflowY: 'auto',
+    mt: '20px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center', // Center horizontally
+    justifyContent: 'center', // Center vertically
+    borderRadius: '10px',
+};
+
     
 const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
     const [groupName, setGroupName] = useState("");
@@ -88,6 +111,9 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
     const [groupMember, setGroupMember] = useState([]);
     const [announcements, setAnnouncements] = useState([]);
     const [meetings, setMeetings] = useState([]);
+    const [editGroupName, setEditGroupName] = useState("");
+    const [openEditNameModal, setOpenEditNameModal] = useState(false);
+
 
     const fetchGroupInfo = async () => {
         try {
@@ -221,6 +247,28 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
         setKickedMember(member);
         setOpenKickMemberModal(true);
     }
+
+    const handleEditGroupName = async () => {
+        try {
+            const response = await instance.post('/group/edit_name', {
+                group_id: String(groupID),
+                content: editGroupName,
+            });
+    
+            if (response.status === 200) {
+                setGroupName(editGroupName);
+                setOpenEditNameModal(false);
+                setAlertMessage('Update group name successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Fail to update group name');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    
 
     const handleKickMember = async () => {
         try {
@@ -382,9 +430,21 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                     </Button>
                 </Box>
                 <Box sx={{width: "30%"}}>
-                    <Typography variant="h5" fontWeight={800} sx={{ textAlign: 'center' }}>
-                        {groupName}
-                    </Typography>
+                    <Box sx={{display: 'flex', justifyContent: 'center'}}>
+                        <Typography variant="h5" fontWeight={800} sx={{ textAlign: 'center' }}>
+                            {groupName}
+                        </Typography>
+                        {userInfo.role === 'Leader' && (
+                            <IconButton
+                                size='small'
+                                color='inherit'
+                                onClick={() => setOpenEditNameModal(true)}
+                                sx={{ marginLeft: '10px' }}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        )}
+                    </Box>
                 </Box>
                 <Box sx={{width: "30%", display:'flex', justifyContent: 'right', paddingRight: '15px'}}>
                     <Button
@@ -568,9 +628,9 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                         <Button
                             size='small'
                             variant="contained"
-                            color='inherit'
+                            color='secondary'
                             onClick={() => handleLeaveGroup()}
-                            sx={{width: '100px', textTransform: 'none', fontSize: '14px', fontWeight: 600, position: 'relative', top: '10%'}}
+                            sx={{width: '100px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600, position: 'relative', top: '10%'}}
                         >
                             退出小組
                         </Button>
@@ -581,9 +641,9 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                         <Button
                             size='small'
                             variant="contained"
-                            color='primary'
+                            color='secondary'
                             onClick={() => handleDiscardGroup()}
-                            sx={{width: '100px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
+                            sx={{width: '100px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600, position: 'relative', top: '10%'}}
                         >
                             解散小組
                         </Button>
@@ -649,6 +709,39 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                     </Box>
                 </Grid>
             </Box>
+
+            <Modal open={openEditNameModal} onClose={() => setOpenEditNameModal(false)}>
+                <Box sx={ModelStyle}>
+                    <Typography variant="h6" color="primary" sx={{fontWeight: 700, mb: '20px'}}>
+                        修改小組名稱
+                    </Typography>
+                    <TextField
+                        size='small'
+                        label="新的小組名稱"
+                        variant="outlined"
+                        value={editGroupName}
+                        onChange={(e) => setEditGroupName(e.target.value)}
+                        sx={{ width: '100%', marginBottom: '10px' }}
+                    />
+                    <Button
+                        id="confirm-update-button"
+                        size="small"
+                        variant="contained"
+                        color="primary"
+                        sx={{
+                            width: '60px',
+                            mt: '20px',
+                            textTransform: 'none',
+                            color: '#fff',
+                            fontSize: '14px',
+                            fontWeight: 600,
+                        }}
+                        onClick={handleEditGroupName}
+                    >
+                        確認
+                    </Button>
+                </Box>
+            </Modal>
 
             <MeetingModal open={openMeetingModel} setOpen={setOpenMeetingModel} handlePublishMeeting={handlePublishMeeting} />
             <AnnouncementModal open={openAnnouncementModel} setOpen={setOpenAnnouncementModel} handlePublishAnnouncement={handlePublishAnnouncement}/>
