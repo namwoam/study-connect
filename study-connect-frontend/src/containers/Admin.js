@@ -6,6 +6,7 @@ import QueryDissolvedGroups from '../components/admin/RessolvedGroup';
 import ProfessorStatsTable from '../components/admin/ProfessorStat';
 import CustomQuery from '../components/admin/CustomQuery';
 import StudentStatsTable from '../components/admin/StudentStats';
+import CourseStatsTable from '../components/admin/CourseStats';
 
 const adminOptions = [
     {id: 0, label:"查詢、復原已刪除課程小組", value: "queryDissolvedGroups"},
@@ -51,7 +52,7 @@ const AdminPage = ({userID}) => {
             {selectedFunction && selectedFunction.value === 'queryDissolvedGroups' && <QueryDissolvedGroups />}
             {selectedFunction && selectedFunction.value === 'importGroupCSV' && <ImportGroup />}
             {selectedFunction && selectedFunction.value === 'studentStats' && <StudentStatsTable />}
-            {selectedFunction && selectedFunction.value === 'courseStats' && <></>}
+            {selectedFunction && selectedFunction.value === 'courseStats' && <CourseStatsTable />}
             {selectedFunction && selectedFunction.value === 'ProfessorStats' && <ProfessorStatsTable />}
             {selectedFunction && selectedFunction.value === 'CustomQuery' && <CustomQuery />}
             <Snackbar
