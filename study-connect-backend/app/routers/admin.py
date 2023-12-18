@@ -89,13 +89,8 @@ def restore_group(aga: AdminGroupAction):
     return ok_respond()
 
 
-class Sort_Rule(BaseModel):
-    return_number: int
-    Sort_Order: str
-
-
 @router.get("/popular_instructor")
-def popular_instructor(SR: Sort_Rule):
+def popular_instructor(limit: int = 10, sort: str = "desc"):
     popularity = query_database(
         f"""
         SELECT I.instructor_id , I.instructor_name , COUNT(*) AS popularity
@@ -104,8 +99,8 @@ def popular_instructor(SR: Sort_Rule):
         JOIN COURSE AS C ON C.course_id = OC.course_id
         JOIN TAKE_COURSE AS TC ON TC.course_id = OC.course_id
         GROUP BY I.instructor_id
-        ORDER BY COUNT(*) {SR.Sort_Order}
-        LIMIT {SR.return_number}
+        ORDER BY COUNT(*) {sort}
+        LIMIT {limit}
         """
     )
     return ok_respond({
@@ -114,15 +109,15 @@ def popular_instructor(SR: Sort_Rule):
 
 
 @router.get("/hardwork_instructor")
-def hardwork_instructor(SR: Sort_Rule):
+def hardwork_instructor(limit: int = 10, sort: str = "desc"):
     hardwork = query_database(
         f"""
         SELECT I.instructor_id , I.instructor_name , COUNT(*) AS popularity
         FROM INSTRUCTOR AS I
         JOIN OFFER_COURSE AS OC ON I.instructor_id = OC.instructor_id
         GROUP BY I.instructor_id
-        ORDER BY COUNT(*) {SR.Sort_Order}
-        LIMIT {SR.return_number}
+        ORDER BY COUNT(*) {sort}
+        LIMIT {limit}
         """
     )
     return ok_respond({
@@ -194,55 +189,79 @@ def student_friend_num(limit: int = 10, sort: str = "desc"):
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-class Group_Student_Total(BaseModel):
-    group: bool
-    student: bool
-    return_number: int
-    Sort_Order: str
+@router.get("/course_count")
+def group_count(by_group: bool = True, by_student: bool = False, limit: int = 10, sort="desc"):
+    try:
+        assert limit > 0 and (sort == "desc" or sort == "asc")
+        assert by_group ^ by_student
+        course_data = query_database(
+            f"""
+            SELECT TG.course_id, TG.course_name, total_group, total_student FROM (
+                SELECT C.course_id, C.course_name,
+                COUNT(*) AS total_group
+                FROM COURSE AS C
+                JOIN STUDY_GROUP AS SG ON SG.course_id = C.course_id
+                GROUP BY SG.course_id
+            ) AS TG JOIN (
+                SELECT C.course_id,
+                COUNT(*) AS total_student
+                FROM COURSE AS C
+                JOIN TAKE_COURSE AS TC ON TC.course_id = C.course_id
+                GROUP BY TC.course_id
+            ) AS TS ON TG.course_id = TS.course_id
+            ORDER BY {"TG.total_group" if by_group else "TS.total_student"} {sort}
+            LIMIT {limit}
+        """)
+        return ok_respond({
+            "courses": course_data.values.tolist()
+        })
+    except BaseException as err:
+        print(err)
+        raise HTTPException(status_code=403, detail="Forbidden")
+
 
 @router.get("/group_student_total")
-def group_student_total(GST: Group_Student_Total):
+def group_student_total(get_group: bool = True, get_student: bool = True, limit: int = 10, sort: str = "desc"):
     group_student_total = query_database(
         f"""
         SELECT
             c.course_id,
             c.course_name,
             c.semester,
-        CASE
-            WHEN {GST.group} = True AND {GST.student} = False THEN COALESCE(g.total_groups, 0)
-            WHEN {GST.student} = True AND {GST.group} = False THEN COALESCE(u.total_students, 0)
-            WHEN {GST.group} = True AND {GST.student} = True THEN COALESCE(g.total_groups, 0)
-            ELSE 0
-        END AS total_groups,
-        CASE
-            WHEN {GST.group} = True AND {GST.student} = False THEN 0  -- If group is selected, set total_students to 0
-            WHEN {GST.student} = True AND {GST.group} = False THEN COALESCE(u.total_students, 0)
-            WHEN {GST.group} = True AND {GST.student} = True THEN COALESCE(u.total_students, 0)
-            ELSE 0
-        END AS total_students
+            CASE
+                WHEN {get_group} = True AND {get_student} = False THEN COALESCE(g.total_groups, 0)
+                WHEN {get_student} = True AND {get_group} = False THEN COALESCE(u.total_students, 0)
+                WHEN {get_group} = True AND {get_student} = True THEN COALESCE(g.total_groups, 0)
+                ELSE 0
+            END AS total_groups,
+            CASE
+                WHEN {get_group} = True AND {get_student} = False THEN 0  -- If group is selected, set total_students to 0
+                WHEN {get_student} = True AND {get_group} = False THEN COALESCE(u.total_students, 0)
+                WHEN {get_group} = True AND {get_student} = True THEN COALESCE(u.total_students, 0)
+                ELSE 0
+            END AS total_students
         FROM course AS c
             LEFT JOIN (
-            SELECT course_id, COUNT(group_id) AS total_groups
-            FROM group
-            GROUP BY course_id
+                SELECT course_id, COUNT(group_id) AS total_groups
+                FROM group
+                GROUP BY course_id
             ) g ON c.course_id = g.course_id
             LEFT JOIN (
-            SELECT course_id, COUNT(user_id) AS total_students
-            FROM take_course
-            GROUP BY course_id
-            ) u ON c.course_id = u.course_id;
+                SELECT course_id, COUNT(user_id) AS total_students
+                FROM take_course
+                GROUP BY course_id
+            ) u ON c.course_id = u.course_id
         ORDER BY
             CASE
-                WHEN {GST.Sort_Order} = 'asc' THEN total_groups + total_students
-                WHEN {GST.Sort_Order} = 'desc' THEN (total_groups + total_students) * -1
+                WHEN {sort} = 'asc' THEN total_groups + total_students
+                WHEN {sort} = 'desc' THEN (total_groups + total_students) * -1
             END
-        LIMIT {GST.return_number}
+        LIMIT {limit};
         """
     )
     return ok_respond({
         "group and student number in courses": group_student_total.values.tolist()
     })
-
 
 
 @router.get("/list_students")
