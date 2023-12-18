@@ -129,7 +129,7 @@ const StudentStatsTable = () => {
                     onChange={(e) => setFetchLimit(e.target.value)}
                     sx={{ marginRight: 1, width: '100px' }}
                 />
-                 <FormControl size="small" sx={{ marginRight: 1 }}>
+                <FormControl size="small" sx={{ marginRight: 1 }}>
                     <InputLabel id="sort-type-label">Sort Type</InputLabel>
                     <Select
                         labelId="sort-type-label"
