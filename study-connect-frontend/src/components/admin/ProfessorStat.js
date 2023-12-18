@@ -26,6 +26,7 @@ const ProfessorStatsTable = () => {
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
     const [analysisType, setAnalysisType] = useState('popular'); // Default to popular
+    const [sortType, setSortType] = useState('desc');
     const [fetchLimit, setFetchLimit] = useState(10);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -41,6 +42,7 @@ const ProfessorStatsTable = () => {
             const response = await instance.get(endpoint, {
                 params: {
                     limit: fetchLimit,
+                    sort: sortType
                 },
             });
 
@@ -105,8 +107,8 @@ const ProfessorStatsTable = () => {
 
     return (
         <>
-            <Box sx={{ maxWidth: '600px', display: 'flex', marginBottom: 2 }}>
-                <FormControl size="small" sx={{ marginRight: 2 }}>
+            <Box sx={{ maxWidth: '800px', display: 'flex', marginBottom: 2 }}>
+                <FormControl size="small" sx={{ marginRight: 1 }}>
                     <InputLabel id="analysis-type-label">Analysis Type</InputLabel>
                     <Select
                         labelId="analysis-type-label"
@@ -115,8 +117,8 @@ const ProfessorStatsTable = () => {
                         label="Analysis Type"
                         onChange={(e) => setAnalysisType(e.target.value)}
                     >
-                        <MenuItem value="popular">受歡迎程度（總修課學生數）</MenuItem>
-                        <MenuItem value="hardworking">爆肝程度（開課總數）</MenuItem>
+                        <MenuItem value="popular">總修課學生數</MenuItem>
+                        <MenuItem value="hardworking">總授課數</MenuItem>
                     </Select>
                 </FormControl>
                 <TextField
@@ -125,8 +127,21 @@ const ProfessorStatsTable = () => {
                     type="number"
                     value={fetchLimit}
                     onChange={(e) => setFetchLimit(e.target.value)}
-                    sx={{ marginRight: 2, width: '100px' }}
+                    sx={{ marginRight: 1, width: '100px' }}
                 />
+                <FormControl size="small" sx={{ marginRight: 2 }}>
+                    <InputLabel id="sort-type-label">Sort Type</InputLabel>
+                    <Select
+                        labelId="sort-type-label"
+                        id="sort-type"
+                        value={sortType}
+                        label="Sort Type"
+                        onChange={(e) => setSortType(e.target.value)}
+                    >
+                        <MenuItem value="desc">高到低</MenuItem>
+                        <MenuItem value="asc">低到高</MenuItem>
+                    </Select>
+                </FormControl>
                 <Button size="small" variant="contained" onClick={handleSearch} sx={{ color: "#fff", fontWeight: 600}}>
                     Search
                 </Button>
