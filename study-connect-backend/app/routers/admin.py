@@ -88,6 +88,7 @@ def restore_group(aga: AdminGroupAction):
         raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 
+
 @router.get("/popular_instructor")
 def popular_instructor(limit: int = 10, sort: str = "desc"):
     popularity = query_database(
@@ -182,6 +183,37 @@ def student_friend_num(limit: int = 10, sort: str = "desc"):
         )
         return ok_respond({
             "students": student_friend.values.tolist()
+        })
+    except BaseException as err:
+        print(err)
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+
+@router.get("/course_count")
+def group_count(by_group: bool = True, by_student: bool = False, limit: int = 10, sort="desc"):
+    try:
+        assert limit > 0 and (sort == "desc" or sort == "asc")
+        assert by_group ^ by_student
+        course_data = query_database(
+            f"""
+            SELECT TG.course_id, TG.course_name, total_group, total_student FROM (
+                SELECT C.course_id, C.course_name,
+                COUNT(*) AS total_group
+                FROM COURSE AS C
+                JOIN STUDY_GROUP AS SG ON SG.course_id = C.course_id
+                GROUP BY SG.course_id
+            ) AS TG JOIN (
+                SELECT C.course_id,
+                COUNT(*) AS total_student
+                FROM COURSE AS C
+                JOIN TAKE_COURSE AS TC ON TC.course_id = C.course_id
+                GROUP BY TC.course_id
+            ) AS TS ON TG.course_id = TS.course_id
+            ORDER BY {"TG.total_group" if by_group else "TS.total_student"} {sort}
+            LIMIT {limit}
+        """)
+        return ok_respond({
+            "courses": course_data.values.tolist()
         })
     except BaseException as err:
         print(err)
