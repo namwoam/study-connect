@@ -1,10 +1,10 @@
 import React from 'react';
-import { Button, Grid, IconButton, Paper, Typography } from '@mui/material';
+import { Button, Grid, IconButton, Paper, Typography, Box } from '@mui/material';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 
 const FriendCardStyle = {
     padding: '15px', 
-    width: '1100px', 
+    width: '850px', 
     margin: '20px',
     boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
     alignItems: 'left',
@@ -17,7 +17,7 @@ const FriendCard = ({friend, handleInfoOpen, handleUnfriend}) => {
     return (
         <Paper elevation={3} sx={FriendCardStyle}>
             <Grid container spacing={0} alignItems="center" justifyContent="center" sx={{marginBottom: '10px'}}>
-                <Grid item xs={4} md={3} sx={{display: 'flex'}}>
+                <Grid item xs={4} md={4} sx={{display: 'flex'}}>
                     <Typography variant="h6">
                         {friend.username}
                     </Typography>
@@ -46,22 +46,21 @@ const FriendCard = ({friend, handleInfoOpen, handleUnfriend}) => {
                 <Grid item xs={2} md={2} style={{justifyContent: 'center', alignItems: 'center'}}>
                     <Typography variant="body1" textAlign="center">{friend.fb_account}</Typography>
                 </Grid>
-                <Grid item xs={2} md={1} style={{justifyContent: 'center', alignItems: 'center'}}>
-                    <Button
-                        size='small'
-                        variant="contained"
-                        color='primary'
-                        onClick={() => handleUnfriend(friend.uid)}
-                        sx={{width: '100px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
-                    >
-                        Unfriend
-                    </Button>
-                </Grid>
             </Grid>
-            
-            <Typography variant="body1" color="textSecondary" paragraph>
-                {friend.selfIntro}
-            </Typography>
+            <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+                <Typography variant="body1" color="textSecondary" paragraph>
+                    {friend.selfIntro}
+                </Typography>
+                <Button
+                    size='small'
+                    variant="contained"
+                    color='secondary'
+                    onClick={() => handleUnfriend(friend.uid)}
+                    sx={{ textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
+                >
+                    Delete Friend
+                </Button>
+            </Box>
         
             {/* <Grid container spacing={2} alignItems="center" justifyContent="center">
                 <Grid item xs={2}>

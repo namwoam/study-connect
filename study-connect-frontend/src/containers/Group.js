@@ -110,7 +110,7 @@ const GroupPage = ({userID}) => {
                             fontWeight: 600,
                         }}
                     >
-                        創建新課程小組
+                        創建課程小組
                     </Button> 
                     <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
                         {joinedGroups.length > 0 && joinedGroups.map((group, index) => (

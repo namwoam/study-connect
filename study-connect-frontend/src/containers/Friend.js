@@ -171,7 +171,6 @@ const FriendPage = () => {
                 Your Friends
             </Typography>
             <Button size='small'
-                maxHeight='10px'
                 variant="contained"
                 color='primary'
                 sx={{width: '160px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
