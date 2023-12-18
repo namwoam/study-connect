@@ -20,9 +20,10 @@ const Login = ({setLogin, setuser, setIsadmin}) => {
         const isAdmin = response.data.data.is_admin;
         if (isAdmin) {
           setIsadmin(true);
-          localStorage.setItem('isAdmin', 'true');
+        } else {
+          setIsadmin(false);
         }
-
+        
         setLogin(true);
         setuser(username);
         setLoginMessage('Login successful!');
