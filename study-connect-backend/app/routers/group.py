@@ -109,8 +109,9 @@ def edit_name(egna: EditGroupNameAction):
 def pending_request(group_id: str):
     requests = query_database(f"""
         SELECT user_ID
-        FROM JOIN_GROUP
-        WHERE join_status = "Waiting" AND group_id = "{group_id}" AND group_status = "In_progress"
+        FROM JOIN_GROUP AS JG
+        JOIN STUDY_GROUP AS SG ON SG.group_id = JG.group_id AND JG.group_id = "{group_id}"
+        WHERE JG.join_status = "Waiting" AND SG.group_status = "In_progress"
     """)
     return ok_respond({
         "requests": requests["user_ID"].to_list()
@@ -165,7 +166,7 @@ def kick(jga: JoinGroupAction):
             f"""
             UPDATE JOIN_GROUP
             SET join_status = "Leave"
-            WHERE group_id = "{jga.group_id}" AND user_id = "{jga.user}" AND group_status = "In_progress"
+            WHERE group_id = "{jga.group_id}" AND user_id = "{jga.user}"
             """
         )
     except BaseException as err:
