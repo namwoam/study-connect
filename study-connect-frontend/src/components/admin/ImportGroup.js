@@ -16,6 +16,7 @@ import {
     TableHead,
     TableRow,
     Typography,
+    Snackbar
 } from '@mui/material';
 import instance from '../../instance';
 
@@ -27,6 +28,12 @@ const ImportGroup = () => {
     const [editingMaximumMember, setEditingMaximumMember] = useState(2);
     const [selectedCourseId, setSelectedCourseId] = useState(null);
     const [selectedLeader, setSelectedLeader] = useState(null);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
 
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
@@ -34,7 +41,6 @@ const ImportGroup = () => {
         if (file) {
             try {
                 const content = await readFileContent(file);
-                console.log(content);
                 setCsvFile(content);
             } catch (error) {
                 console.error('Error reading CSV file', error);
@@ -78,12 +84,20 @@ const ImportGroup = () => {
                     csv: csvFile,
                     group_data: group
                 });
-                console.log(response.data);
+                if (response.status == 200) {
+                    setAlertMessage("Import group successfully")
+                    setOpenSnackbar(true);
+                } else {
+                    setAlertMessage("Fail to import group")
+                    setOpenSnackbar(true);
+                }
             } catch (error) {
-                console.error('Error uploading CSV file', error);
+                setAlertMessage('Error when uploading CSV file', error);
+                setOpenSnackbar(true);
             }
         } else {
-            console.warn('No CSV file selected for upload');
+            setAlertMessage('No CSV file selected for upload');
+            setOpenSnackbar(true);
         }
     };
 
@@ -237,7 +251,16 @@ const ImportGroup = () => {
                         確認上傳
                     </Button>
                 )}
-                
+                <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                    }}
+                    open={openSnackbar}
+                    autoHideDuration={3000} // Adjust the duration as needed
+                    onClose={handleCloseSnackbar}
+                    message={alertMessage}
+                />
             </Box>
         </>
     );
