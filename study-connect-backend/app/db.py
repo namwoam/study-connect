@@ -20,7 +20,8 @@ def query_database(query: str):
 
 def update_database(query: str):
     with engine.connect() as connection:
-        connection.execute(text(query))
+        with connection.begin():
+            connection.execute(text(query))
     return
 
 

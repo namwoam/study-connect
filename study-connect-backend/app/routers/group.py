@@ -137,15 +137,22 @@ def approve_request(jgq: JoinGroupAction):
     try:
         df = query_database(
             f"""
-            SELECT COUNT(*) AS current , capacity
-            FROM JOIN_GROUP AS JG
-            JOIN STUDY_GROUP AS SG ON SG.group_id = JG.group_id
-            WHERE SG.group_id = {jgq.group_id} AND JG.join_status = "Join" AND SG.group_status = "In_progress"
-            GROUP BY JG.group_id
-            """
+            SELECT capacity ,
+                CASE WHEN members IS NULL THEN 0 ELSE members END AS current
+            FROM STUDY_GROUP SG
+            LEFT JOIN (
+                SELECT JG.group_id , COUNT(*) AS members
+                FROM JOIN_GROUP AS JG
+                JOIN STUDY_GROUP AS SG ON JG.group_id = SG.group_id
+                WHERE JG.group_id = "{jgq.group_id}" AND JG.join_status = "Join"
+                GROUP BY JG.group_id
+            )AS C ON C.group_id = SG.group_id
+            WHERE SG.group_status = "In_progress" AND SG.group_id = "{jgq.group_id}"
+        """
         )
         current = df["current"].to_list()[0]
         capacity = df["capacity"].to_list()[0]
+        print(current , capacity)
         assert current < capacity
         update_database(
             f"""
@@ -155,6 +162,7 @@ def approve_request(jgq: JoinGroupAction):
             """
         )
     except BaseException as err:
+        print(err)
         raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
 

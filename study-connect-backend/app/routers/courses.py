@@ -19,7 +19,7 @@ def list_groups(course_id: str):
             SELECT JG.group_id , COUNT(*) AS members
             FROM JOIN_GROUP AS JG
             JOIN STUDY_GROUP AS SG ON JG.group_id = SG.group_id
-            WHERE SG.course_id = "{course_id}"
+            WHERE SG.course_id = "{course_id}" AND JG.join_status = "Join"
             GROUP BY JG.group_id
         )AS C ON C.group_id = SG.group_id
         WHERE SG.group_status = "In_progress" AND SG.course_id = "{course_id}"
