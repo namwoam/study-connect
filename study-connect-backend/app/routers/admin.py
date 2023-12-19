@@ -23,7 +23,7 @@ class CreateGroupCSV(BaseModel):
 @router.post("/group/create_csv")
 def create_csv(cgcsv: CreateGroupCSV):
     try:
-        create(cgcsv.group_data)
+        create(cgcsv.group_data , False)
         group_data = pd.read_csv(io.StringIO(cgcsv.csv))
         assert "user_id" in group_data and "role" in group_data and "job" in group_data
         group_data = group_data[["user_id", "role", "job"]]

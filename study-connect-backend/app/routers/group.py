@@ -152,7 +152,7 @@ def approve_request(jgq: JoinGroupAction):
         )
         current = df["current"].to_list()[0]
         capacity = df["capacity"].to_list()[0]
-        print(current , capacity)
+        print(current, capacity)
         assert current < capacity
         update_database(
             f"""
@@ -183,13 +183,20 @@ def kick(jga: JoinGroupAction):
 
 
 @router.post("/create")
-def create(cg: CreateGroup):
+def create(cg: CreateGroup, auto_join=True):
     try:
+        if auto_join:
+            assert cg.capacity > 0
         update_database(
             f"""
             INSERT INTO STUDY_GROUP (group_name,capacity,creator_ID,course_ID) VALUES ('{cg.group_name}' , '{cg.capacity}','{cg.user}' ,'{cg.course_id}')
             """
         )
+        if auto_join:
+            group_id = str(query_database("SELECT group_id FROM STUDY_GROUP ORDER BY group_id DESC LIMIT 1")[
+                "group_ID"].to_list()[0])
+            send_request(JoinGroupAction(user=cg.user, group_id=group_id))
+            approve_request(JoinGroupAction(user=cg.user, group_id=group_id))
     except BaseException as err:
         print(err)
         raise HTTPException(status_code=403, detail="Forbidden")
