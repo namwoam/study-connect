@@ -166,7 +166,7 @@ const StudentStatsTable = () => {
                                     <TableCell>順序</TableCell>
                                     <TableCell>學號</TableCell>
                                     <TableCell>姓名</TableCell>
-                                    <TableCell>{analysisType === 'groupCnt' ? "總召的料（創建小組數）" : "好友總數"}</TableCell>
+                                    <TableCell>{analysisType === 'groupCnt' ? "創建小組數" : "好友總數"}</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
