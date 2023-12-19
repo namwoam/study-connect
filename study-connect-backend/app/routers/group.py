@@ -197,6 +197,7 @@ def create(cg: CreateGroup, auto_join=True):
                 "group_ID"].to_list()[0])
             send_request(JoinGroupAction(user=cg.user, group_id=group_id))
             approve_request(JoinGroupAction(user=cg.user, group_id=group_id))
+            change_leader(ChangeLeaderAction(user=cg.user, group_id=group_id))
     except BaseException as err:
         print(err)
         raise HTTPException(status_code=403, detail="Forbidden")

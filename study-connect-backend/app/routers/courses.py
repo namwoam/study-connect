@@ -12,8 +12,9 @@ router = APIRouter(
 def list_groups(course_id: str):
     groups = query_database(
         f"""
-        SELECT SG.group_id , SG.group_name , capacity , 
-            CASE WHEN members IS NULL THEN 0 ELSE members END AS count
+        SELECT SG.group_id , SG.group_name ,
+            CASE WHEN members IS NULL THEN 0 ELSE members END AS count,
+            capacity
         FROM STUDY_GROUP SG
         LEFT JOIN (
             SELECT JG.group_id , COUNT(*) AS members
