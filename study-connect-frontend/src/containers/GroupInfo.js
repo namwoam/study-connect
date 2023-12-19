@@ -113,6 +113,9 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
     const [meetings, setMeetings] = useState([]);
     const [editGroupName, setEditGroupName] = useState("");
     const [openEditNameModal, setOpenEditNameModal] = useState(false);
+    const [joinRequests, setJoinRequests] = useState([]);
+    const [openJoinRequestsModal, setOpenJoinRequestsModal] = useState(false);
+
 
 
     const fetchGroupInfo = async () => {
@@ -416,6 +419,63 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
     }
     };
 
+    const handleShowGroupRequest = async () => {
+        try {
+            const response = await instance.get(`/group/pending_request/${groupID}`);
+            if (response.status === 200) {
+                setJoinRequests(response.data.data.requests);
+                setOpenJoinRequestsModal(true);
+            } else {
+                setAlertMessage('Failed to fetch join requests');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setAlertMessage('Failed to fetch join requests');
+            setOpenSnackbar(true);
+        }
+    };
+    
+    const handleAcceptJoinRequest = async (studentId) => {
+        try {
+            const response = await instance.post('/group/accept_request', {
+                user: studentId,
+                group_id: String(groupID),
+            });
+            if (response.status === 200) {
+                fetchGroupInfo();
+                setAlertMessage(`Accepted join request from ${studentId}`);
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage(`Failed to accept join request from ${studentId}`);
+                setOpenSnackbar(true);
+            }
+            setOpenJoinRequestsModal(false);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    
+    const handleRejectJoinRequest = async (studentId) => {
+        try {
+            const response = await instance.post('/group/kick', {
+                user: studentId,
+                group_id: String(groupID),
+            });
+            if (response.status === 200) {
+                setAlertMessage(`Rejected join request from ${studentId}`);
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage(`Failed to reject join request from ${studentId}`);
+                setOpenSnackbar(true);
+            }
+            setOpenJoinRequestsModal(false);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    
+
     
     return (
         <Container sx={MainContainer}>
@@ -667,7 +727,19 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                             組員
                         </Typography>
                         {renderMembers('Member')}
-
+                        {userInfo.role == 'Leader' ? 
+                        <Button
+                            size='small'
+                            variant="contained"
+                            color='secondary'
+                            onClick={() => handleShowGroupRequest()}
+                            sx={{width: '150px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600, position: 'relative', top: '10%'}}
+                        >
+                            查看加入申請
+                        </Button>
+                        : 
+                        <></>
+                        }
                     </Box>
                 </Grid>
                 }
@@ -740,6 +812,51 @@ const GroupInfoPage = ({userID, groupID, setEnterGroup}) => {
                     >
                         確認
                     </Button>
+                </Box>
+            </Modal>
+
+            <Modal open={openJoinRequestsModal} onClose={() => setOpenJoinRequestsModal(false)}>
+                <Box sx={ModelStyle}>
+                    <Typography variant="h6" color="primary" sx={{ fontWeight: 700, mb: '20px' }}>
+                        所有加入申請的同學
+                    </Typography>
+                    {joinRequests.length > 0 ? <>{joinRequests.map((request, index) => (
+                        <Box key={index} sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '5px' }}>
+                            <Box sx={{ fontSize: 15, width: '50%' }}>
+                                {request}
+                            </Box>
+                            <Box sx={{ width: '50%' }} flex={0.5}>
+                                {/* Add buttons/actions for accepting or rejecting join requests */}
+                                <Button
+                                    size='small'
+                                    sx={{ width: '80px', textTransform: 'none',
+                                        color: '#fff',
+                                        fontSize: '14px',
+                                        fontWeight: 600, marginBottom: '5px' }}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => handleAcceptJoinRequest(request)}
+                                >
+                                    Accept
+                                </Button>
+                                <Button
+                                    size='small'
+                                    sx={{  width: '80px', textTransform: 'none',
+                                        color: '#fff',
+                                        fontSize: '14px',
+                                        fontWeight: 600, fontSize: '12px' }}
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={() => handleRejectJoinRequest(request)}
+                                >
+                                    Reject
+                                </Button>
+                            </Box>
+                        </Box>
+                    ))}</> : 
+                    <Typography>
+                        尚無任何加入申請
+                    </Typography>}
                 </Box>
             </Modal>
 
