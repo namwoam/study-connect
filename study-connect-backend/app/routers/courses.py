@@ -8,19 +8,24 @@ router = APIRouter(
 )
 
 
-
 @router.get("/list_groups/{course_id}")
 def list_groups(course_id: str):
     groups = query_database(
         f"""
-        SELECT JG.group_id , SG.group_name , COUNT(*) AS group_member , capacity
+        SELECT SG.group_id , SG.group_name , capacity , 
+            CASE WHEN members IS NULL THEN 0 ELSE members END AS count
         FROM STUDY_GROUP SG
-        JOIN JOIN_GROUP AS JG ON JG.group_id = SG.group_id AND course_id = "{course_id}" AND JG.join_status = "Join" AND SG.group_status = "In_progress"
-        WHERE SG.group_status = "In_progress"
-        GROUP BY JG.group_id
+        LEFT JOIN (
+            SELECT JG.group_id , COUNT(*) AS members
+            FROM JOIN_GROUP AS JG
+            JOIN STUDY_GROUP AS SG ON JG.group_id = SG.group_id
+            WHERE SG.course_id = "{course_id}"
+            GROUP BY JG.group_id
+        )AS C ON C.group_id = SG.group_id
+        WHERE SG.group_status = "In_progress" AND SG.course_id = "{course_id}"
         """)
     return ok_respond({
-        "groups": groups[["group_ID", "group_name", "group_member" , "capacity"]].values.tolist()
+        "groups": groups.values.tolist()
     })
 
 
