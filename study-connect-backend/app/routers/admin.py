@@ -41,6 +41,34 @@ def create_csv(cgcsv: CreateGroupCSV):
         print(err)
         raise HTTPException(status_code=403, detail="Forbidden")
 
+from ..db import engine
+from sqlalchemy.orm import Session
+
+@router.post("/group/create_csv2")
+def create_csv2(cgcsv: CreateGroupCSV):
+    with Session(engine) as session:
+        session.begin()
+        try:
+            create(cgcsv.group_data , False)
+            group_data = pd.read_csv(io.StringIO(cgcsv.csv))
+            assert "user_id" in group_data and "role" in group_data and "job" in group_data
+            group_data = group_data[["user_id", "role", "job"]]
+            assert group_data['role'].isin(['Leader', 'Member']).all()
+            assert sum(group_data['role'] == "Leader") == 1
+            assert group_data[group_data['role'] ==
+                          "Leader"]['user_id'].to_list()[0] == cgcsv.group_data.user
+            group_id = query_database("SELECT group_id FROM STUDY_GROUP ORDER BY group_id DESC LIMIT 1")[
+            "group_ID"].to_list()[0]
+            group_data["group_id"] = group_id
+            group_data["join_status"] = "Join"
+            update_database_df(group_data, "JOIN_GROUP")
+        except BaseException as err:
+            session.rollback()
+            raise HTTPException(status_code=403, detail="Forbidden")
+        else:
+            session.commit()
+            return ok_respond()
+
 
 @router.get("/group/list_deleted")
 def list_deleted(limit: int = 10):
