@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import {
   Box,
   Grid,
@@ -6,57 +6,58 @@ import {
   Button,
   Container,
   TextField,
+  Paper, 
+  Snackbar
 } from '@mui/material';
-
-import InformationModal from '../components/InformationModal';
+import instance from '../instance';
+import { fetchUserInfo } from '../utils/fetchUser'; 
 
 const MainContainer = {
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
+  background: "FFB7A1"
 };
 
 const BigCard = {
   // padding: '10px',
-  width: '50%',
+  width: '45%',
   margin: '20px',
   alignItems: 'center',
-  borderRadius: '10px',
-  border: '1px solid #ccc',
   display: 'flex', 
   flexDirection: 'column',
+  paddingBottom: '20px'
 };
 
 const InfoCard = {
   padding: '15px',
-  width: '95%',
-  margin: '20px',
+  width: '90%',
+  marginTop: '25px',
   alignItems: 'center',
   borderRadius: '10px',
-  border: '1px solid #ccc',
+  boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
 };
 
 const BigCourseCard = {
   padding: '15px',
-  width: '95%',
-  margin: '20px',
+  width: '90%',
+  marginTop: '25px',
   alignItems: 'center',
   borderRadius: '10px',
-  border: '1px solid #ccc',
+  boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
   overflowY: 'auto',
   maxHeight: '50vh'
 };
 
 const CourseCard = {
-  padding: '15px',
+  padding: '5px',
   width: '95%',
-  margin: '20px',
+  margin: '5px',
   alignItems: 'center',
   borderRadius: '10px',
-  border: '1px solid #ccc',
   flexDirection: 'row',
-  'justify-content': 'space-between',
+  justifyContent: 'space-between',
 };
 
 const currentUser = {
@@ -94,151 +95,259 @@ const previousCourseRecords = [//create 10 course 1nfo
   {uid: 9, coursename: 'course9', semester: '112-1', grade: 'A', visibility: 0},
 ]
 
-const UserPage = () => {
-  const [openModel, setOpenModel] = useState(false);
-  const [editingIntro, setEditingIntro] = useState(currentUser.selfIntro);
-  const [editingFB, setEditingFB] = useState(currentUser.FB);
-  const [editingIG, setEditingIG] = useState(currentUser.IG);
+const UserPage = ({userID}) => {
+  const [editingIntro, setEditingIntro] = useState("");
+  const [editingFB, setEditingFB] = useState("");
+  const [editingIG, setEditingIG] = useState("");
   const [editingSetCourseHistory, SetCourseHistory] = useState("");
+  const [userInfo, setUserInfo] = useState({});
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [courseRecords, setCourseRecords] = useState([]);
+
+  const fetchUser = async () => {
+    try {
+      const getUserInfo = await fetchUserInfo(userID);
+      //console.log("userpage user info:",getUserInfo);
+      setUserInfo(getUserInfo);
+      setEditingFB(getUserInfo.fb);
+      setEditingIG(getUserInfo.ig);
+      setEditingIntro(getUserInfo.self_introduction);
+      return getUserInfo;
+    }
+    catch (error) {
+      console.error('Error fetching userinfo:', error);
+      throw error;
+    }
+  }
+
+  const fetcCourseHistory = async () => {
+    try {
+      const response = await instance.get(`/user/enrolled_courses/${userID}`);
+      if (response.data.success) {
+        let courses = [];
+        let enrolledCourses = response.data.data.courses;
+        enrolledCourses.forEach((course) => {
+            courses.push({id: course[0], courseName: course[1], semester: course[2], grade: course[3], visibility: course[4]})
+        })
+        setCourseRecords([...courses]);
+      }
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  useEffect(() => {    
+    fetchUser();   
+    fetcCourseHistory(); 
+  }, [userID]);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   const handleIntroChange = (event) => {
     setEditingIntro(event.target.value);
+    //console.log("Intro change:",editingIntro);
   };
   
   const handleIGChange = (event) => {
     setEditingIG(event.target.value);
+    //console.log("IG change:",editingIG);
   };
 
   const handleFBChange = (event) => {
     setEditingFB(event.target.value);
+    //console.log("FB change:",editingFB);
   };
-  const handleUpdateVisibility = (courseHistoryID, visibility) => {
-    SetCourseHistory(courseHistoryID, visibility);
-    console.log('Toggle visibility', courseHistoryID);
+
+  const handleUpdateVisibility = async (courseID, visibility) => {
+    const alterVisibility = visibility === 0 ? 1 : 0;
+    try {
+      const response = await instance.post('/user/change_visibility', {
+        user_id: userID,
+        course_id: courseID,
+        visibility: alterVisibility,
+      });
+      if (response.data.success) {
+        setAlertMessage('Change visibility successfully');
+        setOpenSnackbar(true);
+        fetcCourseHistory(); 
+      } else {
+          setAlertMessage('Failed to change visibility');
+          setOpenSnackbar(true);
+      }
+    } catch (error) {
+        console.log(error);
+    }
   }
 
-  const handleConfirmUpdate = () => {
-    console.log('Updating self introduction:', editingIntro);
-    console.log('Updating self introduction:', editingIG);
-    console.log('Updating self introduction:', editingFB);
-    // TODO: Make API request to update the self introduction
-    // After the update, you may want to fetch the updated user information
+  const updateUserIG = async () => {
+    try {
+      const updateContent = editingIG !== undefined && editingIG !== null ? editingIG.toString() : null;
+      const response = await instance.post('/user/edit_contact/IG', {
+          user_id: userID,
+          update_content: updateContent
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateUserFB = async () => {
+    try {
+      const updateContent = editingFB !== undefined && editingFB !== null ? editingFB.toString() : null;
+      const response = await instance.post('/user/edit_contact/FB', {
+          user_id: userID,
+          update_content: updateContent
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateUserIntro = async () => {
+    try {
+      const updateContent = editingIntro !== undefined && editingIntro !== null ? editingIntro.toString() : null;
+      const response = await instance.post('/user/edit_intro', {
+          user_id: userID,
+          update_content: updateContent
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleConfirmUpdate = async () => {
+    try {
+      await updateUserFB();
+      await updateUserIG();
+      await updateUserIntro();
+      setAlertMessage('Update data successfully');
+      setOpenSnackbar(true);
+    }
+    catch (error) {
+      setAlertMessage('Failed to update data');
+      setOpenSnackbar(true);
+    }
   };
 
   return (
     <Container sx={MainContainer}>
-      <Typography variant="h5" fontWeight={800} sx={{ mt: '30px' }}>
-        Edit Your Personal Info Here
-      </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'row', width: '120%'}}>
-          {/* 左側部分，顯示個人資訊 */}
-          <Box sx={BigCard}>
-            <Box sx={InfoCard}>
-              <Typography variant="h5" fontWeight={800} sx={{ mt: '5px' }}>
-                Personal Info
-              </Typography>
-              <Typography 
-                sx={{ 
-                  mt: 2,
-                  fontSize: 12,
-                  color: '#BBB'
+      {
+        userInfo && 
+        <>
+        <Typography variant="h5" fontWeight={800} sx={{ mt: '30px' }}>
+          Edit Your Personal Info Here
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between'}}>
+            {/* 左側部分，顯示個人資訊 */}
+            <Box sx={BigCard}>
+              <Box sx={InfoCard}>
+                <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
+                  Personal Info
+                </Typography>
+                <Typography 
+                  sx={{ 
+                    mt: 2,
+                    fontSize: 12,
+                    color: '#BBB'
+                  }}
+                >
+                  ID
+                </Typography>
+                <Typography sx={{ mt: 2 }} >{userInfo.student_id ?? "User ID"}</Typography>
+                <Typography
+                  sx={{
+                    mt: 2,
+                    fontSize: 12,
+                    color: '#BBB'  
+                  }}  
+                >
+                  Username
+                </Typography>
+                <Typography sx={{ mt: 2 }}>{userInfo.student_name ?? "User Name"}</Typography>
+              </Box>
+              <Box sx={InfoCard}>
+                <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
+                  Contact
+                </Typography>
+                <TextField
+                  multiline
+                  rows={1}
+                  label="Instagram帳號"
+                  variant="outlined"
+                  fullWidth
+                  value={editingIG}
+                  onChange={handleIGChange}
+                  sx={{ mt: 2 }}
+                />
+                <TextField
+                  multiline
+                  rows={1}
+                  label="Facebook帳號"
+                  variant="outlined"
+                  fullWidth
+                  value={editingFB}
+                  onChange={handleFBChange}
+                  sx={{ mt: 2 }}
+                />
+              </Box>
+              <Box sx={InfoCard}>
+                <Typography variant="h6" fontWeight={600} sx={{ mt: '4px' }}>
+                  Self Introduction
+                </Typography>
+                <TextField
+                  multiline
+                  rows={4}
+                  variant="outlined"
+                  fullWidth
+                  value={editingIntro}
+                  onChange={handleIntroChange}
+                  sx={{ mt: 2 }}
+                />
+              </Box>
+                    {/* Confirm Update Button */}
+              <Button
+                id="confirm-update-button"
+                size="small"
+                variant="contained"
+                color="primary"
+                onClick={handleConfirmUpdate}
+                sx={{
+                  width: '200px',
+                  mt: '35px',
+                  textTransform: 'none',
+                  color: '#fff',
+                  fontSize: '14px',
+                  fontWeight: 600,
                 }}
               >
-                ID
-              </Typography>
-              <Typography sx={{ mt: 2 }}>{currentUser.uid}</Typography>
-              <Typography
-                sx={{
-                  mt: 2,
-                  fontSize: 12,
-                  color: '#BBB'  
-                }}  
-              >
-                Username
-              </Typography>
-              <Typography sx={{ mt: 2 }}>{currentUser.uid}</Typography>
+                Confirm Update
+              </Button>
             </Box>
-            <Box sx={InfoCard}>
-              <Typography variant="h5" fontWeight={800} sx={{ mt: '5px' }}>
-                Contact
-              </Typography>
-              <TextField
-                multiline
-                rows={1}
-                label="Instagram帳號"
-                variant="outlined"
-                fullWidth
-                value={editingIG}
-                onChange={handleIGChange}
-                sx={{ mt: 2 }}
-              />
-              <TextField
-                multiline
-                rows={1}
-                label="Facebook帳號"
-                variant="outlined"
-                fullWidth
-                value={editingFB}
-                onChange={handleFBChange}
-                sx={{ mt: 2 }}
-              />
-            </Box>
-            <Box sx={InfoCard}>
-              <Typography variant="h5" fontWeight={800} sx={{ mt: '5px' }}>
-                Self Introduction
-              </Typography>
-              <TextField
-                multiline
-                rows={4}
-                label="Self Introduction"
-                variant="outlined"
-                fullWidth
-                value={editingIntro}
-                onChange={handleIntroChange}
-                sx={{ mt: 2 }}
-              />
-            </Box>
-                  {/* Confirm Update Button */}
-            <Button
-              id="confirm-update-button"
-              size="small"
-              variant="contained"
-              color="primary"
-              onClick={handleConfirmUpdate}
-              sx={{
-                width: '120px',
-                mt: '5px',
-                textTransform: 'none',
-                color: '#fff',
-                fontSize: '14px',
-                fontWeight: 600,
-              }}
-            >
-              Confirm Update
-            </Button>
-          </Box>
 
           {/* 右側部分，顯示修課紀錄 */}
-          <Grid sx={BigCard}>
+          <Box sx={BigCard}>
             <Box sx={BigCourseCard}>
-              <Typography variant="h5" fontWeight={800} sx={{ mt: '5px' }}>
+              <Typography variant="h6" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
                 Current Course Records
               </Typography>
-              {currentCourseRecords.map((course, index) => (
+              {courseRecords.map((course, index) => (
                   <Grid container spacing={2} sx={CourseCard}>
+                      <Paper elevation={0} style={{ border: '1px #d0d0d0 solid', borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', margin: '3px', textAlign: 'center'}}>
+                        <Typography>
+                          {course.semester}
+                        </Typography>
+                      </Paper>
                       <Grid>
                           <Typography>
-                              {course.semester}
+                              {course.courseName}
                           </Typography>
                       </Grid>
                       <Grid>
                           <Typography>
-                              {course.coursename}
-                          </Typography>
-                      </Grid>
-                      <Grid>
-                          <Typography>
-                              {/* {course.grade} */}
+                              {course.grade === 'I' ? '' : course.grade}
                           </Typography>
                       </Grid>
                       <Grid
@@ -253,37 +362,42 @@ const UserPage = () => {
                               size='small'
                               variant="contained"
                               // if visibility == 1, color = primary, else color = secondary
-                              color={course.visibility == 1 ? 'primary' : 'secondary'}
-                              onClick={() => handleUpdateVisibility(course.uid)}
+                              color={course.visibility === 1 ? 'primary' : 'secondary'}
+                              onClick={() => handleUpdateVisibility(course.id, course.visibility)}
                               sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                           >
                               {/* if visibility == 1, "Show", else Hide */}
-                              {course.visibility == 1 ? 'Show' : 'Hide'}
+                              {course.visibility === 1 ? 'Show' : 'Hide'}
                           </Button>
                       </Grid>
                   </Grid>
               ))}
             </Box>
             <Box sx={BigCourseCard}>
-              <Typography variant="h5" fontWeight={800} sx={{ mt: '5px' }}>
+              <Typography variant="h6" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
                 History Course Records
               </Typography>
-              {previousCourseRecords.map((course, index) => (
+              <Typography variant="h7" align="center" color="textSecondary" fontWeight={600} sx={{ marginBottom: '8px', mt: '4px' }}>
+                No Records
+              </Typography>
+              {/* {previousCourseRecords.map((course, index) => (
                   <Grid container spacing={2} sx={CourseCard}>
-                      <Grid>
-                          <Typography>
-                              {course.semester}
-                          </Typography>
-                      </Grid>
+                      <Paper elevation={0} style={{ border: '1px #d0d0d0 solid', borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '6px', paddingRight: '6px', margin: '3px', textAlign: 'center'}}>
+                        <Typography>
+                          {course.semester}
+                        </Typography>
+                      </Paper>
                       <Grid>
                           <Typography>
                               {course.coursename}
                           </Typography>
                       </Grid>
                       <Grid>
-                          <Typography>
-                              {course.grade}
+                        <Paper elevation={0} style={{ borderRadius: '10px', paddingTop: '2px', paddingBottom: '2px', paddingLeft: '8px', paddingRight: '8px', textAlign: 'center', background: '#F5E9D3' }}>
+                          <Typography variant='subtitle2'>
+                            {course.grade}
                           </Typography>
+                        </Paper>
                       </Grid>
                       <Grid
                           sx={{ 
@@ -297,19 +411,31 @@ const UserPage = () => {
                               size='small'
                               variant="contained"
                               // if visibility == 1, color = primary, else color = secondary
-                              color={course.visibility == 1 ? 'primary' : 'secondary'}
+                              color={course.visibility === 1 ? 'primary' : 'secondary'}
                               onClick={() => handleUpdateVisibility(course.uid)}
                               sx={{width: '100px', mt: '5px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
                           >
-                              {/* if visibility == 1, "Show", else Hide */}
-                              {course.visibility == 1 ? 'Show' : 'Hide'}
+                              // if visibility == 1, "Show", else Hide
+                              {course.visibility === 1 ? 'Show' : 'Hide'}
                           </Button>
                       </Grid>
                   </Grid>
-              ))}
+              ))*/} 
             </Box>
-          </Grid>
+          </Box>
       </Box>
+      </>
+      }
+      <Snackbar
+        anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+        }}
+        open={openSnackbar}
+        autoHideDuration={3000} // Adjust the duration as needed
+        onClose={handleCloseSnackbar}
+        message={alertMessage}
+      />
     </Container>
   );
 };

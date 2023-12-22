@@ -5,3 +5,4 @@ study-connect-backend/app/__pycache__/utils.cpython-311.pyc
 study-connect-backend/app/routers/__pycache__/__init__.cpython-311.pyc
 study-connect-backend/app/routers/__pycache__/courses.cpython-311.pyc
 study-connect-backend/app/routers/__pycache__/friends.cpython-311.pyc
+.env

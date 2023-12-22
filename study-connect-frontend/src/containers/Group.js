@@ -1,8 +1,9 @@
-import { React, useState } from 'react';
-import { Box, Grid, Paper, Typography, Button, Container } from '@mui/material';
-
-import InformationModal from '../components/InformationModal';
+import { React, useState, useEffect } from 'react';
+import { Box, Grid, Snackbar, Typography, Button, Container } from '@mui/material';
+import instance from '../instance';
 import GroupCard from '../components/GroupCard';
+import GroupInfoPage from './GroupInfo';
+import CreateGroupModal from '../components/CreateGroupModal';
 
 const MainContainer = {
     display: 'flex',
@@ -11,52 +12,129 @@ const MainContainer = {
     alignItems: 'center',
 }
 
-//SQL: use joingroup, group, course to get group{groupName}, joingroup{job}, course{courseName, semester}
-const Groups = [
-    {uid: 1, groupName: 'group1', courseName: '資料庫管理', semester: '112-1', jobs: ['Data']},
-    {uid: 2, groupName: 'group2', courseName: '網路服務程式設計', semester: '112-1', jobs: ['Frontend', 'Backend']},
-    {uid: 3, groupName: 'group3', courseName: '網路', semester: '112-1', jobs: ['Research', 'Analysis', 'Report']},
-    {uid: 4, groupName: 'group4', courseName: '演算法設計與分析', semester: '112-1', jobs: ['Design', 'Content']},
-    {uid: 5, groupName: 'group5', courseName: '資訊安全概論', semester: '112-1', jobs: ['Planning', 'Execution']},
-    {uid: 6, groupName: 'group6', courseName: '演算法', semester: '112-1', jobs: ['Customer', 'Issue']},
-    {uid: 7, groupName: 'group7', courseName: '會計學甲上', semester: '112-1', jobs: ['Marketing', 'Management', 'Analytics']}
-]
-
-
-
 const GroupPage = ({userID}) => {
+    const [joinedGroups, setJoinedGroups] = useState([]);
+    const [enterGroup, setEnterGroup] = useState(false);
+    const [groupDetailId, setGroupDetailId] = useState(null);
+    const [openCreateGroupModel, setOpenCreateGroupModel] = useState(false);
+    const [courseOptions, setCourseOptions] = useState([]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
+
+    const handleOpenCreateGroup = () => {
+        fetchEnrolledCourses(userID);
+        setOpenCreateGroupModel(true);
+    }
+
+    const fetchEnrolledCourses = async () => {
+        try {
+            const response = await instance.get(`/user/enrolled_courses/${userID}`);
+            if (response.data.success) {
+                let courses = [];
+                let enrolledCourses = response.data.data.courses;
+                enrolledCourses.forEach((course) => {
+                    courses.push({id: course[0], label: course[1]})
+                })
+                setCourseOptions([...courses]);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const fetchJoinedGroups = async () => {
+        try {
+            const response = await instance.get(`/user/joined_groups/${userID}`);
+            if (response.data.success) {
+                let groups = [];
+                let joinedGroups = response.data.data.groups;
+                joinedGroups.forEach((group) => {
+                    groups.push({id: group[0], groupName: group[1], courseName: group[4], semester: group[5]})
+                })
+                setJoinedGroups([...groups]);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        fetchJoinedGroups();
+    }, [userID, enterGroup]);
+
+    const handlePublish = async (GroupName, MaximumMember, CourseID) => {
+        try {
+            const response = await instance.post('/group/create', {
+                user: userID,
+                group_name: GroupName,
+                capacity: MaximumMember,
+                course_id: CourseID,
+            });
+            if (response.data.success) {
+                fetchJoinedGroups();
+                setAlertMessage('Course group created successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Failed to create course group');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return(
         <Container sx={MainContainer}>
-            <Typography variant="h5" fontWeight={800} sx={{mt: '30px', textAlign: 'center'}}>
-                Your Groups
-            </Typography>
-            <Box sx={{ maxHeight: '80vh', overflowY: 'auto', mt: '20px' }}>
-                {Groups.map((group, index) => (
-                    <GroupCard group={group} id={index} key={index} />
-                ))}
-            </Box>
-            {/* <Grid container spacing={2} sx={{ mt: '30px' }}>
-                <Grid item md={6}>
-                    <Typography variant="h5" fontWeight={800} sx={{textAlign: 'center'}}>
+            {enterGroup && groupDetailId ? 
+                <GroupInfoPage userID={userID} groupID={groupDetailId} setEnterGroup={setEnterGroup}/>
+                :
+                <>
+                    <Typography variant="h5" fontWeight={800} sx={{my: '30px', textAlign: 'center'}}>
                         Your Groups
                     </Typography>
+                    <Button
+                        // size="small"
+                        variant="contained"
+                        color='primary'
+                        onClick={handleOpenCreateGroup}
+                        sx={{
+                            size: 'small',
+                            width: '150px',
+                            textTransform: 'none',
+                            color: '#fff',
+                            fontSize: '14px',
+                            fontWeight: 600,
+                        }}
+                    >
+                        創建課程小組
+                    </Button> 
                     <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
-                        {Groups.map((group, index) => (
-                            <GroupCard group={group} id={index} key={index} />
+                        {joinedGroups.length > 0 && joinedGroups.map((group, index) => (
+                            <GroupCard group={group} setGroupDetailId={setGroupDetailId} setEnterGroup={setEnterGroup} id={index} key={index} />
                         ))}
                     </Box>
-                </Grid>
-                <Grid item md={6}>
-                    <Typography variant="h5" fontWeight={800} sx={{textAlign: 'center'}}>
-                        Course Groups Open To You
-                    </Typography>
-                    <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
-                        {Groups.map((group, index) => (
-                            <GroupCard group={group} id={index} key={index} />
-                        ))}
-                    </Box>
-                </Grid>
-            </Grid> */}
+                    <CreateGroupModal 
+                        open={openCreateGroupModel} 
+                        setOpen={setOpenCreateGroupModel}
+                        courseOptions={courseOptions}
+                        handlePublish={handlePublish}
+                    />
+                </>
+            }
+            <Snackbar
+                anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+                }}
+                open={openSnackbar}
+                autoHideDuration={3000} // Adjust the duration as needed
+                onClose={handleCloseSnackbar}
+                message={alertMessage}
+            />
         </Container>
     );
 }

@@ -1,8 +1,9 @@
 import { React, useEffect, useState } from 'react';
-import { Box, Grid, Paper, Typography, Button, Container } from '@mui/material';
+import { Box, Grid, Snackbar, Typography, Button, Container } from '@mui/material';
 import instance from '../instance';
 import { fetchUserInfo } from '../utils/fetchUser';
-
+import FriendCard from '../components/FriendCard';
+import FriendModal from '../components/FriendModal';
 import InformationModal from '../components/InformationModal';
 
 const MainContainer = {
@@ -12,45 +13,53 @@ const MainContainer = {
     alignItems: 'center',
 }
 
-const FriendCard = {
-    padding: '15px', 
-    width: '800px', 
-    margin: '20px',
-    boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
-    alignItems: 'center',
-    borderRadius: '10px'
-}
-
-const friends = [
-    {uid: 1, username: 'user1', selfIntro: 'Hi, my name is ...', ig_account: 'user1_ig', fb_account: 'user1_fb'},
-    {uid: 2, username: 'user2', selfIntro: 'Hi, my name is ...', ig_account: 'user2_ig', fb_account: 'user2_fb'},
-    {uid: 3, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user3_ig', fb_account: 'user3_fb'},
-    {uid: 4, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user4_ig', fb_account: 'user4_fb'},
-    {uid: 5, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user5_ig', fb_account: 'user5_fb'},
-    {uid: 6, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user6_ig', fb_account: 'user6_fb'},
-    {uid: 7, username: 'user3', selfIntro: 'Hi, my name is ...', ig_account: 'user7_ig', fb_account: 'user7_fb'}
-]
-
-
-
 const FriendPage = () => {
     const userID = localStorage.getItem('userID')
     const [openModel, setOpenModel] = useState(false);
-    const [detailUserId, setDetailUserId] = useState("");
+    const [invatations, setInvatations] = useState([]);
     const [userFriends, setUserFriends] = useState([]);
+    const [openInfoModel, setOpenInfoModel] = useState(false);
+    const [selectedUser, setSelectedUser] = useState("");
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
 
-    // WIP
-    const fetcUserFriends = async () => {
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
+
+    const handleInfoOpen = (friend) => {
+        setSelectedUser(friend);
+        setOpenInfoModel(true);
+    }
+
+    const fetchUserFriends = async () => {
         try {
             const response = await instance.get(`/user/friend/list/${userID}`);
             if (response.data.success) {
-                let friends = [];
                 let friendIDs = response.data.data.friends;
-                console.log(friendIDs);
-                friendIDs.forEach((friendID) => {
-                    const friendInfo = fetchUserInfo(friendID);
-                    friends.push({uid: friendID})
-                })
+                
+                const fetchFriendInfo = async (fid) => {
+                    const friendInfo = await fetchUserInfo(fid);
+                    const courseResponse = await instance.get(`/user/enrolled_courses/${fid}`);
+                    if (courseResponse.data.success) {
+                        if (friendInfo){
+                            return { uid: fid, 
+                                username: friendInfo.student_name, 
+                                department: friendInfo.department_name, 
+                                selfIntro: friendInfo.self_introduction ?? "",
+                                courseRecords: courseResponse.data.data.courses,
+                                ig_account: friendInfo.ig,
+                                fb_account: friendInfo.fb
+                            };
+                        }
+                        else {
+                            return null;
+                        }
+                    }
+                };
+    
+                const friendInfoArray = await Promise.all(friendIDs.map(fetchFriendInfo));
+                let friends = friendInfoArray.filter(info => info !== null);
                 setUserFriends([...friends]);
             }
         } catch (error) {
@@ -58,54 +67,139 @@ const FriendPage = () => {
         }
     };
 
+    const fetchFriendRequests = async (userID) => {
+        try {
+            const response = await instance.get(`/user/friend/list_requests/${userID}`);
+            if (response.data.success) {
+                let requestIDs = response.data.data.requests;
+                // console.log(requestIDs);
+                const fetchFriendRequestInfo = async (requestID) => {
+                    const friendInfo = await fetchUserInfo(requestID);
+                    const courseResponse = await instance.get(`/user/enrolled_courses/${requestID}`);
+                    if (courseResponse.data.success) {
+                        return friendInfo ? {
+                            uid: requestID,
+                            username: friendInfo.student_name,
+                            department: friendInfo.department_name,
+                            selfIntro: friendInfo.self_introduction ?? "",
+                            courseRecords: courseResponse.data.data.courses,
+                        } : null;
+                    }
+                };
+    
+                const friendRequestInfoArray = await Promise.all(requestIDs.map(fetchFriendRequestInfo));
+                const friendRequests = friendRequestInfoArray.filter(info => info !== null);
+    
+                setInvatations([...friendRequests]);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     useEffect(()=>{
-        fetcUserFriends()
+        fetchUserFriends()
     }, [userID]);
 
-    const handleOpen = (userId) => {
-        setDetailUserId(userId);
+    const handleOpen = async () => {
+        fetchFriendRequests(userID);
         setOpenModel(true);
     };
 
+    const accept_friend = async (studentID) => {
+        try{
+            const response = await instance.post('/user/friend/approve_request', {
+                user: userID,
+                target: studentID
+            })
+            if (response.status == 200) {
+                fetchUserFriends();
+                setAlertMessage('Accept friend request successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Failed to accept friend request');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const reject_friend = async (studentID) => {
+        try{
+            const response = await instance.post('/user/friend/unfriend', {
+                user: userID,
+                target: studentID
+            })
+            if (response.status == 200) {
+                fetchFriendRequests();
+                setAlertMessage('Reject friend request successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Failed to reject friend request');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        console.log("reject: ", studentID);
+    }
+
+    const unfriend = async (studentID) => {
+        try{
+            const response = await instance.post('/user/friend/unfriend', {
+                user: userID,
+                target: studentID
+            })
+            if (response.status == 200) {
+                fetchUserFriends();
+                setAlertMessage('Unfriend successfully');
+                setOpenSnackbar(true);
+            } else {
+                setAlertMessage('Failed to unfriend');
+                setOpenSnackbar(true);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        console.log("reject: ", studentID);
+    }
+
     return(
         <Container sx={MainContainer}>
-            <Typography variant="h5" fontWeight={800} sx={{mt: '30px'}}>
+            <Typography variant="h5" fontWeight={800} sx={{my: '30px'}}>
                 Your Friends
             </Typography>
+            <Button size='small'
+                variant="contained"
+                color='primary'
+                sx={{width: '160px', textTransform: 'none', color: "#fff", fontSize: '14px', fontWeight: 600}}
+                // position: 'absolute', top: '94px', right: '24%'
+                onClick={handleOpen}
+            >
+                View Invitations
+            </Button>
             <Box sx={{ maxHeight: '70vh', overflowY: 'auto', mt: '20px' }}>
-            {friends.map((friend, index) => (
-                <Paper elevation={3} sx={FriendCard}>
-                    <Typography variant="h5" gutterBottom>
-                        {friend.username}
-                    </Typography>
-                    <Typography variant="body1" color="textSecondary" paragraph>
-                        {friend.selfIntro}
-                    </Typography>
-                    <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={2}>
-                            <Box bgcolor='#ff8000' borderRadius="10px" textAlign="center" marginTop="1px">
-                                <Typography variant="subtitle1" color="#ffffff">
-                                    IG Account
-                                </Typography>
-                            </Box>
-                            <Box bgcolor='#ff8000' borderRadius="10px" textAlign="center" marginTop="1px">
-                                <Typography variant="subtitle1" color="#ffffff">
-                                    FB Account
-                                </Typography>
-                            </Box>
-                        </Grid>                        
-                        <Grid item xs={8} style={{justifyContent: 'center', alignItems: 'center'}}>
-                            <Typography variant="body1" textAlign="center">{friend.ig_account}</Typography>
-                            <Typography variant="body1" textAlign="center">{friend.fb_account}</Typography>
-                        </Grid>
-                    </Grid>
-                    
-                </Paper>
-            ))}
+            {userFriends.length > 0 ? 
+                userFriends.map((friend, index) => (   
+                    <FriendCard friend={friend} handleInfoOpen={handleInfoOpen} handleUnfriend={unfriend}/>
+                ))
+                : <Typography sx={{mt: '20px'}}>You don't have any friend now. QQ</Typography>
+            }
             </Box>
-            <InformationModal open={openModel} setOpen={setOpenModel} userId={detailUserId}/>
+            <InformationModal open={openInfoModel} setOpen={setOpenInfoModel} user={selectedUser}/>
+            <FriendModal open={openModel} setOpen={setOpenModel} invatations={invatations} accept_friend={accept_friend} reject_friend={reject_friend} handleInfoOpen={handleInfoOpen}/>
+            <Snackbar
+                anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+                }}
+                open={openSnackbar}
+                autoHideDuration={3000} // Adjust the duration as needed
+                onClose={handleCloseSnackbar}
+                message={alertMessage}
+            />
         </Container>
-        
     );
 }
 

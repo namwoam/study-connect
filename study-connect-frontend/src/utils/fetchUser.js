@@ -3,7 +3,7 @@ import instance from '../instance';
 //WIP
 export const fetchUserInfo = async (userId) => {
     try {
-        const response = await instance.get(`info/user/info/${userId}`);
+        const response = await instance.get(`info/user/${userId}`);
         if (response.data.success) {
             return response.data.data;
         }

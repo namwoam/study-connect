@@ -4,6 +4,8 @@ import { Box, Grid, Typography, Button } from '@mui/material';
 
 const GroupCard = {
     padding: '15px', 
+    paddingLeft: '0px',
+    paddingTop: '0px',
     width: '600px', 
     margin: '20px',
     boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.16), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 9px 20px 0px rgba(0,0,0,0.12)',
@@ -11,13 +13,13 @@ const GroupCard = {
     borderRadius: '10px'
 }
 
-const CourseGroupView = ({selectedCourse, courseGroups, sendJoinGroupRequest}) => {
+const CourseGroupView = ({courseGroups, sendJoinGroupRequest}) => {
     
     return(
-        <Box sx={{ maxHeight: '65vh', overflowY: 'auto'}}>
-            {selectedCourse && courseGroups.map((group) => (
-                <Grid container spacing={2} sx={GroupCard} key={group.id}>
-                    <Grid md={8}>
+        <Box sx={{ maxHeight: '50vh', overflowY: 'auto'}}>
+            {courseGroups.map((group, index) => (
+                <Grid container spacing={2} sx={GroupCard} key={index}>
+                    <Grid item md={8}>
                         <Typography>
                             小組名稱：{group.groupName}
                         </Typography>
@@ -25,7 +27,7 @@ const CourseGroupView = ({selectedCourse, courseGroups, sendJoinGroupRequest}) =
                             小組人數：{group.currentCnt}/{group.groupCapacity}
                         </Typography>
                     </Grid>
-                    <Grid md={4} 
+                    <Grid item md={4} 
                         sx={{ 
                             display: 'flex',
                             flexDirection: 'column',
