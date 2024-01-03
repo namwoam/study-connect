@@ -157,3 +157,16 @@ def change_visibility(cv: ChangeVisibility):
     except BaseException as err:
         raise HTTPException(status_code=403, detail="Forbidden")
     return ok_respond()
+
+@router.get("/group/pending_requests/{group_id}")
+def pending_requests(group_id: str):
+    groups = query_database(
+        f"""
+        SELECT JG.group_id, SG.group_name
+        FROM STUDY_GROUP AS SG
+        JOIN JOIN_GROUP AS JG ON JG.group_id = {group_id} AND JG.join_status = "Pending"
+        GROUP BY JG.group_id
+        """)
+    return ok_respond({
+        "groups": groups[["group_ID", "group_name", "group_member", "capacity", "course_name", "semester"]].values.tolist()
+    })
